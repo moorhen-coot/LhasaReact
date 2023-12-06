@@ -14,5 +14,5 @@ The build procedure is very much like [Moorhen](https://github.com/moorhen-coot/
 * Run `get_sources` (download C++ dependencies)
 * Run `initial_build.sh` to build all the necessary dependencies using Emscripten
 * Run `build_lhasa.sh` to build Lhasa WebAssembly module
-* Copy `lhasa.js`, `lhasa.worker.js` and `lhasa.wasm` from `lhasa/lhbuild/` to `/public`
+* Copy `lhasa.js`, `lhasa.worker.js` and `lhasa.wasm` from `Coot/lhasa/lhbuild/` to `LhasaReact/public`
 * Your React app is ready to go (Use Vite.js to run: `npx vite serve`)
