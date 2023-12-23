@@ -4,6 +4,7 @@ import './index.css';
 import { Lhasa } from './main.tsx'
 import * as d3 from "d3";
 import { Canvas, Color } from './lhasa';
+import { createRoot } from 'react-dom/client';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -103,20 +104,24 @@ function on_render(lh: Canvas) {
       'height': 0
     };
     try{
-      // console.warn('todo: Fix in React');
-      return size_info;
-      const parent = document.getElementById("editor_canvas_container");
+      //const domNode = document.createElement("div");
+      const domNode = document.getElementById("text_measurement_worker_div");
+      if (domNode == null) {
+        // todo: do something with this.
+        return size_info;
+      }
       const msvg = d3.create("svg")
         .attr("width", 100)
         .attr("height", 100)
         .attr("id", "measurement_temporary");
       const text_elem = lhasa_text_to_d3js(msvg, text);
-      parent.append(msvg.node());
+      domNode.append(msvg.node());
       const node = text_elem.node();
       // This has awful performance but I don't really have a choice
       const bbox = node.getBBox();
       size_info.width = Math.ceil(bbox.width);
       size_info.height = Math.ceil(bbox.height);
+      // console.log("measurement returning:", size_info);
       msvg.remove();
     } catch(err) {
       console.error('Error occured in text measurement: ', err);
@@ -428,6 +433,9 @@ export function LhasaComponent() {
 
           >
             {/* {st.svg_node == null && <div id="pre_render_message">Lhasa not rendered.</div>} */}
+          </div>
+          <div id="text_measurement_worker_div">
+            {/* Ugly, I know */}
           </div>
         </div>
         <div id="status_display_panel" className="panel">
