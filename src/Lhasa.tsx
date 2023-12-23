@@ -1,4 +1,4 @@
-import { MouseEventHandler, useState } from 'react'
+import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 // import './_App.css'
 import './index.css';
 import { Lhasa } from './main.tsx'
@@ -205,18 +205,16 @@ function on_render(lh: Canvas) {
   ren.delete();
   
   const node = svg.node();
-  //console.log(node);
   return node;
-  // const elem = document.getElementById("editor_canvas_container");
-  // while (elem.firstChild) {
-  //   elem.removeChild(elem.lastChild);
-  // }
-  // elem.append(node);
 };
 
 export function LhasaComponent() {
   const [st, setSt] = useState(() => {
     return {
+      // Text measurement relies on elements with certain IDs being in the DOM already.
+      // This means that text measurement will be incorrect (zeroed) for the first render
+      // meaning that if 'first_render' is true, we should re-render immediately
+      first_render: true,
       svg_node: null,
       smiles: [],
       scale: 1.0,
@@ -334,6 +332,23 @@ export function LhasaComponent() {
     chLh(() => lh.set_active_tool(Lhasa.make_active_tool(tool)));
   };
   
+  const svgRef = useRef<Element>(null);
+  // defers the callback to run after render, which is crucial for text measurement
+  // to work after the first render (we need to render it again after the first render)
+  useEffect(()=>{
+    if(svgRef.current && st.svg_node) {
+      svgRef.current.replaceChildren(st.svg_node);
+      if(st.first_render === true) {
+        setSt(pst => {
+          return {
+            ...pst,
+            svg_node: on_render(lh),
+            first_render: false
+          }
+        });
+      }
+    }
+  },[st]);
 
   return (
     <>
@@ -428,10 +443,11 @@ export function LhasaComponent() {
               lh.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
             }}
 
-            dangerouslySetInnerHTML={st.svg_node != null ? {__html:st.svg_node.outerHTML} : undefined}
+            // dangerouslySetInnerHTML={st.svg_node != null ? {__html:st.svg_node.outerHTML} : undefined}
+            ref={svgRef}
 
           >
-            {/* {st.svg_node == null && <div id="pre_render_message">Lhasa not rendered.</div>} */}
+            <div id="pre_render_message">Lhasa not rendered.</div>
           </div>
           <div id="text_measurement_worker_div">
             {/* Ugly, I know */}
