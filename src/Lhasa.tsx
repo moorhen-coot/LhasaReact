@@ -4,7 +4,6 @@ import './index.css';
 import { Lhasa } from './main.tsx'
 import * as d3 from "d3";
 import { Canvas, Color } from './lhasa';
-import { createRoot } from 'react-dom/client';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
