@@ -218,7 +218,8 @@ export function LhasaComponent() {
       svg_node: null,
       smiles: [],
       scale: 1.0,
-      status_text: ''
+      status_text: '',
+      x_element_input_shown: false
     };
   });
   const [lh, setLh] = useState(() => {
@@ -392,9 +393,13 @@ export function LhasaComponent() {
           <ToolButton caption="8-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloOctaneRing))} />
         </div>
         <div id="x_element_panel" className="panel horizontal_container" >
-          {/* <span style="align-self: center;flex-grow:1;">Custom element symbol: </span> */}
-          <input id="x_element_symbol_input"></input>
-          {/* <div className="button" id="x_element_submit_button" onclick="javascript:on_x_element_submit_button(this)">Submit</div> */}
+          {st.x_element_input_shown && 
+            <>
+              <span style="align-self: center;flex-grow:1;">Custom element symbol: </span>
+              <input id="x_element_symbol_input"></input>
+              <div className="button" id="x_element_submit_button" onClick="javascript:on_x_element_submit_button(this)">Submit</div>
+            </>
+          }
         </div>
         <div id="error_display" className="vertical_container vertical_toolbar">
 
