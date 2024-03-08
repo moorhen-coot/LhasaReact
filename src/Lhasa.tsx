@@ -271,50 +271,6 @@ export function LhasaComponent() {
         };
       });
     });
-    // const smiles_import_button = document.getElementById("smiles_import_button");
-    // smiles_import_button.addEventListener("click", function (el) {
-    //   const smiles_input = document.getElementById("smiles_input");
-    //   Module.append_from_smiles(lh, smiles_input.value);
-    // });
-
-    // on_x_element_button = (button) => {
-    //   const panel = document.getElementById("x_element_panel");
-    //   console.log(panel.style.display);
-    //   if(panel.style.display == 'none' || panel.style.display == '') {
-    //     panel.style.display = 'flex';
-    //   } else {
-    //     panel.style.display = 'none';
-    //   }
-    // };
-
-    // on_x_element_submit_button = (button) => {
-    //   const symbol_input = document.getElementById("x_element_symbol_input");
-    //   const x_button = document.getElementById("x_element_button");
-    //   const err_display = document.getElementById("error_display");
-    //   try {
-    //     const el_ins = Module.element_insertion_from_symbol(symbol_input.value);
-    //     switch_tool(x_button, el_ins);
-    //     const panel = document.getElementById("x_element_panel");
-    //     panel.style.display = 'none';
-    //     err_display.style.display = 'none';
-    //   }catch(err) {
-    //     console.warn("Could not set custom element: ", err);
-    //     err_display.textContent = "Could not load ElementInsertion tool. Is your symbol valid?";
-    //     err_display.style.display = 'flex';
-    //   }
-    // };
-
-    // switch_display_mode = (value) => {
-    //   switch(value) {
-    //     default:
-    //     case 'standard':
-    //       lh.set_display_mode(Module.LhasaDisplayMode.Standard);
-    //       break;
-    //     case 'atom_indices':
-    //       lh.set_display_mode(Module.LhasaDisplayMode.AtomIndices);
-    //       break;
-    //   }
-    // };
 
     console.log('Adding demo molecule.');
     Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
@@ -332,6 +288,52 @@ export function LhasaComponent() {
     // todo: pressed buttons
     chLh(() => lh.set_active_tool(Lhasa.make_active_tool(tool)));
   };
+
+  // todo pressed buttons
+  function on_x_element_button() {
+    setSt(pst =>{
+      return {
+        ...pst,
+        x_element_input_shown: true
+      }
+    });
+  }
+
+  // const smiles_import_button = document.getElementById("smiles_import_button");
+  // smiles_import_button.addEventListener("click", function (el) {
+  //   const smiles_input = document.getElementById("smiles_input");
+  //   Module.append_from_smiles(lh, smiles_input.value);
+  // });
+
+
+  function on_x_element_submit_button() {
+    // const symbol_input = document.getElementById("x_element_symbol_input");
+    // const x_button = document.getElementById("x_element_button");
+    // const err_display = document.getElementById("error_display");
+    // try {
+    //   const el_ins = Module.element_insertion_from_symbol(symbol_input.value);
+    //   switch_tool(x_button, el_ins);
+    //   const panel = document.getElementById("x_element_panel");
+    //   panel.style.display = 'none';
+    //   err_display.style.display = 'none';
+    // }catch(err) {
+    //   console.warn("Could not set custom element: ", err);
+    //   err_display.textContent = "Could not load ElementInsertion tool. Is your symbol valid?";
+    //   err_display.style.display = 'flex';
+    // }
+  }
+
+  // switch_display_mode = (value) => {
+  //   switch(value) {
+  //     default:
+  //     case 'standard':
+  //       lh.set_display_mode(Module.LhasaDisplayMode.Standard);
+  //       break;
+  //     case 'atom_indices':
+  //       lh.set_display_mode(Module.LhasaDisplayMode.AtomIndices);
+  //       break;
+  //   }
+  // };
   
   const svgRef = useRef<Element>(null);
   // defers the callback to run after render, which is crucial for text measurement
@@ -392,15 +394,15 @@ export function LhasaComponent() {
           <ToolButton caption="7-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHeptaneRing))} />
           <ToolButton caption="8-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloOctaneRing))} />
         </div>
-        <div id="x_element_panel" className="panel horizontal_container" >
-          {st.x_element_input_shown && 
-            <>
-              <span style="align-self: center;flex-grow:1;">Custom element symbol: </span>
+        {st.x_element_input_shown && 
+          <>
+            <div id="x_element_panel" className="panel horizontal_container" >
+              <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
               <input id="x_element_symbol_input"></input>
-              <div className="button" id="x_element_submit_button" onClick="javascript:on_x_element_submit_button(this)">Submit</div>
-            </>
-          }
-        </div>
+            </div>
+            <div className="button" id="x_element_submit_button" onClick={() => on_x_element_submit_button()}>Submit</div>
+          </>
+        }
         <div id="error_display" className="vertical_container vertical_toolbar">
 
         </div>
@@ -416,7 +418,8 @@ export function LhasaComponent() {
             <ToolButton caption="Cl" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Cl))} />
             <ToolButton caption="Br" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Br))} />
             <ToolButton caption="I" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.I))} />
-            <ToolButton caption="X" id="x_element_button" />
+            {/* todo pressed buttons */}
+            <ToolButton caption="X" id="x_element_button" onclick={() => on_x_element_button()} />
           </div>
           <div 
             id="editor_canvas_container"
