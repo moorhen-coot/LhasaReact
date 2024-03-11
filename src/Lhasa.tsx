@@ -313,7 +313,6 @@ export function LhasaComponent() {
     try {
       const el_ins = Lhasa.element_insertion_from_symbol(symbol_input.value);
       switch_tool(el_ins);
-      const panel = document.getElementById("x_element_panel");
       setSt(pst =>{
         return {
           ...pst,
@@ -400,11 +399,12 @@ export function LhasaComponent() {
         </div>
         {st.x_element_input_shown && 
           <>
+            {/* The id is used for CSS */}
             <div id="x_element_panel" className="panel horizontal_container" >
               <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
               <input id="x_element_symbol_input"></input>
             </div>
-            <div className="button" id="x_element_submit_button" onClick={() => on_x_element_submit_button()}>Submit</div>
+            <div className="button" /*id="x_element_submit_button"*/ onClick={() => on_x_element_submit_button()}>Submit</div>
           </>
         }
         <div id="error_display" className="vertical_container vertical_toolbar">
