@@ -307,20 +307,24 @@ export function LhasaComponent() {
 
 
   function on_x_element_submit_button() {
-    // const symbol_input = document.getElementById("x_element_symbol_input");
+    const symbol_input = document.getElementById("x_element_symbol_input");
     // const x_button = document.getElementById("x_element_button");
     // const err_display = document.getElementById("error_display");
-    // try {
-    //   const el_ins = Module.element_insertion_from_symbol(symbol_input.value);
-    //   switch_tool(x_button, el_ins);
-    //   const panel = document.getElementById("x_element_panel");
-    //   panel.style.display = 'none';
-    //   err_display.style.display = 'none';
-    // }catch(err) {
-    //   console.warn("Could not set custom element: ", err);
-    //   err_display.textContent = "Could not load ElementInsertion tool. Is your symbol valid?";
-    //   err_display.style.display = 'flex';
-    // }
+    try {
+      const el_ins = Lhasa.element_insertion_from_symbol(symbol_input.value);
+      switch_tool(el_ins);
+      const panel = document.getElementById("x_element_panel");
+      setSt(pst =>{
+        return {
+          ...pst,
+          x_element_input_shown: false
+        }
+      });
+    }catch(err) {
+      console.warn("Could not set custom element: ", err);
+      // err_display.textContent = "Could not load ElementInsertion tool. Is your symbol valid?";
+      // err_display.style.display = 'flex';
+    }
   }
 
   // switch_display_mode = (value) => {
