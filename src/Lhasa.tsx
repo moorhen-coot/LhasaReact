@@ -470,12 +470,15 @@ export function LhasaComponent() {
           <span id="status_display">{ st.status_text }</span>
         </div>
         <div id="invalid_molecules_panel" className="panel">
-          {/* <input 
+          <label>
+            <input 
             type="checkbox" 
             id="allow_invalid_molecules_checkbox" 
             name="allow_invalid_molecules"
-            onChange={() => chLh(() => lh.set_allow_invalid_molecules(this.checked))}
-            >Allow invalid molecules</input> */}
+            onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
+            />
+            Allow invalid molecules
+          </label>
         </div>
         <div id="info_block" className="horizontal_container">
           <div id="scale_panel" className="panel">
