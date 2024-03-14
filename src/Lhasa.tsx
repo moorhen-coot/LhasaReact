@@ -133,7 +133,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
   lh.render(ren);
   const commands = ren.get_commands();
   const svg = d3.create("svg")
-    .attr("id", "lhasa_drawing")
+    .attr("class", "lhasa_drawing")
     .attr("width", lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size)
     .attr("height", lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size);
 
@@ -212,6 +212,7 @@ export function LhasaComponent() {
   const text_measurement_worker_div = useId();
   const smiles_input = useId();
   const x_element_symbol_input = useId();
+  const error_display = useId();
   const [st, setSt] = useState(() => {
     return {
       // Text measurement relies on elements with certain IDs being in the DOM already.
@@ -359,10 +360,10 @@ export function LhasaComponent() {
 
   return (
     <>
-      <div id="lhasa_editor">
-        <div id="lhasa_hello_outer" className="horizontal_container">
+      <div className="lhasa_editor">
+        <div className="horizontal_container">
           <img src="/icons/icons/hicolor_apps_scalable_coot-layla.svg" />
-          <div id="lhasa_hello">
+          <div /*id_="lhasa_hello"*/ >
             <h3>Welcome to Lhasa!</h3>
             <p>
               Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
@@ -373,7 +374,7 @@ export function LhasaComponent() {
             </p>
           </div>
         </div>
-        <div id="molecule_tools_toolbar" className="horizontal_toolbar toolbar horizontal_container">
+        <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
           <ToolButton caption="Move" onclick={() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation))} />
           <ToolButton caption="Rotate" onclick={() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation))} />
           <ToolButton caption="Flip around X" onclick={() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal))} />
@@ -381,7 +382,7 @@ export function LhasaComponent() {
           <ToolButton caption="Delete hydrogens" onclick={() => switch_tool(new Lhasa.RemoveHydrogensTool())} />
           <ToolButton caption="Format" onclick={() => switch_tool(new Lhasa.FormatTool())} />
         </div>
-        <div id="main_tools_toolbar" className="horizontal_toolbar toolbar horizontal_container">
+        <div /*id_="main_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
           <ToolButton caption="Single Bond" onclick={() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single))} />
           <ToolButton caption="Double Bond" onclick={() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double))} />
           <ToolButton caption="Triple Bond" onclick={() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple))} />
@@ -389,7 +390,7 @@ export function LhasaComponent() {
           <ToolButton caption="Charge" onclick={() => switch_tool(new Lhasa.ChargeModifier())} icon="icons/layla_charge_tool.svg" />
           <ToolButton caption="Delete" onclick={() => switch_tool(new Lhasa.DeleteTool())} />
         </div>
-        <div id="structure_toolbar" className="horizontal_toolbar toolbar horizontal_container">
+        <div /*id_="structure_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
           <ToolButton caption="3-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPropaneRing))} />
           <ToolButton caption="4-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloButaneRing))} />
           <ToolButton caption="5-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPentaneRing))} />
@@ -400,19 +401,18 @@ export function LhasaComponent() {
         </div>
         {st.x_element_input_shown && 
           <>
-            {/* The id is used for CSS */}
-            <div id="x_element_panel" className="panel horizontal_container" >
+            <div className="x_element_panel panel horizontal_container" >
               <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
               <input id={x_element_symbol_input}></input>
             </div>
-            <div className="button" /*id="x_element_submit_button"*/ onClick={() => on_x_element_submit_button()}>Submit</div>
+            <div className="button x_element_submit_button" onClick={() => on_x_element_submit_button()}>Submit</div>
           </>
         }
-        <div id="error_display" className="vertical_container vertical_toolbar">
+        <div id={error_display} className="error_display vertical_container vertical_toolbar">
 
         </div>
-        <div id="main_horizontal_container" className="horizontal_container">
-          <div id="element_toolbar" className="vertical_toolbar toolbar vertical_container">
+        <div /*id_="main_horizontal_container"*/ className="horizontal_container">
+          <div /*id_="element_toolbar"*/ className="vertical_toolbar toolbar vertical_container">
             <ToolButton caption="C" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.C))} />
             <ToolButton caption="N" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.N))} />
             <ToolButton caption="O" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.O))} />
@@ -427,7 +427,7 @@ export function LhasaComponent() {
             <ToolButton caption="X" onclick={() => on_x_element_button()} />
           </div>
           <div 
-            id="editor_canvas_container"
+            className="editor_canvas_container"
             // todo: fix
             onContextMenu={() => {return false}}
             onMouseMove={(event) => {
@@ -460,31 +460,31 @@ export function LhasaComponent() {
             ref={svgRef}
 
           >
-            <div id="pre_render_message">Lhasa not rendered.</div>
+            <div className="pre_render_message">Lhasa not rendered.</div>
           </div>
-          <div id={text_measurement_worker_div}>
+          <div id={text_measurement_worker_div} className="text_measurement_worker_div">
             {/* Ugly, I know */}
           </div>
         </div>
-        <div id="status_display_panel" className="panel">
+        <div className="status_display_panel panel">
           <span>▶</span>
-          <span id="status_display">{ st.status_text }</span>
+          <span /*id_="status_display"*/>{ st.status_text }</span>
         </div>
-        <div id="invalid_molecules_panel" className="panel">
+        <div className="invalid_molecules_panel panel">
           <label>
             <input 
             type="checkbox" 
-            id="allow_invalid_molecules_checkbox" 
+            /*id_="allow_invalid_molecules_checkbox" */
             name="allow_invalid_molecules"
             onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
             />
             Allow invalid molecules
           </label>
         </div>
-        <div id="info_block" className="horizontal_container">
-          <div id="scale_panel" className="panel">
+        <div /*id_="info_block"*/ className="horizontal_container">
+          <div className="scale_panel panel">
             <b>SCALE</b>
-            <div id="scale_display">
+            <div className="scale_display">
               {st.scale}
             </div>
             <div className="toolbar horizontal_toolbar horizontal_container">
@@ -492,7 +492,7 @@ export function LhasaComponent() {
               <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}><b>+</b></div>
             </div>
           </div>
-          <div id="display_mode_panel" className="panel">
+          <div className="display_mode_panel panel">
             <b>DISPLAY MODE</b>
             <br/>
             <label>
@@ -506,25 +506,25 @@ export function LhasaComponent() {
               <input type="radio" name="display_mode" value="atom_indices" onChange={() => switch_display_mode("atom_indices")} />
               Atom Indices
             </label>
-            {/* <!-- <input type="radio" name="display_mode" id="display_mode_atom_names">Atom Names</input> --> */}
+            {/* <!-- <input type="radio" name="display_mode" id_="display_mode_atom_names">Atom Names</input> --> */}
           </div>
-          <div id="smiles_display_outer" className="panel">
+          <div className="smiles_display_outer panel">
             <b>SMILES</b>
-            <div id="smiles_display">
+            <div className="smiles_display">
               {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
             </div>
           </div>
         </div>
-        <div id="bottom_toolbar" className="horizontal_toolbar toolbar horizontal_container">
+        <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
           <div className="button" onClick={() => chLh(() => lh.undo_edition())} >Undo</div>
           <div className="button" onClick={() => chLh(() => lh.redo_edition())} >Redo</div>
           <div style={{"flexGrow": 1}} className="horizontal_container toolbar">
             {/* SMILES:  */}
-            <input id={smiles_input} />
+            <input id={smiles_input} className="smiles_input" />
             <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
           </div>
         </div>
-        <div id="lhasa_footer">
+        <div className="lhasa_footer">
           <i>Written by Jakub Smulski</i>
         </div>
       </div>

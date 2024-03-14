@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 } */
 
-#editor_canvas_container {
+.editor_canvas_container {
     border: greenyellow 1px solid;
     padding: 5px;
     cursor: default;
@@ -25,11 +25,11 @@
     min-height: 100px;
 }
 
-#lhasa_drawing {
+.lhasa_drawing {
     background-color: white;
 }
 
-#lhasa_editor {
+.lhasa_editor {
     font-family: sans-serif;
     background-color: rgb(0, 0, 66);
     color: yellow;
@@ -49,27 +49,28 @@
     padding: 5px;
 }
 
-#invalid_molecules_panel, 
-#scale_panel,  
-#display_mode_panel,
-#status_display_panel {
+.invalid_molecules_panel, 
+.scale_panel,  
+.display_mode_panel,
+.status_display_panel {
     margin-bottom: 5px;
 }
 
-#smiles_display_outer {
+.smiles_display_outer {
     margin-bottom: 5px;
     flex-grow: 1;
 }
 
-#x_element_panel {
+.x_element_panel,
+.x_element_submit_button {
     margin-bottom: 5px;
     /* display: none; */
 }
 
 
-#error_display {
+.error_display {
     margin-bottom: 5px;
-    display: none;
+    display: none !important;
     color: red;
     font-weight: bold;
     border: red 1px solid;
@@ -128,21 +129,21 @@
     background-color: rgb(0, 0, 175) !important;
 }
 
-#smiles_display {
+.smiles_display {
     padding: 5px;
     font-family: monospace;
 }
 
-#scale_display {
+.scale_display {
     padding: 5px;
 }
 
-#status_display_panel {
+.status_display_panel {
     padding: 10px;
     margin-top: 5px;
 }
 
-#lhasa_editor input {
+.lhasa_editor input {
     font-family: sans-serif;
     background-color: rgb(0, 0, 66);
     color: yellow;
@@ -150,17 +151,23 @@
     border-style: ridge;
 }
 
-#smiles_input {
+.smiles_input {
     flex-grow: 1;
 }
 
-#lhasa_footer {
+.lhasa_footer {
     margin-top: 20px;
 }
 
-#pre_render_message {
+.pre_render_message {
     color: yellow;
     font-weight: bold;
     font-size: 200%;
     background-color: rgb(0, 0, 66);
+}
+
+.text_measurement_worker_div {
+    /* Cancels out the gap in the owning container 
+    so that we get nice alignment */
+    margin-left: -5px;
 }
