@@ -299,15 +299,13 @@ export function LhasaComponent() {
     });
   }
 
-  // const smiles_import_button = document.getElementById("smiles_import_button");
-  // smiles_import_button.addEventListener("click", function (el) {
-  //   const smiles_input = document.getElementById("smiles_input");
-  //   Module.append_from_smiles(lh, smiles_input.value);
-  // });
-
+  function on_smiles_import_button() {
+      const smiles_input = document.getElementById("smiles_input") as HTMLInputElement;
+      chLh(() => Lhasa.append_from_smiles(lh, smiles_input.value));
+  }
 
   function on_x_element_submit_button() {
-    const symbol_input = document.getElementById("x_element_symbol_input");
+    const symbol_input = document.getElementById("x_element_symbol_input") as HTMLInputElement;
     // const x_button = document.getElementById("x_element_button");
     // const err_display = document.getElementById("error_display");
     try {
@@ -423,7 +421,7 @@ export function LhasaComponent() {
             <ToolButton caption="Br" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Br))} />
             <ToolButton caption="I" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.I))} />
             {/* todo pressed buttons */}
-            <ToolButton caption="X" id="x_element_button" onclick={() => on_x_element_button()} />
+            <ToolButton caption="X" onclick={() => on_x_element_button()} />
           </div>
           <div 
             id="editor_canvas_container"
@@ -507,10 +505,11 @@ export function LhasaComponent() {
         <div id="bottom_toolbar" className="horizontal_toolbar toolbar horizontal_container">
           <div className="button" onClick={() => chLh(() => lh.undo_edition())} >Undo</div>
           <div className="button" onClick={() => chLh(() => lh.redo_edition())} >Redo</div>
-          {/* <div style="flex-grow: 1;" className="horizontal_container toolbar">
-            <input id="smiles_input"></input>
-            <div className="button" id="smiles_import_button">Import SMILES</div>
-          </div> */}
+          <div style={{"flexGrow": 1}} className="horizontal_container toolbar">
+            {/* SMILES:  */}
+            <input id="smiles_input" />
+            <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
+          </div>
         </div>
         <div id="lhasa_footer">
           <i>Written by Jakub Smulski</i>
