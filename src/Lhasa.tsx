@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
+import { MouseEventHandler, useEffect, useId, useRef, useState } from 'react'
 // import './_App.css'
 import './index.css';
 import { Lhasa } from './main.tsx'
@@ -25,7 +25,7 @@ function ToolButton(props:ToolButtonProps) {
   )
 }
 
-function on_render(lh: Canvas) {
+function on_render(lh: Canvas, text_measurement_worker_div: string) {
   console.debug("on_render() called.");
 
   const css_color_from_lhasa_color = (lhasa_color: Color) => {
@@ -104,7 +104,7 @@ function on_render(lh: Canvas) {
     };
     try{
       //const domNode = document.createElement("div");
-      const domNode = document.getElementById("text_measurement_worker_div");
+      const domNode = document.getElementById(text_measurement_worker_div);
       if (domNode == null) {
         // todo: do something with this.
         return size_info;
@@ -209,6 +209,9 @@ function on_render(lh: Canvas) {
 };
 
 export function LhasaComponent() {
+  const text_measurement_worker_div = useId();
+  const smiles_input = useId();
+  const x_element_symbol_input = useId();
   const [st, setSt] = useState(() => {
     return {
       // Text measurement relies on elements with certain IDs being in the DOM already.
@@ -225,7 +228,7 @@ export function LhasaComponent() {
   const [lh, setLh] = useState(() => {
     const lh = new Lhasa.Canvas();
     lh.connect("queue_redraw", () => {
-      const node = on_render(lh);
+      const node = on_render(lh, text_measurement_worker_div);
       setSt(pst =>{
           return {
           ...pst,
@@ -300,12 +303,12 @@ export function LhasaComponent() {
   }
 
   function on_smiles_import_button() {
-      const smiles_input = document.getElementById("smiles_input") as HTMLInputElement;
-      chLh(() => Lhasa.append_from_smiles(lh, smiles_input.value));
+      const smiles_input_el = document.getElementById(smiles_input) as HTMLInputElement;
+      chLh(() => Lhasa.append_from_smiles(lh, smiles_input_el.value));
   }
 
   function on_x_element_submit_button() {
-    const symbol_input = document.getElementById("x_element_symbol_input") as HTMLInputElement;
+    const symbol_input = document.getElementById(x_element_symbol_input) as HTMLInputElement;
     // const x_button = document.getElementById("x_element_button");
     // const err_display = document.getElementById("error_display");
     try {
@@ -400,7 +403,7 @@ export function LhasaComponent() {
             {/* The id is used for CSS */}
             <div id="x_element_panel" className="panel horizontal_container" >
               <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
-              <input id="x_element_symbol_input"></input>
+              <input id={x_element_symbol_input}></input>
             </div>
             <div className="button" /*id="x_element_submit_button"*/ onClick={() => on_x_element_submit_button()}>Submit</div>
           </>
@@ -459,7 +462,7 @@ export function LhasaComponent() {
           >
             <div id="pre_render_message">Lhasa not rendered.</div>
           </div>
-          <div id="text_measurement_worker_div">
+          <div id={text_measurement_worker_div}>
             {/* Ugly, I know */}
           </div>
         </div>
@@ -517,7 +520,7 @@ export function LhasaComponent() {
           <div className="button" onClick={() => chLh(() => lh.redo_edition())} >Redo</div>
           <div style={{"flexGrow": 1}} className="horizontal_container toolbar">
             {/* SMILES:  */}
-            <input id="smiles_input" />
+            <input id={smiles_input} />
             <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
           </div>
         </div>
