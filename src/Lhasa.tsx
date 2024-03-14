@@ -3,7 +3,7 @@ import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import './index.css';
 import { Lhasa } from './main.tsx'
 import * as d3 from "d3";
-import { Canvas, Color } from './lhasa';
+import { Canvas, Color, DisplayMode } from './lhasa';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -324,17 +324,17 @@ export function LhasaComponent() {
     }
   }
 
-  // switch_display_mode = (value) => {
-  //   switch(value) {
-  //     default:
-  //     case 'standard':
-  //       lh.set_display_mode(Module.LhasaDisplayMode.Standard);
-  //       break;
-  //     case 'atom_indices':
-  //       lh.set_display_mode(Module.LhasaDisplayMode.AtomIndices);
-  //       break;
-  //   }
-  // };
+  function switch_display_mode(value: string) {
+    switch(value) {
+      default:
+      case 'standard':
+        chLh(() => lh.set_display_mode(Lhasa.DisplayMode.Standard));
+        break;
+      case 'atom_indices':
+        chLh(() => lh.set_display_mode(Lhasa.DisplayMode.AtomIndices));
+        break;
+    }
+  };
   
   const svgRef = useRef<Element>(null);
   // defers the callback to run after render, which is crucial for text measurement
@@ -491,8 +491,18 @@ export function LhasaComponent() {
           </div>
           <div id="display_mode_panel" className="panel">
             <b>DISPLAY MODE</b>
-            {/* <br/><input type="radio" name="display_mode" checked value="standard" onchange="javascript:switch_display_mode(this.value);">Standard</input>
-            <br/><input type="radio" name="display_mode" value="atom_indices" onchange="javascript:switch_display_mode(this.value);">Atom Indices</input> */}
+            <br/>
+            <label>
+              {/* Not sure how to avod redundancy with value in React */}
+              <input type="radio" name="display_mode" defaultChecked={true} value="standard" onChange={() => switch_display_mode("standard")} />
+              Standard
+            </label>
+            <br/>
+            <label>
+              {/* Not sure how to avod redundancy with value in React */}
+              <input type="radio" name="display_mode" value="atom_indices" onChange={() => switch_display_mode("atom_indices")} />
+              Atom Indices
+            </label>
             {/* <!-- <input type="radio" name="display_mode" id="display_mode_atom_names">Atom Names</input> --> */}
           </div>
           <div id="smiles_display_outer" className="panel">
