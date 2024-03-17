@@ -428,8 +428,7 @@ export function LhasaComponent() {
           </div>
           <div 
             className="editor_canvas_container"
-            // todo: fix
-            onContextMenu={() => {return false}}
+            onContextMenu={(e) => {e.preventDefault();}}
             onMouseMove={(event) => {
               // console.log('Mousemove');
               lh.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
