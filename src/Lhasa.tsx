@@ -535,7 +535,7 @@ export function LhasaComponent() {
           <div className="scale_panel panel">
             <b>SCALE</b>
             <div className="scale_display">
-              {st.scale}
+              {st.scale.toFixed(2)}
             </div>
             <div className="toolbar horizontal_toolbar horizontal_container">
               <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}><b>-</b></div>
