@@ -179,15 +179,15 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
 
             return d;       
         }
-        // svg.append("path")
-        //   // todo
-        //   .attr("stroke-width", 1)
-        //   // todo
-        //   .attr("fill", "none")
-        //   // todo
-        //   .attr("stroke", "#000000")
-        //   .attr("d", describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two));
-        console.log("todo: render arcs properly");
+        svg.append("path")
+          // todo
+          .attr("stroke-width", 1)
+          // todo
+          .attr("fill", "none")
+          // todo
+          .attr("stroke", "#000000")
+          .attr("d", describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two));
+        // console.log("todo: render arcs properly");
 
       } else if(command.is_path()) {
         const path = command.as_path();
