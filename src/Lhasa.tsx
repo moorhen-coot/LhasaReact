@@ -171,9 +171,22 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
             var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
             //var largeArcFlag = "1";
 
+            // From the SVG reference:
+            //
+            // If sweep-flag is '1', 
+            // then the arc will be drawn in a "positive-angle" direction 
+            // (i.e., the ellipse formula x=cx+rx*cos(theta) and y=cy+ry*sin(theta) 
+            // is evaluated such that theta starts at an angle corresponding 
+            // to the current point and increases positively until the arc reaches (x,y)). 
+            // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
+            // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
+            const sweep = 1;
             var d = [
                 "M", start.x, start.y, 
-                "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+                "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
+                // "L", x,y,
+                // "L", start.x, start.y,
+                // "Z"
             ].join(" ");
             // console.log("d", d);
 
