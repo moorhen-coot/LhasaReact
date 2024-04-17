@@ -212,7 +212,6 @@ export function LhasaComponent() {
   const text_measurement_worker_div = useId();
   const smiles_input = useId();
   const x_element_symbol_input = useId();
-  const error_display = useId();
   const [st, setSt] = useState(() => {
     return {
       // Text measurement relies on elements with certain IDs being in the DOM already.
@@ -223,7 +222,10 @@ export function LhasaComponent() {
       smiles: [],
       scale: 1.0,
       status_text: '',
-      x_element_input_shown: false
+      x_element_input_shown: false,
+      /// This is only used for user feedback,
+      /// i.e. when the user inputs something invalid
+      error_message_content: null
     };
   });
   const [lh, setLh] = useState(() => {
@@ -311,7 +313,6 @@ export function LhasaComponent() {
   function on_x_element_submit_button() {
     const symbol_input = document.getElementById(x_element_symbol_input) as HTMLInputElement;
     // const x_button = document.getElementById("x_element_button");
-    // const err_display = document.getElementById("error_display");
     try {
       const el_ins = Lhasa.element_insertion_from_symbol(symbol_input.value);
       switch_tool(el_ins);
@@ -323,8 +324,12 @@ export function LhasaComponent() {
       });
     }catch(err) {
       console.warn("Could not set custom element: ", err);
-      // err_display.textContent = "Could not load ElementInsertion tool. Is your symbol valid?";
-      // err_display.style.display = 'flex';
+      setSt(pst =>{
+        return {
+          ...pst,
+          error_message_content: "Could not load ElementInsertion tool. Is your symbol valid?"
+        }
+      });
     }
   }
 
@@ -350,13 +355,23 @@ export function LhasaComponent() {
         setSt(pst => {
           return {
             ...pst,
-            svg_node: on_render(lh),
+            svg_node: on_render(lh, text_measurement_worker_div),
             first_render: false
           }
         });
       }
     }
   },[st]);
+
+  useEffect(()=>{
+    if(st.error_message_content) {
+      // Note that we're not calling 'setSt'.
+      // This is on purpose. We don't want React to re-render things now.
+      // Otherwise the error message would pop-up and then
+      // immediately disappear.
+      st.error_message_content = null;
+    }
+  })
 
   return (
     <>
@@ -408,9 +423,11 @@ export function LhasaComponent() {
             <div className="button x_element_submit_button" onClick={() => on_x_element_submit_button()}>Submit</div>
           </>
         }
-        <div id={error_display} className="error_display vertical_container vertical_toolbar">
-
-        </div>
+        {st.error_message_content &&
+          <div className="error_display vertical_container vertical_toolbar">
+            {st.error_message_content}
+          </div>
+        }
         <div /*id_="main_horizontal_container"*/ className="horizontal_container">
           <div /*id_="element_toolbar"*/ className="vertical_toolbar toolbar vertical_container">
             <ToolButton caption="C" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.C))} />
