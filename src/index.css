@@ -15,7 +15,8 @@
 
 .editor_canvas_container {
     border: greenyellow 1px solid;
-    padding: 5px;
+    /* Padding here breaks relative coords */
+    /* padding: 5px; */
     cursor: default;
     user-select: none;
     overflow: auto;
