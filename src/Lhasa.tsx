@@ -196,19 +196,19 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
         const arc_path = svg.append("path");
         if(arc.has_stroke) {
           arc_path
-            // todo
             .attr("stroke-width", arc.stroke_style.line_width)
-            // todo
             .attr("stroke", css_color_from_lhasa_color(arc.stroke_style.color));
 
         }
         if(arc.has_fill) {
-          // todo
+          arc_path
+            .attr("fill", css_color_from_lhasa_color(arc.fill_color));
+        } else {
+          arc_path
+            .attr("fill", "none");
         }
           
         arc_path
-          // todo
-          .attr("fill", "none")
           .attr("d", describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two));
 
       } else if(command.is_path()) {
