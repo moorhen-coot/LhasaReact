@@ -300,7 +300,7 @@ export function LhasaComponent() {
     setSt(pst =>{
       return {
         ...pst,
-        x_element_input_shown: true
+        x_element_input_shown: !pst.x_element_input_shown
       }
     });
   }
