@@ -307,7 +307,19 @@ export function LhasaComponent() {
 
   function on_smiles_import_button() {
       const smiles_input_el = document.getElementById(smiles_input) as HTMLInputElement;
-      chLh(() => Lhasa.append_from_smiles(lh, smiles_input_el.value));
+      chLh(() => {
+        try {
+          Lhasa.append_from_smiles(lh, smiles_input_el.value)
+        } catch(err) {
+          console.warn("Could not import molecule from SMILES: ", err);
+          setSt(pst =>{
+            return {
+              ...pst,
+              error_message_content: "Could not load import molecule from SMILES. Is your SMILES valid?"
+            }
+          });
+        }
+      });
   }
 
   function on_x_element_submit_button() {
