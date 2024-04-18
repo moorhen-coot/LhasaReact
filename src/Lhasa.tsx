@@ -213,7 +213,6 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
 
       } else if(command.is_path()) {
         const path = command.as_path();
-        // todo: this needs to return something in the future
         const new_root = svg.append("g");
         render_commands(path.commands, new_root);
         if(path.has_fill) {
