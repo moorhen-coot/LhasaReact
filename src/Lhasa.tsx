@@ -137,13 +137,13 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
     .attr("width", lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size)
     .attr("height", lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size);
 
-  const render_commands = (cmds) => {
+  const render_commands = (cmds, node_root = svg) => {
     for(var i = 0; i < cmds.size(); i++) {
       const command = cmds.get(i);
       if(command.is_line()) {
         const line = command.as_line();
         const color = line.style.color;
-        svg.append("line")
+        node_root.append("line")
           .attr("x1", line.start.x)
           .attr("y1", line.start.y)
           .attr("x2", line.end.x)
@@ -193,7 +193,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
             return d;       
         }
 
-        const arc_path = svg.append("path");
+        const arc_path = node_root.append("path");
         if(arc.has_stroke) {
           arc_path
             .attr("stroke-width", arc.stroke_style.line_width)
@@ -214,8 +214,12 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
       } else if(command.is_path()) {
         const path = command.as_path();
         // todo: this needs to return something in the future
-        render_commands(path.commands);
-        console.log("todo: implement fills for paths.");
+        const new_root = svg.append("g");
+        render_commands(path.commands, new_root);
+        if(path.has_fill) {
+          console.log("todo: Make sure that fills for paths work.");
+          new_root.attr("fill", css_color_from_lhasa_color(path.fill_color));
+        }
 
       } else if(command.is_text()) {
         const text = command.as_text();
