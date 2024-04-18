@@ -213,6 +213,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
 
       } else if(command.is_path()) {
         const path = command.as_path();
+        // todo: this needs to return something in the future
         render_commands(path.commands);
         console.log("todo: implement fills for paths.");
 
