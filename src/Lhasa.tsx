@@ -218,7 +218,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
         //   // console.warn("Empty path!");
         //   // return;
         // }
-        const new_root = svg.append("g");
+        const new_root = node_root.append("g");
         render_commands(path.commands, new_root);
         if(path.has_fill) {
           console.log("todo: Make sure that fills for paths work.");
