@@ -213,6 +213,11 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
 
       } else if(command.is_path()) {
         const path = command.as_path();
+        // this causes a crash
+        // if(path.commands.empty()) {
+        //   // console.warn("Empty path!");
+        //   // return;
+        // }
         const new_root = svg.append("g");
         render_commands(path.commands, new_root);
         if(path.has_fill) {
