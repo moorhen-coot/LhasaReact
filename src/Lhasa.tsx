@@ -201,8 +201,9 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
 
         }
         if(arc.has_fill) {
+          // THis is hacky: todo: rework paths from the ground up
           arc_path
-            .attr("fill", css_color_from_lhasa_color(arc.fill_color));
+            .attr("style", "background: " + css_color_from_lhasa_color(arc.fill_color) + ";");
         } else {
           arc_path
             .attr("fill", "none");
