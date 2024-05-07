@@ -201,9 +201,8 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
 
         }
         if(arc.has_fill) {
-          // THis is hacky: todo: rework paths from the ground up
           arc_path
-            .attr("style", "background-color: " + css_color_from_lhasa_color(arc.fill_color) + ";");
+            .attr("fill", css_color_from_lhasa_color(arc.fill_color));
         } else {
           arc_path
             .attr("fill", "none");
@@ -223,7 +222,8 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
         render_commands(path.commands, new_root);
         if(path.has_fill) {
           console.log("todo: Make sure that fills for paths work.");
-          new_root.attr("fill", css_color_from_lhasa_color(path.fill_color));
+          // THis is hacky: todo: rework paths from the ground up
+          new_root.attr("style", "background-color: " + css_color_from_lhasa_color(path.fill_color) + ";");
         }
 
       } else if(command.is_text()) {
