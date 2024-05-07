@@ -221,7 +221,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
         const new_root = node_root.append("g");
         render_commands(path.commands, new_root);
         if(path.has_fill) {
-          console.log("todo: Make sure that fills for paths work.");
+          console.log("todo: Rewrite fills for paths.");
           // THis is hacky: todo: rework paths from the ground up
           new_root.attr("style", "background-color: " + css_color_from_lhasa_color(path.fill_color) + ";");
         }
