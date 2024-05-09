@@ -8,7 +8,7 @@ import { Canvas, Color, DisplayMode } from './lhasa';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
-  // action_name: string | undefined;
+  active: boolean = false;
   caption: string | undefined;
   icon: string | undefined | null;
 }
@@ -16,7 +16,7 @@ class ToolButtonProps {
 function ToolButton(props:ToolButtonProps) {
   // console.log(props.caption);
   return (
-    <div className="button tool_button" onClick={props.onclick}>
+    <div className={"button tool_button" + (props.active ? 'active_tool' : '')} onClick={props.onclick}>
       {props.icon && 
         <>
           <img src={props.icon} width="24px" />
@@ -259,7 +259,8 @@ export function LhasaComponent() {
       x_element_input_shown: false,
       /// This is only used for user feedback,
       /// i.e. when the user inputs something invalid
-      error_message_content: null
+      error_message_content: null,
+      active_tool_name: ''
     };
   });
   const [lh, setLh] = useState(() => {
@@ -610,8 +611,12 @@ export function LhasaComponent() {
 
   function wrap_handler(action_name: string, raw_handler: () => void) : () => void {
     return () => {
-      const button_obj = tool_buttons.get(action_name);
-      // todo: highlights
+      setSt(pst => {
+        return {
+          ...pst,
+          active_tool_name: action_name
+        }
+      });
       raw_handler();
     };
   }
@@ -622,14 +627,14 @@ export function LhasaComponent() {
       .map(([k,v]) => [k, wrap_handler(k,v["raw_handler"])])
   );
 
-  if(tool_buttons.size == 0) {
-    for(const [k,v] of Object.entries(tool_button_data)) {
-      tool_buttons.set(k, ToolButton({
-        onclick: () => {handler_map[k]()},
-        caption: v.caption,
-        icon: v.icon ?? null
-      }));
-    }
+  
+  for(const [k,v] of Object.entries(tool_button_data)) {
+    tool_buttons.set(k, ToolButton({
+      onclick: () => {handler_map[k]()},
+      caption: v.caption,
+      icon: v.icon ?? null,
+      active: st.active_tool_name == k
+    }));
   }
 
   // todo: manage storage
