@@ -1,4 +1,5 @@
-import { MouseEventHandler, useEffect, useId, useRef, useState } from 'react'
+import { MouseEventHandler, Profiler, useEffect, useId, useRef, useState } from 'react'
+import { HotKeys } from "react-hotkeys"
 // import './_App.css'
 import './index.css';
 import { Lhasa } from './main.tsx'
@@ -7,20 +8,21 @@ import { Canvas, Color, DisplayMode } from './lhasa';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
+  // action_name: string | undefined;
   caption: string | undefined;
-  icon: string | undefined | null
+  icon: string | undefined | null;
 }
 
 function ToolButton(props:ToolButtonProps) {
   // console.log(props.caption);
   return (
     <div className="button tool_button" onClick={props.onclick}>
-      {props.caption}
-      {/* {props.icon && 
+      {props.icon && 
         <>
           <img src={props.icon} width="24px" />
           <br/>
-        </>} */}
+        </>}
+      {props.caption}
     </div>
   )
 }
@@ -323,7 +325,7 @@ export function LhasaComponent() {
   };
 
   function switch_tool(tool : any) {
-    // todo: pressed buttons
+    // Making the buttons appear as "active" happens in the button event handlers.
     chLh(() => lh.set_active_tool(Lhasa.make_active_tool(tool)));
   };
 
@@ -417,177 +419,401 @@ export function LhasaComponent() {
     }
   })
 
+  const tool_button_data = {
+    Move: { 
+      caption:"Move",
+      raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
+      // icon:"",
+      hotkey:"m"
+    },
+    Rotate: { 
+      caption:"Rotate",
+      raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation)),
+      // icon:"",
+      hotkey:"r"
+    },
+    Flip_around_X: { 
+      caption:"Flip around X",
+      raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal)),
+      // icon:"",
+      // hotkey:""
+    },
+    Flip_around_Y: { 
+      caption:"Flip around Y",
+      raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical)),
+      // icon:"",
+      // hotkey:""
+    },
+    Delete_hydrogens: { 
+      caption:"Delete hydrogens",
+      raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
+      // icon:"",
+      // hotkey:""
+    },
+    Format: { 
+      caption:"Format",
+      raw_handler:() => switch_tool(new Lhasa.FormatTool()),
+      // icon:"",
+      // hotkey:""
+    },
+    Single_Bond: { 
+      caption:"Single Bond",
+      raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
+      // icon:"",
+      // hotkey:""
+    },
+    Double_Bond: { 
+      caption:"Double Bond",
+      raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
+      // icon:"",
+      // hotkey:""
+    },
+    Triple_Bond: { 
+      caption:"Triple Bond",
+      raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
+      // icon:"",
+      // hotkey:""
+    },
+    Geometry: { 
+      caption:"Geometry",
+      raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
+      // icon:"",
+      // hotkey:""
+    },
+    Charge: { 
+      caption:"Charge",
+      raw_handler:() => switch_tool(new Lhasa.ChargeModifier()),
+      icon:"icons/layla_charge_tool.svg",
+      // hotkey:"c"
+    },
+    Delete: { 
+      caption:"Delete",
+      raw_handler:() => switch_tool(new Lhasa.DeleteTool()),
+      // icon:"",
+      // hotkey:""
+    },
+    C3: { 
+      caption:"3-C",
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPropaneRing)),
+      // icon:"",
+      // hotkey:""
+    },
+    C4: { 
+      caption:"4-C",
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloButaneRing)),
+      // icon:"",
+      // hotkey:""
+    },
+    C5: { 
+      caption:"5-C",
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPentaneRing)),
+      // icon:"",
+      // hotkey:""
+    },
+    C6: { 
+      caption:"6-C",
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHexaneRing)),
+      // icon:"",
+      // hotkey:""
+    },
+    Arom6: { 
+      caption:"6-Arom",
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.BenzeneRing)),
+      // icon:"",
+      // hotkey:""
+    },
+    C7: { 
+      caption:"7-C",
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHeptaneRing)),
+      // icon:"",
+      // hotkey:""
+    },
+    C8: { 
+      caption:"8-C",
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloOctaneRing)),
+      // icon:"",
+      // hotkey:""
+    },
+    C: { 
+      caption:"C",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.C)),
+      // icon:"",
+      // hotkey:""
+    },
+    N: { 
+      caption:"N",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.N)),
+      // icon:"",
+      // hotkey:""
+    },
+    O: { 
+      caption:"O",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.O)),
+      // icon:"",
+      // hotkey:""
+    },
+    S: { 
+      caption:"S",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.S)),
+      // icon:"",
+      // hotkey:""
+    },
+    P: { 
+      caption:"P",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.P)),
+      // icon:"",
+      // hotkey:""
+    },
+    H: { 
+      caption:"H",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.H)),
+      // icon:"",
+      // hotkey:""
+    },
+    F: { 
+      caption:"F",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.F)),
+      // icon:"",
+      // hotkey:""
+    },
+    Cl: { 
+      caption:"Cl",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Cl)),
+      // icon:"",
+      // hotkey:""
+    },
+    Br: { 
+      caption:"Br",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Br)),
+      // icon:"",
+      // hotkey:""
+    },
+    I: { 
+      caption:"I",
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.I)),
+      // icon:"",
+      // hotkey:""
+    },
+    X: { 
+      caption:"X",
+      raw_handler:() => on_x_element_button(),
+      // icon:"",
+      // hotkey:""
+    }
+  };
+
+  // doesn't work
+  // let tool_buttons = useRef<Map<string,JSX.Element>>({});
+
+  // todo: manage storage
+  let tool_buttons = new Map<string,JSX.Element>();
+
+  function wrap_handler(action_name: string, raw_handler: () => void) : () => void {
+    return () => {
+      const button_obj = tool_buttons.get(action_name);
+      // todo: highlights
+      raw_handler();
+    };
+  }
+
+  // todo: manage storage
+  const handler_map = Object.fromEntries(
+    Object.entries(tool_button_data)
+      .map(([k,v]) => [k, wrap_handler(k,v["raw_handler"])])
+  );
+
+  if(tool_buttons.size == 0) {
+    for(const [k,v] of Object.entries(tool_button_data)) {
+      tool_buttons.set(k, ToolButton({
+        onclick: () => {handler_map[k]()},
+        caption: v.caption,
+        icon: v.icon ?? null
+      }));
+    }
+  }
+
+  // todo: manage storage
+  let key_map = Object.fromEntries(
+    Object.entries(tool_button_data)
+      .filter(([k,v]) => 'hotkey' in v)
+      .map(([k,v]) => [k, v['hotkey']])
+  );
+
+
+
+
   return (
     <>
-      <div className="lhasa_editor">
-        <div className="horizontal_container">
-          <img src="/icons/icons/hicolor_apps_scalable_coot-layla.svg" />
-          <div /*id_="lhasa_hello"*/ >
-            <h3>Welcome to Lhasa!</h3>
-            <p>
-              Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
-              Lhasa is experimental software.
-            </p>
-            <p>
-              This is a demo UI for development purposes.
-            </p>
-          </div>
-        </div>
-        <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
-          <ToolButton caption="Move" onclick={() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation))} />
-          <ToolButton caption="Rotate" onclick={() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation))} />
-          <ToolButton caption="Flip around X" onclick={() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal))} />
-          <ToolButton caption="Flip around Y" onclick={() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical))} />
-          <ToolButton caption="Delete hydrogens" onclick={() => switch_tool(new Lhasa.RemoveHydrogensTool())} />
-          <ToolButton caption="Format" onclick={() => switch_tool(new Lhasa.FormatTool())} />
-        </div>
-        <div /*id_="main_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
-          <ToolButton caption="Single Bond" onclick={() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single))} />
-          <ToolButton caption="Double Bond" onclick={() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double))} />
-          <ToolButton caption="Triple Bond" onclick={() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple))} />
-          <ToolButton caption="Geometry" onclick={() => switch_tool(new Lhasa.GeometryModifier())} />
-          <ToolButton caption="Charge" onclick={() => switch_tool(new Lhasa.ChargeModifier())} icon="icons/layla_charge_tool.svg" />
-          <ToolButton caption="Delete" onclick={() => switch_tool(new Lhasa.DeleteTool())} />
-        </div>
-        <div /*id_="structure_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
-          <ToolButton caption="3-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPropaneRing))} />
-          <ToolButton caption="4-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloButaneRing))} />
-          <ToolButton caption="5-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPentaneRing))} />
-          <ToolButton caption="6-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHexaneRing))} />
-          <ToolButton caption="6-Arom" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.BenzeneRing))} />
-          <ToolButton caption="7-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHeptaneRing))} />
-          <ToolButton caption="8-C" onclick={() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloOctaneRing))} />
-        </div>
-        {st.x_element_input_shown && 
-          <>
-            <div className="x_element_panel panel horizontal_container" >
-              <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
-              <input id={x_element_symbol_input}></input>
+      <HotKeys keyMap={key_map} handlers={handler_map}>
+        <div className="lhasa_editor">
+          <div className="horizontal_container">
+            <img src="/icons/icons/hicolor_apps_scalable_coot-layla.svg" />
+            <div /*id_="lhasa_hello"*/ >
+              <h3>Welcome to Lhasa!</h3>
+              <p>
+                Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
+                Lhasa is experimental software.
+              </p>
+              <p>
+                This is a demo UI for development purposes.
+              </p>
             </div>
-            <div className="button x_element_submit_button" onClick={() => on_x_element_submit_button()}>Submit</div>
-          </>
-        }
-        {st.error_message_content &&
-          <div className="error_display vertical_container vertical_toolbar">
-            {st.error_message_content}
           </div>
-        }
-        <div /*id_="main_horizontal_container"*/ className="horizontal_container">
-          <div /*id_="element_toolbar"*/ className="vertical_toolbar toolbar vertical_container">
-            <ToolButton caption="C" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.C))} />
-            <ToolButton caption="N" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.N))} />
-            <ToolButton caption="O" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.O))} />
-            <ToolButton caption="S" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.S))} />
-            <ToolButton caption="P" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.P))} />
-            <ToolButton caption="H" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.H))} />
-            <ToolButton caption="F" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.F))} />
-            <ToolButton caption="Cl" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Cl))} />
-            <ToolButton caption="Br" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Br))} />
-            <ToolButton caption="I" onclick={() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.I))} />
-            {/* todo pressed buttons */}
-            <ToolButton caption="X" onclick={() => on_x_element_button()} />
+          <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            { tool_buttons.get("Move") }
+            { tool_buttons.get("Rotate") }
+            { tool_buttons.get("Flip_around_X") }
+            { tool_buttons.get("Flip_around_Y") }
+            { tool_buttons.get("Delete_hydrogens") }
+            { tool_buttons.get("Format") }
           </div>
-          <div 
-            className="editor_canvas_container"
-            onContextMenu={(e) => {e.preventDefault();}}
-            onMouseMove={(event) => {
-              // console.log('Mousemove');
-              lh.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
-            }}
-            onMouseDown={(event) => {
-              if(event.button == 0) {
-                //console.log('lclick');
-                lh.on_left_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-              } else if(event.button == 2) {
-                //console.log('rclick');
-                lh.on_right_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-              }
-            }}
-            onMouseUp={(event) => {
-              if(event.button == 0) {
-                //console.log('lreleased');
-                lh.on_left_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-              } else if(event.button == 2) {
-                //console.log('rreleased');
-                lh.on_right_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-              }
-            }}
-            onWheel={(event) => {
-              lh.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
-            }}
+          <div /*id_="main_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            { tool_buttons.get("Single_Bond") }
+            { tool_buttons.get("Double_Bond") }
+            { tool_buttons.get("Triple_Bond") }
+            { tool_buttons.get("Geometry") }
+            { tool_buttons.get("Charge") }
+            { tool_buttons.get("Delete") }
+          </div>
+          <div /*id_="structure_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            { tool_buttons.get("C3") }
+            { tool_buttons.get("C4") }
+            { tool_buttons.get("C5") }
+            { tool_buttons.get("C6") }
+            { tool_buttons.get("Arom6") }
+            { tool_buttons.get("C7") }
+            { tool_buttons.get("C8") }
+          </div>
+          {st.x_element_input_shown && 
+            <>
+              <div className="x_element_panel panel horizontal_container" >
+                <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
+                <input id={x_element_symbol_input}></input>
+              </div>
+              <div className="button x_element_submit_button" onClick={() => on_x_element_submit_button()}>Submit</div>
+            </>
+          }
+          {st.error_message_content &&
+            <div className="error_display vertical_container vertical_toolbar">
+              {st.error_message_content}
+            </div>
+          }
+          <div /*id_="main_horizontal_container"*/ className="horizontal_container">
+            <div /*id_="element_toolbar"*/ className="vertical_toolbar toolbar vertical_container">
+            { tool_buttons.get("C") }
+            { tool_buttons.get("N") }
+            { tool_buttons.get("O") }
+            { tool_buttons.get("S") }
+            { tool_buttons.get("P") }
+            { tool_buttons.get("H") }
+            { tool_buttons.get("F") }
+            { tool_buttons.get("Cl") }
+            { tool_buttons.get("Br") }
+            { tool_buttons.get("I") }
+            { tool_buttons.get("X") }
+            </div>
+            <div 
+              className="editor_canvas_container"
+              onContextMenu={(e) => {e.preventDefault();}}
+              onMouseMove={(event) => {
+                // console.log('Mousemove');
+                lh.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
+              }}
+              onMouseDown={(event) => {
+                if(event.button == 0) {
+                  //console.log('lclick');
+                  lh.on_left_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                } else if(event.button == 2) {
+                  //console.log('rclick');
+                  lh.on_right_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                }
+              }}
+              onMouseUp={(event) => {
+                if(event.button == 0) {
+                  //console.log('lreleased');
+                  lh.on_left_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                } else if(event.button == 2) {
+                  //console.log('rreleased');
+                  lh.on_right_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                }
+              }}
+              onWheel={(event) => {
+                lh.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
+              }}
 
-            // dangerouslySetInnerHTML={st.svg_node != null ? {__html:st.svg_node.outerHTML} : undefined}
-            ref={svgRef}
+              // dangerouslySetInnerHTML={st.svg_node != null ? {__html:st.svg_node.outerHTML} : undefined}
+              ref={svgRef}
 
-          >
-            <div className="pre_render_message">Lhasa not rendered.</div>
-          </div>
-          <div id={text_measurement_worker_div} className="text_measurement_worker_div">
-            {/* Ugly, I know */}
-          </div>
-        </div>
-        <div className="status_display_panel panel">
-          <span>▶</span>
-          <span /*id_="status_display"*/>{ st.status_text }</span>
-        </div>
-        <div className="invalid_molecules_panel panel">
-          <label>
-            <input 
-            type="checkbox" 
-            /*id_="allow_invalid_molecules_checkbox" */
-            name="allow_invalid_molecules"
-            onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
-            />
-            Allow invalid molecules
-          </label>
-        </div>
-        <div /*id_="info_block"*/ className="horizontal_container">
-          <div className="scale_panel panel">
-            <b>SCALE</b>
-            <div className="scale_display">
-              {st.scale.toFixed(2)}
+            >
+              <div className="pre_render_message">Lhasa not rendered.</div>
             </div>
-            <div className="toolbar horizontal_toolbar horizontal_container">
-              <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}><b>-</b></div>
-              <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}><b>+</b></div>
+            <div id={text_measurement_worker_div} className="text_measurement_worker_div">
+              {/* Ugly, I know */}
             </div>
           </div>
-          <div className="display_mode_panel panel">
-            <b>DISPLAY MODE</b>
-            <br/>
+          <div className="status_display_panel panel">
+            <span>▶</span>
+            <span /*id_="status_display"*/>{ st.status_text }</span>
+          </div>
+          <div className="invalid_molecules_panel panel">
             <label>
-              {/* Not sure how to avod redundancy with value in React */}
-              <input type="radio" name="display_mode" defaultChecked={true} value="standard" onChange={() => switch_display_mode("standard")} />
-              Standard
+              <input 
+              type="checkbox" 
+              /*id_="allow_invalid_molecules_checkbox" */
+              name="allow_invalid_molecules"
+              onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
+              />
+              Allow invalid molecules
             </label>
-            <br/>
-            <label>
-              {/* Not sure how to avod redundancy with value in React */}
-              <input type="radio" name="display_mode" value="atom_indices" onChange={() => switch_display_mode("atom_indices")} />
-              Atom Indices
-            </label>
-            {/* <!-- <input type="radio" name="display_mode" id_="display_mode_atom_names">Atom Names</input> --> */}
           </div>
-          <div className="smiles_display_outer panel">
-            <b>SMILES</b>
-            <div className="smiles_display">
-              {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
+          <div /*id_="info_block"*/ className="horizontal_container">
+            <div className="scale_panel panel">
+              <b>SCALE</b>
+              <div className="scale_display">
+                {st.scale.toFixed(2)}
+              </div>
+              <div className="toolbar horizontal_toolbar horizontal_container">
+                <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}><b>-</b></div>
+                <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}><b>+</b></div>
+              </div>
+            </div>
+            <div className="display_mode_panel panel">
+              <b>DISPLAY MODE</b>
+              <br/>
+              <label>
+                {/* Not sure how to avod redundancy with value in React */}
+                <input type="radio" name="display_mode" defaultChecked={true} value="standard" onChange={() => switch_display_mode("standard")} />
+                Standard
+              </label>
+              <br/>
+              <label>
+                {/* Not sure how to avod redundancy with value in React */}
+                <input type="radio" name="display_mode" value="atom_indices" onChange={() => switch_display_mode("atom_indices")} />
+                Atom Indices
+              </label>
+              {/* <!-- <input type="radio" name="display_mode" id_="display_mode_atom_names">Atom Names</input> --> */}
+            </div>
+            <div className="smiles_display_outer panel">
+              <b>SMILES</b>
+              <div className="smiles_display">
+                {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
+              </div>
             </div>
           </div>
-        </div>
-        <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
-          <div className="button" onClick={() => chLh(() => lh.undo_edition())} >Undo</div>
-          <div className="button" onClick={() => chLh(() => lh.redo_edition())} >Redo</div>
-          <div style={{"flexGrow": 1}} className="horizontal_container toolbar">
-            {/* SMILES:  */}
-            <input id={smiles_input} className="smiles_input" />
-            <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
+          <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            <div className="button" onClick={() => chLh(() => lh.undo_edition())} >Undo</div>
+            <div className="button" onClick={() => chLh(() => lh.redo_edition())} >Redo</div>
+            <div style={{"flexGrow": 1}} className="horizontal_container toolbar">
+              {/* SMILES:  */}
+              <input id={smiles_input} className="smiles_input" />
+              <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
+            </div>
+          </div>
+          <div className="lhasa_footer">
+            <i>Written by Jakub Smulski</i>
           </div>
         </div>
-        <div className="lhasa_footer">
-          <i>Written by Jakub Smulski</i>
-        </div>
-      </div>
+      </HotKeys>
     </>
   )
 }

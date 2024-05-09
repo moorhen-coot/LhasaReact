@@ -110,6 +110,8 @@
     flex-direction: column;
     gap: 2px;
     justify-content: center;
+    /* CSS is weird */
+    align-items: center;
     cursor: pointer;
 }
 
