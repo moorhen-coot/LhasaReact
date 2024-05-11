@@ -443,169 +443,169 @@ export function LhasaComponent() {
       caption:"Flip around X",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal)),
       // icon:"",
-      // hotkey:""
+      hotkey:"alt+f"
     },
     Flip_around_Y: { 
       caption:"Flip around Y",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical)),
       // icon:"",
-      // hotkey:""
+      hotkey:"ctrl+alt+f"
     },
     Delete_hydrogens: { 
       caption:"Delete hydrogens",
       raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
       // icon:"",
-      // hotkey:""
+      hotkey:"alt+delete"
     },
     Format: { 
       caption:"Format",
       raw_handler:() => switch_tool(new Lhasa.FormatTool()),
       // icon:"",
-      // hotkey:""
+      hotkey:"f"
     },
     Single_Bond: { 
       caption:"Single Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
       // icon:"",
-      // hotkey:""
+      hotkey:"s"
     },
     Double_Bond: { 
       caption:"Double Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
       // icon:"",
-      // hotkey:""
+      hotkey:"d"
     },
     Triple_Bond: { 
       caption:"Triple Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
       // icon:"",
-      // hotkey:""
+      hotkey:"t"
     },
     Geometry: { 
       caption:"Geometry",
       raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
       // icon:"",
-      // hotkey:""
+      hotkey:"g"
     },
     Charge: { 
       caption:"Charge",
       raw_handler:() => switch_tool(new Lhasa.ChargeModifier()),
       icon:"icons/layla_charge_tool.svg",
-      // hotkey:"c"
+      hotkey:"v"
     },
     Delete: { 
       caption:"Delete",
       raw_handler:() => switch_tool(new Lhasa.DeleteTool()),
       // icon:"",
-      // hotkey:""
+      hotkey:"delete"
     },
     C3: { 
       caption:"3-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPropaneRing)),
       // icon:"",
-      // hotkey:""
+      hotkey:"3"
     },
     C4: { 
       caption:"4-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloButaneRing)),
       // icon:"",
-      // hotkey:""
+      hotkey:"4"
     },
     C5: { 
       caption:"5-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPentaneRing)),
       // icon:"",
-      // hotkey:""
+      hotkey:"5"
     },
     C6: { 
       caption:"6-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHexaneRing)),
       // icon:"",
-      // hotkey:""
+      hotkey:"6"
     },
     Arom6: { 
       caption:"6-Arom",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.BenzeneRing)),
       // icon:"",
-      // hotkey:""
+      hotkey:["b","alt+6"]
     },
     C7: { 
       caption:"7-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHeptaneRing)),
       // icon:"",
-      // hotkey:""
+      hotkey:"7"
     },
     C8: { 
       caption:"8-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloOctaneRing)),
       // icon:"",
-      // hotkey:""
+      hotkey:"8"
     },
     C: { 
       caption:"C",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.C)),
       // icon:"",
-      // hotkey:""
+      hotkey:"c"
     },
     N: { 
       caption:"N",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.N)),
       // icon:"",
-      // hotkey:""
+      hotkey:"n"
     },
     O: { 
       caption:"O",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.O)),
       // icon:"",
-      // hotkey:""
+      hotkey:"o"
     },
     S: { 
       caption:"S",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.S)),
       // icon:"",
-      // hotkey:""
+      hotkey:"alt+s"
     },
     P: { 
       caption:"P",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.P)),
       // icon:"",
-      // hotkey:""
+      hotkey:"p"
     },
     H: { 
       caption:"H",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.H)),
       // icon:"",
-      // hotkey:""
+      hotkey:"h"
     },
     F: { 
       caption:"F",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.F)),
       // icon:"",
-      // hotkey:""
+      hotkey:"alt+i"
     },
     Cl: { 
       caption:"Cl",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Cl)),
       // icon:"",
-      // hotkey:""
+      hotkey:"alt+c"
     },
     Br: { 
       caption:"Br",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Br)),
       // icon:"",
-      // hotkey:""
+      hotkey:"alt+b"
     },
     I: { 
       caption:"I",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.I)),
       // icon:"",
-      // hotkey:""
+      hotkey:"i"
     },
     X: { 
       caption:"X",
       raw_handler:() => on_x_element_button(),
       // icon:"",
-      // hotkey:""
+      hotkey:"x"
     }
   });
 
