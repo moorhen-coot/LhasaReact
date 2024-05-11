@@ -430,7 +430,7 @@ export function LhasaComponent() {
     Move: { 
       caption:"Move",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
-      // icon:"",
+      icon:"icons/layla_move_tool.svg",
       hotkey:"m"
     },
     Rotate: { 
@@ -454,37 +454,37 @@ export function LhasaComponent() {
     Delete_hydrogens: { 
       caption:"Delete hydrogens",
       raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
-      // icon:"",
+      icon:"icons/layla_delete_hydrogens_tool.svg",
       hotkey:"alt+delete"
     },
     Format: { 
       caption:"Format",
       raw_handler:() => switch_tool(new Lhasa.FormatTool()),
-      // icon:"",
+      icon:"icons/layla_format_tool.svg",
       hotkey:"f"
     },
     Single_Bond: { 
       caption:"Single Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
-      // icon:"",
+      icon:"icons/layla_single_bond.svg",
       hotkey:"s"
     },
     Double_Bond: { 
       caption:"Double Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
-      // icon:"",
+      icon:"icons/layla_double_bond.svg",
       hotkey:"d"
     },
     Triple_Bond: { 
       caption:"Triple Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
-      // icon:"",
+      icon:"icons/layla_triple_bond.svg",
       hotkey:"t"
     },
     Geometry: { 
       caption:"Geometry",
       raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
-      // icon:"",
+      icon:"icons/layla_geometry_tool.svg",
       hotkey:"g"
     },
     Charge: { 
@@ -502,43 +502,43 @@ export function LhasaComponent() {
     C3: { 
       caption:"3-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPropaneRing)),
-      // icon:"",
+      icon:"icons/layla_3c.svg",
       hotkey:"3"
     },
     C4: { 
       caption:"4-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloButaneRing)),
-      // icon:"",
+      icon:"icons/layla_4c.svg",
       hotkey:"4"
     },
     C5: { 
       caption:"5-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPentaneRing)),
-      // icon:"",
+      icon:"icons/layla_5c.svg",
       hotkey:"5"
     },
     C6: { 
       caption:"6-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHexaneRing)),
-      // icon:"",
+      icon:"icons/layla_6c.svg",
       hotkey:"6"
     },
     Arom6: { 
       caption:"6-Arom",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.BenzeneRing)),
-      // icon:"",
+      icon:"icons/layla_6arom.svg",
       hotkey:["b","alt+6"]
     },
     C7: { 
       caption:"7-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHeptaneRing)),
-      // icon:"",
+      icon:"icons/layla_7c.svg",
       hotkey:"7"
     },
     C8: { 
       caption:"8-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloOctaneRing)),
-      // icon:"",
+      icon:"icons/layla_8c.svg",
       hotkey:"8"
     },
     C: { 
