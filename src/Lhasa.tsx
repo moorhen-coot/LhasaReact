@@ -621,10 +621,16 @@ export function LhasaComponent() {
     };
   }
 
-  const handler_map = useMemo(() => Object.fromEntries(
-    Object.entries(tool_button_data.current)
-      .map(([k,v]) => [k, wrap_handler(k,v["raw_handler"])])
-  ), [tool_button_data.current]);
+  const handler_map = useMemo(() => {
+    let ret = Object.fromEntries(
+      Object.entries(tool_button_data.current)
+        .map(([k,v]) => [k, wrap_handler(k,v["raw_handler"])])
+    );
+    // Those are not tool buttons. We handle them manually.
+    ret['Undo'] = () => chLh(() => lh.undo_edition());
+    ret['Redo'] = () => chLh(() => lh.redo_edition());
+    return ret;
+  }, [tool_button_data.current]);
 
   let tool_buttons = useMemo(() => {
     let m_tool_buttons = new Map<string,JSX.Element>();
@@ -640,11 +646,17 @@ export function LhasaComponent() {
   }, [tool_button_data.current, handler_map]);
   
 
-  let key_map = useMemo(() => Object.fromEntries(
-    Object.entries(tool_button_data.current)
-      .filter(([k,v]) => 'hotkey' in v)
-      .map(([k,v]) => [k, v['hotkey']])
-  ), [tool_button_data.current]);
+  let key_map = useMemo(() => {
+    let ret = Object.fromEntries(
+      Object.entries(tool_button_data.current)
+        .filter(([k,v]) => 'hotkey' in v)
+        .map(([k,v]) => [k, v['hotkey']])
+    );
+    // Those are not tool buttons. We handle them manually.
+    ret['Undo'] = 'ctrl+z';
+    ret['Redo'] = ['ctrl+r','ctrl+shift+z'];
+    return ret;
+  }, [tool_button_data.current]);
 
   return (
     <>
@@ -806,8 +818,8 @@ export function LhasaComponent() {
               </div>
             </div>
             <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
-              <div className="button" onClick={() => chLh(() => lh.undo_edition())} >Undo</div>
-              <div className="button" onClick={() => chLh(() => lh.redo_edition())} >Redo</div>
+              <div className="button" onClick={() => handler_map['Undo']()} >Undo</div>
+              <div className="button" onClick={() => handler_map['Redo']()} >Redo</div>
               <div style={{"flexGrow": 1}} className="horizontal_container toolbar">
                 {/* SMILES:  */}
                 <input id={smiles_input} className="smiles_input" />
