@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, useId, useRef, useState, createContext } from 'react'
+import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
 import { HotKeys } from "react-hotkeys"
 // import './_App.css'
 import './index.css';
@@ -426,7 +426,7 @@ export function LhasaComponent() {
     }
   })
 
-  const tool_button_data = {
+  const tool_button_data = useRef({
     Move: { 
       caption:"Move",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
@@ -607,13 +607,7 @@ export function LhasaComponent() {
       // icon:"",
       // hotkey:""
     }
-  };
-
-  // doesn't work
-  // let tool_buttons = useRef<Map<string,JSX.Element>>({});
-
-  // todo: manage storage
-  let tool_buttons = new Map<string,JSX.Element>();
+  });
 
   function wrap_handler(action_name: string, raw_handler: () => void) : () => void {
     return () => {
@@ -627,31 +621,31 @@ export function LhasaComponent() {
     };
   }
 
-  // todo: manage storage
-  const handler_map = Object.fromEntries(
-    Object.entries(tool_button_data)
+  const handler_map = useMemo(() => Object.fromEntries(
+    Object.entries(tool_button_data.current)
       .map(([k,v]) => [k, wrap_handler(k,v["raw_handler"])])
-  );
+  ), [tool_button_data.current]);
 
+  let tool_buttons = useMemo(() => {
+    let m_tool_buttons = new Map<string,JSX.Element>();
+    for(const [k,v] of Object.entries(tool_button_data.current)) {
+      console.log("BUtton generated");
+      m_tool_buttons.set(k, ToolButton({
+        onclick: () => {handler_map[k]()},
+        caption: v.caption,
+        icon: v.icon ?? null,
+        action_name: k
+      }));
+    }
+    return m_tool_buttons;
+  }, [tool_button_data.current, handler_map]);
   
-  for(const [k,v] of Object.entries(tool_button_data)) {
-    tool_buttons.set(k, ToolButton({
-      onclick: () => {handler_map[k]()},
-      caption: v.caption,
-      icon: v.icon ?? null,
-      action_name: k
-    }));
-  }
 
-  // todo: manage storage
-  let key_map = Object.fromEntries(
-    Object.entries(tool_button_data)
+  let key_map = useMemo(() => Object.fromEntries(
+    Object.entries(tool_button_data.current)
       .filter(([k,v]) => 'hotkey' in v)
       .map(([k,v]) => [k, v['hotkey']])
-  );
-
-
-
+  ), [tool_button_data.current]);
 
   return (
     <>
