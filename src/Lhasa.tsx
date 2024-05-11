@@ -629,7 +629,6 @@ export function LhasaComponent() {
   let tool_buttons = useMemo(() => {
     let m_tool_buttons = new Map<string,JSX.Element>();
     for(const [k,v] of Object.entries(tool_button_data.current)) {
-      console.log("BUtton generated");
       m_tool_buttons.set(k, ToolButton({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
