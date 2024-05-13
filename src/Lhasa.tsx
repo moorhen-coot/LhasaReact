@@ -232,7 +232,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
       if(path.has_stroke) {
         //console.log("todo: Implement stroke for paths.");
         path_node.attr("stroke", css_color_from_lhasa_color(path.stroke_style.color));
-        path_node.attr("stroke-width", (path.stroke_style.line_width));
+        path_node.attr("stroke-width", path.stroke_style.line_width);
       }
 
 
