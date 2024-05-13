@@ -204,7 +204,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
               return d;       
           }
 
-          d_string += describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two); 
+          d_string += describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two) + " "; 
       
         } if(element.is_line()) {
           const line = element.as_line();
@@ -217,7 +217,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
             return d;
           }
 
-          d_string += describeLine(line.start.x, line.start.y, line.end.x, line.end.y);
+          d_string += describeLine(line.start.x, line.start.y, line.end.x, line.end.y) + " ";
         } else {
           console.error("Unknown path element type");
         }
