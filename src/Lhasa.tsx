@@ -149,80 +149,93 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
     const command = commands.get(i);
     if(command.is_path()) {
       const path = command.as_path();
-      // TODO: COMPLETE REWRITE 
       // this causes a crash
       // if(path.commands.empty()) {
       //   // console.warn("Empty path!");
       //   // return;
       // }
-      // const new_root = node_root.append("g");
-      // render_commands(path.commands, new_root);
-      // if(path.has_fill) {
-      //   console.log("todo: Rewrite fills for paths.");
-      //   // THis is hacky: todo: rework paths from the ground up
-      //   new_root.attr("style", "background-color: " + css_color_from_lhasa_color(path.fill_color) + ";");
-      // }
+      // TODO: COMPLETE REWRITE 
+      const path_node = svg.append("path");
+      let d_string = "";
+      // This should be just a reference
+      const elements = path.get_elements();
+      for(var j = 0; j < elements.size(); j++) {
+        const element = elements.get(j);
+        if(element.is_arc()) {
+          const arc = element.as_arc();
+
+          // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
+          function polarToCartesian(centerX, centerY, radius, angleInRadians) {
+            //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+    
+            return {
+              x: centerX + (radius * Math.cos(angleInRadians)),
+              y: centerY + (radius * Math.sin(angleInRadians))
+            };
+          }
+    
+          function describeArc(x, y, radius, startAngle, endAngle){
+    
+              var start = polarToCartesian(x, y, radius, endAngle);
+              var end = polarToCartesian(x, y, radius, startAngle);
+    
+              var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+              //var largeArcFlag = "1";
+    
+              // From the SVG reference:
+              //
+              // If sweep-flag is '1', 
+              // then the arc will be drawn in a "positive-angle" direction 
+              // (i.e., the ellipse formula x=cx+rx*cos(theta) and y=cy+ry*sin(theta) 
+              // is evaluated such that theta starts at an angle corresponding 
+              // to the current point and increases positively until the arc reaches (x,y)). 
+              // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
+              // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
+              const sweep = 1;
+              var d = [
+                  "M", start.x, start.y, 
+                  "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
+                  // "L", x,y,
+                  // "L", start.x, start.y,
+                  // "Z"
+              ].join(" ");
+              // console.log("d", d);
+    
+              return d;       
+          }
+
+          d_string += describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two); 
+      
+        } if(element.is_line()) {
+          const line = element.as_line();
+
+          function describeLine(x1, y1, x2, y2) {
+            var d = [
+              "M", x1, y1,
+              "L", x2, y2
+            ].join(" ");
+            return d;
+          }
+
+          d_string += describeLine(line.start.x, line.start.y, line.end.x, line.end.y);
+        } else {
+          console.error("Unknown path element type");
+        }
+      }
+
+      path_node.attr("d", d_string);
+
+      if(path.has_fill) {
+        //console.log("todo: Rewrite fills for paths.");
+        path_node.attr("fill", css_color_from_lhasa_color(path.fill_color));
+      }
+      if(path.has_stroke) {
+        //console.log("todo: Implement stroke for paths.");
+        path_node.attr("stroke", css_color_from_lhasa_color(path.stroke_style.color));
+        path_node.attr("stroke-width", (path.stroke_style.line_width));
+      }
 
 
-    // } else if(command.is_arc()) {
-    //   const arc = command.as_arc();
-    //   // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-    //   function polarToCartesian(centerX, centerY, radius, angleInRadians) {
-    //     //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
-
-    //     return {
-    //       x: centerX + (radius * Math.cos(angleInRadians)),
-    //       y: centerY + (radius * Math.sin(angleInRadians))
-    //     };
-    //   }
-
-    //   function describeArc(x, y, radius, startAngle, endAngle){
-
-    //       var start = polarToCartesian(x, y, radius, endAngle);
-    //       var end = polarToCartesian(x, y, radius, startAngle);
-
-    //       var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
-    //       //var largeArcFlag = "1";
-
-    //       // From the SVG reference:
-    //       //
-    //       // If sweep-flag is '1', 
-    //       // then the arc will be drawn in a "positive-angle" direction 
-    //       // (i.e., the ellipse formula x=cx+rx*cos(theta) and y=cy+ry*sin(theta) 
-    //       // is evaluated such that theta starts at an angle corresponding 
-    //       // to the current point and increases positively until the arc reaches (x,y)). 
-    //       // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
-    //       // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
-    //       const sweep = 1;
-    //       var d = [
-    //           "M", start.x, start.y, 
-    //           "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
-    //           // "L", x,y,
-    //           // "L", start.x, start.y,
-    //           // "Z"
-    //       ].join(" ");
-    //       // console.log("d", d);
-
-    //       return d;       
-    //   }
-
-    //   const arc_path = node_root.append("path");
-    //   if(arc.has_stroke) {
-    //     arc_path
-    //       .attr("stroke-width", arc.stroke_style.line_width)
-    //       .attr("stroke", css_color_from_lhasa_color(arc.stroke_style.color));
-
-    //   }
-    //   if(arc.has_fill) {
-    //     arc_path
-    //       .attr("fill", css_color_from_lhasa_color(arc.fill_color));
-    //   } else {
-    //     arc_path
-    //       .attr("fill", "none");
-    //   }
-        
-    //   arc_path
-    //     .attr("d", describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two));
     } else if(command.is_text()) {
       const text = command.as_text();
       lhasa_text_to_d3js(svg, text);
