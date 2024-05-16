@@ -228,6 +228,8 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
       if(path.has_fill) {
         //console.log("todo: Rewrite fills for paths.");
         path_node.attr("fill", css_color_from_lhasa_color(path.fill_color));
+      } else {
+        path_node.attr("fill", "none");
       }
       if(path.has_stroke) {
         //console.log("todo: Implement stroke for paths.");
