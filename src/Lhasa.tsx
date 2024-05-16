@@ -156,6 +156,7 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
       // }
       // TODO: COMPLETE REWRITE 
       const path_node = svg.append("path");
+      let path_started = false;
       let d_string = "";
       // This should be just a reference
       const elements = path.get_elements();
@@ -192,13 +193,13 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
               // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
               // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
               const sweep = 1;
-              var d = [
-                  "M", start.x, start.y, 
+              var p = path_started ? [] : ["M", start.x, start.y];
+              var d = p.concat([
                   "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
                   // "L", x,y,
                   // "L", start.x, start.y,
                   // "Z"
-              ].join(" ");
+              ]).join(" ");
               // console.log("d", d);
     
               return d;       
@@ -210,32 +211,38 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
           const line = element.as_line();
 
           function describeLine(x1, y1, x2, y2) {
-            var d = [
-              "M", x1, y1,
-              "L", x2, y2
-            ].join(" ");
+            var p = path_started ? [] : ["M", x1, y1];
+            var d = p.concat(["L", x2, y2]).join(" ");
             return d;
           }
 
           d_string += describeLine(line.start.x, line.start.y, line.end.x, line.end.y) + " ";
         } else {
           console.error("Unknown path element type");
+          console.log(element);
         }
+
+        path_started = true;
       }
 
+      //Breaks wavy bond
+      //d_string += "Z";
+      
       path_node.attr("d", d_string);
 
+      let style_str = '';
+
       if(path.has_fill) {
-        //console.log("todo: Rewrite fills for paths.");
-        path_node.attr("fill", css_color_from_lhasa_color(path.fill_color));
+        style_str += "fill: " + css_color_from_lhasa_color(path.fill_color) + ";";
       } else {
-        path_node.attr("fill", "none");
+        style_str += "fill: none;";
       }
       if(path.has_stroke) {
-        //console.log("todo: Implement stroke for paths.");
-        path_node.attr("stroke", css_color_from_lhasa_color(path.stroke_style.color));
-        path_node.attr("stroke-width", path.stroke_style.line_width);
+        style_str += "stroke:" + css_color_from_lhasa_color(path.stroke_style.color) + ";";
+        style_str += "stroke-width:" + path.stroke_style.line_width + ";";
       }
+
+      path_node.attr("style", style_str);
 
 
     } else if(command.is_text()) {
