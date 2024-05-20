@@ -140,107 +140,132 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
   const ren = new Lhasa.Renderer(text_measure_function);
   lh.render(ren);
   const commands = ren.get_commands();
+  const get_width = () => {
+    const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
+    const min_size = 300;
+    if(measured < min_size) {
+      return min_size;
+    }
+    return measured;
+  };
+  const get_height = () => {
+    const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
+    const min_size = 320;
+    if(measured < min_size) {
+      return min_size;
+    }
+    return measured;
+  };
   const svg = d3.create("svg")
     .attr("class", "lhasa_drawing")
-    .attr("width", lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size)
-    .attr("height", lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size);
+    .attr("width", get_width())
+    .attr("height", get_height());
 
-  const render_commands = (cmds, node_root = svg) => {
-    for(var i = 0; i < cmds.size(); i++) {
-      const command = cmds.get(i);
-      if(command.is_line()) {
-        const line = command.as_line();
-        const color = line.style.color;
-        node_root.append("line")
-          .attr("x1", line.start.x)
-          .attr("y1", line.start.y)
-          .attr("x2", line.end.x)
-          .attr("y2", line.end.y)
-          .attr("stroke", css_color_from_lhasa_color(color))
-          .attr("stroke-width", line.style.line_width);
+  for(var i = 0; i < commands.size(); i++) {
+    const command = commands.get(i);
+    if(command.is_path()) {
+      const path = command.as_path();
+      // this causes a crash
+      // if(path.commands.empty()) {
+      //   // console.warn("Empty path!");
+      //   // return;
+      // }
+      // TODO: COMPLETE REWRITE 
+      const path_node = svg.append("path");
+      let path_started = false;
+      let d_string = "";
+      // This should be just a reference
+      const elements = path.get_elements();
+      for(var j = 0; j < elements.size(); j++) {
+        const element = elements.get(j);
+        if(element.is_arc()) {
+          const arc = element.as_arc();
 
-      } else if(command.is_arc()) {
-        const arc = command.as_arc();
-        // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-        function polarToCartesian(centerX, centerY, radius, angleInRadians) {
-          //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+          // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
+          function polarToCartesian(centerX, centerY, radius, angleInRadians) {
+            //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+    
+            return {
+              x: centerX + (radius * Math.cos(angleInRadians)),
+              y: centerY + (radius * Math.sin(angleInRadians))
+            };
+          }
+    
+          function describeArc(x, y, radius, startAngle, endAngle){
+    
+              var start = polarToCartesian(x, y, radius, endAngle);
+              var end = polarToCartesian(x, y, radius, startAngle);
+    
+              var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+              //var largeArcFlag = "1";
+    
+              // From the SVG reference:
+              //
+              // If sweep-flag is '1', 
+              // then the arc will be drawn in a "positive-angle" direction 
+              // (i.e., the ellipse formula x=cx+rx*cos(theta) and y=cy+ry*sin(theta) 
+              // is evaluated such that theta starts at an angle corresponding 
+              // to the current point and increases positively until the arc reaches (x,y)). 
+              // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
+              // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
+              const sweep = 1;
+              var p = path_started ? [] : ["M", start.x, start.y];
+              var d = p.concat([
+                  "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
+                  // "L", x,y,
+                  // "L", start.x, start.y,
+                  // "Z"
+              ]).join(" ");
+              // console.log("d", d);
+    
+              return d;       
+          }
 
-          return {
-            x: centerX + (radius * Math.cos(angleInRadians)),
-            y: centerY + (radius * Math.sin(angleInRadians))
-          };
-        }
+          d_string += describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two) + " "; 
+      
+        } if(element.is_line()) {
+          const line = element.as_line();
 
-        function describeArc(x, y, radius, startAngle, endAngle){
+          function describeLine(x1, y1, x2, y2) {
+            var p = path_started ? [] : ["M", x1, y1];
+            var d = p.concat(["L", x2, y2]).join(" ");
+            return d;
+          }
 
-            var start = polarToCartesian(x, y, radius, endAngle);
-            var end = polarToCartesian(x, y, radius, startAngle);
-
-            var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
-            //var largeArcFlag = "1";
-
-            // From the SVG reference:
-            //
-            // If sweep-flag is '1', 
-            // then the arc will be drawn in a "positive-angle" direction 
-            // (i.e., the ellipse formula x=cx+rx*cos(theta) and y=cy+ry*sin(theta) 
-            // is evaluated such that theta starts at an angle corresponding 
-            // to the current point and increases positively until the arc reaches (x,y)). 
-            // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
-            // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
-            const sweep = 1;
-            var d = [
-                "M", start.x, start.y, 
-                "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
-                // "L", x,y,
-                // "L", start.x, start.y,
-                // "Z"
-            ].join(" ");
-            // console.log("d", d);
-
-            return d;       
-        }
-
-        const arc_path = node_root.append("path");
-        if(arc.has_stroke) {
-          arc_path
-            .attr("stroke-width", arc.stroke_style.line_width)
-            .attr("stroke", css_color_from_lhasa_color(arc.stroke_style.color));
-
-        }
-        if(arc.has_fill) {
-          arc_path
-            .attr("fill", css_color_from_lhasa_color(arc.fill_color));
+          d_string += describeLine(line.start.x, line.start.y, line.end.x, line.end.y) + " ";
         } else {
-          arc_path
-            .attr("fill", "none");
-        }
-          
-        arc_path
-          .attr("d", describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two));
-
-      } else if(command.is_path()) {
-        const path = command.as_path();
-        // this causes a crash
-        // if(path.commands.empty()) {
-        //   // console.warn("Empty path!");
-        //   // return;
-        // }
-        const new_root = node_root.append("g");
-        render_commands(path.commands, new_root);
-        if(path.has_fill) {
-          console.log("todo: Make sure that fills for paths work.");
-          // THis is hacky: todo: rework paths from the ground up
-          new_root.attr("style", "background-color: " + css_color_from_lhasa_color(path.fill_color) + ";");
+          console.error("Unknown path element type");
+          console.log(element);
         }
 
-      } else if(command.is_text()) {
-        const text = command.as_text();
-        lhasa_text_to_d3js(svg, text);
+        path_started = true;
       }
+
+      //Breaks wavy bond
+      //d_string += "Z";
+      
+      path_node.attr("d", d_string);
+
+      let style_str = '';
+
+      if(path.has_fill) {
+        style_str += "fill: " + css_color_from_lhasa_color(path.fill_color) + ";";
+      } else {
+        style_str += "fill: none;";
+      }
+      if(path.has_stroke) {
+        style_str += "stroke:" + css_color_from_lhasa_color(path.stroke_style.color) + ";";
+        style_str += "stroke-width:" + path.stroke_style.line_width + ";";
+      }
+
+      path_node.attr("style", style_str);
+
+
+    } else if(command.is_text()) {
+      const text = command.as_text();
+      lhasa_text_to_d3js(svg, text);
     }
-  };
-  render_commands(commands);
+  }
   commands.delete();
   ren.delete();
   
@@ -319,10 +344,11 @@ export function LhasaComponent() {
       });
     });
 
-    console.log('Adding demo molecule.');
-    Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
     const default_scale = 1.0;
     lh.set_scale(default_scale);
+
+    //console.log('Adding demo molecule.');
+    //Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
     return lh;
   });
   const chLh = (func: () => void) => {
