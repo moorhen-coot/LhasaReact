@@ -140,10 +140,26 @@ function on_render(lh: Canvas, text_measurement_worker_div: string) {
   const ren = new Lhasa.Renderer(text_measure_function);
   lh.render(ren);
   const commands = ren.get_commands();
+  const get_width = () => {
+    const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
+    const min_size = 300;
+    if(measured < min_size) {
+      return min_size;
+    }
+    return measured;
+  };
+  const get_height = () => {
+    const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
+    const min_size = 320;
+    if(measured < min_size) {
+      return min_size;
+    }
+    return measured;
+  };
   const svg = d3.create("svg")
     .attr("class", "lhasa_drawing")
-    .attr("width", lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size)
-    .attr("height", lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size);
+    .attr("width", get_width())
+    .attr("height", get_height());
 
   for(var i = 0; i < commands.size(); i++) {
     const command = commands.get(i);
@@ -328,10 +344,11 @@ export function LhasaComponent() {
       });
     });
 
-    console.log('Adding demo molecule.');
-    Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
     const default_scale = 1.0;
     lh.set_scale(default_scale);
+
+    //console.log('Adding demo molecule.');
+    //Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
     return lh;
   });
   const chLh = (func: () => void) => {

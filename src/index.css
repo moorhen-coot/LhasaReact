@@ -23,11 +23,13 @@
     max-width: 700px;
     min-width: 300px;
     max-height: 500px;
-    min-height: 100px;
+    min-height: 320px;
 }
 
 .lhasa_drawing {
     background-color: white;
+    /* Removes weird, empty margin-like area */
+    margin-bottom: -5px;
 }
 
 .lhasa_editor {
