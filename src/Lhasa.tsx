@@ -3,6 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import './index.css';
 import * as d3 from "d3";
 import { Canvas, Color } from './lhasa';
+// This needs to be changed somehow
 import * as Lhasa from './lhasa';
 
 class ToolButtonProps {
