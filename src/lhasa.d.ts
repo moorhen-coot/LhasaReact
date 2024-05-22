@@ -1,3 +1,18 @@
+// TypeScript bindings for emscripten-generated code.  Automatically generated at compile time.
+interface WasmModule {
+  _pthread_self(): number;
+  __ZN5boost13serialization16singleton_module8get_lockEv(_0: number): number;
+  __ZNK5boost7archive6detail11oserializerINS0_13text_oarchiveEN5RDKit9MolBundleEE16save_object_dataERNS1_14basic_oarchiveEPKv(_0: number, _1: number, _2: number): void;
+  __ZNK5boost7archive6detail11oserializerINS0_13text_oarchiveENSt3__26vectorINS4_12basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEENS9_ISB_EEEEE16save_object_dataERNS1_14basic_oarchiveEPKv(_0: number, _1: number, _2: number): void;
+  __ZNK5boost7archive6detail11iserializerINS0_13text_iarchiveEN5RDKit9MolBundleEE16load_object_dataERNS1_14basic_iarchiveEPvj(_0: number, _1: number, _2: number, _3: number): void;
+  __ZNK5boost7archive6detail11iserializerINS0_13text_iarchiveENSt3__26vectorINS4_12basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEENS9_ISB_EEEEE16load_object_dataERNS1_14basic_iarchiveEPvj(_0: number, _1: number, _2: number, _3: number): void;
+  __emscripten_tls_init(): number;
+  __embind_initialize_bindings(): void;
+  __emscripten_thread_init(_0: number, _1: number, _2: number, _3: number, _4: number, _5: number): void;
+  __emscripten_thread_crashed(): void;
+  __emscripten_thread_exit(_0: number): void;
+}
+
 export interface DisplayModeValue<T extends number> {
   value: T;
 }
@@ -7,8 +22,17 @@ export interface DrawingCommandVector {
   push_back(_0: DrawingCommand): void;
   resize(_0: number, _1: DrawingCommand): void;
   size(): number;
+  get(_0: number): DrawingCommand | undefined;
   set(_0: number, _1: DrawingCommand): boolean;
-  get(_0: number): any;
+  delete(): void;
+}
+
+export interface PathElementVector {
+  push_back(_0: PathElement): void;
+  resize(_0: number, _1: PathElement): void;
+  size(): number;
+  get(_0: number): PathElement | undefined;
+  set(_0: number, _1: PathElement): boolean;
   delete(): void;
 }
 
@@ -17,11 +41,20 @@ export interface Renderer {
   delete(): void;
 }
 
+export interface PathElement {
+  is_arc(): boolean;
+  is_line(): boolean;
+  as_line(): Line;
+  as_arc(): Arc;
+  delete(): void;
+}
+
 export interface Path {
-  commands: DrawingCommandVector;
   has_fill: boolean;
+  has_stroke: boolean;
   fill_color: Color;
   stroke_style: BrushStyle;
+  get_elements(): PathElementVector;
   delete(): void;
 }
 
@@ -44,7 +77,7 @@ export interface TextSpan {
   specifies_style: boolean;
   as_subspans(): TextSpanVector;
   has_subspans(): boolean;
-  as_caption(): ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string;
+  as_caption(): string;
   delete(): void;
 }
 
@@ -52,8 +85,8 @@ export interface TextSpanVector {
   push_back(_0: TextSpan): void;
   resize(_0: number, _1: TextSpan): void;
   size(): number;
+  get(_0: number): TextSpan | undefined;
   set(_0: number, _1: TextSpan): boolean;
-  get(_0: number): any;
   delete(): void;
 }
 
@@ -68,11 +101,7 @@ export interface DrawingCommand {
   as_path(): Path;
   as_text(): Text;
   is_path(): boolean;
-  is_arc(): boolean;
-  is_line(): boolean;
   is_text(): boolean;
-  as_line(): Line;
-  as_arc(): Arc;
   delete(): void;
 }
 
@@ -96,19 +125,19 @@ export interface RemoveHydrogensTool {
   delete(): void;
 }
 
-export interface ElementValue<T extends number> {
+export interface LhasaElementValue<T extends number> {
   value: T;
 }
-export type Element = ElementValue<0>|ElementValue<1>|ElementValue<2>|ElementValue<3>|ElementValue<4>|ElementValue<5>|ElementValue<6>|ElementValue<7>|ElementValue<8>|ElementValue<9>;
+export type LhasaElement = LhasaElementValue<0>|LhasaElementValue<1>|LhasaElementValue<2>|LhasaElementValue<3>|LhasaElementValue<4>|LhasaElementValue<5>|LhasaElementValue<6>|LhasaElementValue<7>|LhasaElementValue<8>|LhasaElementValue<9>;
 
 export interface ElementInsertion {
   delete(): void;
 }
 
-export interface StructureValue<T extends number> {
+export interface LhasaStructureValue<T extends number> {
   value: T;
 }
-export type Structure = StructureValue<0>|StructureValue<1>|StructureValue<2>|StructureValue<3>|StructureValue<4>|StructureValue<5>|StructureValue<6>;
+export type LhasaStructure = LhasaStructureValue<0>|LhasaStructureValue<1>|LhasaStructureValue<2>|LhasaStructureValue<3>|LhasaStructureValue<4>|LhasaStructureValue<5>|LhasaStructureValue<6>;
 
 export interface StructureInsertion {
   delete(): void;
@@ -174,8 +203,8 @@ export interface Canvas extends ImplWidgetCoreData {
   on_left_click_released(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
   on_right_click(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
   on_right_click_released(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
-  get_smiles(): ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string;
-  get_smiles_for_molecule(_0: number): ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string;
+  get_smiles(): string;
+  get_smiles_for_molecule(_0: number): string;
   connect(_0: ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string, _1: any): void;
   delete(): void;
 }
@@ -194,6 +223,11 @@ export type GraphenePoint = {
   y: number
 };
 
+export type Line = {
+  start: GraphenePoint,
+  end: GraphenePoint
+};
+
 export type Color = {
   r: number,
   g: number,
@@ -206,43 +240,35 @@ export type BrushStyle = {
   line_width: number
 };
 
-export type Line = {
-  start: GraphenePoint,
-  end: GraphenePoint,
-  style: BrushStyle
-};
-
 export type Arc = {
   origin: GraphenePoint,
   radius: number,
   angle_one: number,
-  angle_two: number,
-  has_fill: boolean,
-  fill_color: Color,
-  has_stroke: boolean,
-  stroke_style: BrushStyle
+  angle_two: number
 };
 
-export interface MainModule {
+interface EmbindModule {
   DisplayMode: {Standard: DisplayModeValue<0>, AtomIndices: DisplayModeValue<1>, AtomNames: DisplayModeValue<2>};
   DrawingCommandVector: {new(): DrawingCommandVector};
+  PathElementVector: {new(): PathElementVector};
   Renderer: {new(_0: any): Renderer};
-  Path: {new(): Path};
+  PathElement: {};
+  Path: {};
   TextPositioning: {Normal: TextPositioningValue<0>, Sub: TextPositioningValue<1>, Super: TextPositioningValue<2>};
   TextStyle: {new(): TextStyle};
-  TextSpan: {new(): TextSpan};
+  TextSpan: {new(): TextSpan; new(_0: TextSpanVector): TextSpan};
   TextSpanVector: {new(): TextSpanVector};
   Text: {new(): Text};
-  DrawingCommand: {new(): DrawingCommand};
+  DrawingCommand: {};
   DeleteTool: {new(): DeleteTool};
   ChargeModifier: {new(): ChargeModifier};
   GeometryModifier: {new(): GeometryModifier};
   FormatTool: {new(): FormatTool};
   RemoveHydrogensTool: {new(): RemoveHydrogensTool};
-  Element: {C: ElementValue<0>, N: ElementValue<1>, O: ElementValue<2>, S: ElementValue<3>, P: ElementValue<4>, H: ElementValue<5>, F: ElementValue<6>, Cl: ElementValue<7>, Br: ElementValue<8>, I: ElementValue<9>};
-  ElementInsertion: {new(_0: Element): ElementInsertion};
-  Structure: {CycloPropaneRing: StructureValue<0>, CycloButaneRing: StructureValue<1>, CycloPentaneRing: StructureValue<2>, CycloHexaneRing: StructureValue<3>, BenzeneRing: StructureValue<4>, CycloHeptaneRing: StructureValue<5>, CycloOctaneRing: StructureValue<6>};
-  StructureInsertion: {new(_0: Structure): StructureInsertion};
+  LhasaElement: {C: LhasaElementValue<0>, N: LhasaElementValue<1>, O: LhasaElementValue<2>, S: LhasaElementValue<3>, P: LhasaElementValue<4>, H: LhasaElementValue<5>, F: LhasaElementValue<6>, Cl: LhasaElementValue<7>, Br: LhasaElementValue<8>, I: LhasaElementValue<9>};
+  ElementInsertion: {new(_0: LhasaElement): ElementInsertion};
+  LhasaStructure: {CycloPropaneRing: LhasaStructureValue<0>, CycloButaneRing: LhasaStructureValue<1>, CycloPentaneRing: LhasaStructureValue<2>, CycloHexaneRing: LhasaStructureValue<3>, BenzeneRing: LhasaStructureValue<4>, CycloHeptaneRing: LhasaStructureValue<5>, CycloOctaneRing: LhasaStructureValue<6>};
+  StructureInsertion: {new(_0: LhasaStructure): StructureInsertion};
   BondModifierMode: {Single: BondModifierModeValue<0>, Double: BondModifierModeValue<1>, Triple: BondModifierModeValue<2>};
   BondModifier: {new(_0: BondModifierMode): BondModifier};
   TransformMode: {Rotation: TransformModeValue<0>, Translation: TransformModeValue<1>};
@@ -251,9 +277,10 @@ export interface MainModule {
   FlipTool: {new(_0: FlipMode): FlipTool};
   ActiveTool: {new(): ActiveTool};
   MeasurementDirection: {HORIZONTAL: MeasurementDirectionValue<0>, VERTICAL: MeasurementDirectionValue<1>};
-  ImplWidgetCoreData: {new(): ImplWidgetCoreData};
+  ImplWidgetCoreData: {};
   Canvas: {new(): Canvas};
   append_from_smiles(_0: Canvas, _1: ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string): void;
   element_insertion_from_symbol(_0: ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string): ElementInsertion;
   make_active_tool(_0: any): ActiveTool;
 }
+export type MainModule = WasmModule & EmbindModule;
