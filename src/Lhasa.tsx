@@ -1,9 +1,9 @@
 import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
 import { HotKeys } from "react-hotkeys"
 import './index.css';
-import { Lhasa } from './main.tsx'
 import * as d3 from "d3";
 import { Canvas, Color } from './lhasa';
+import * as Lhasa from './lhasa';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
