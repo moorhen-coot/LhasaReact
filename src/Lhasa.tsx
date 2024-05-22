@@ -4,7 +4,7 @@ import { HotKeys } from "react-hotkeys"
 import './index.css';
 import { Lhasa } from './main.tsx'
 import * as d3 from "d3";
-import { Canvas, Color, DisplayMode } from './lhasa';
+import { Canvas, Color } from './lhasa';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -527,43 +527,43 @@ export function LhasaComponent() {
     },
     C3: { 
       caption:"3-C",
-      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPropaneRing)),
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPropaneRing)),
       icon:"icons/layla_3c.svg",
       hotkey:"3"
     },
     C4: { 
       caption:"4-C",
-      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloButaneRing)),
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloButaneRing)),
       icon:"icons/layla_4c.svg",
       hotkey:"4"
     },
     C5: { 
       caption:"5-C",
-      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloPentaneRing)),
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPentaneRing)),
       icon:"icons/layla_5c.svg",
       hotkey:"5"
     },
     C6: { 
       caption:"6-C",
-      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHexaneRing)),
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHexaneRing)),
       icon:"icons/layla_6c.svg",
       hotkey:"6"
     },
     Arom6: { 
       caption:"6-Arom",
-      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.BenzeneRing)),
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.BenzeneRing)),
       icon:"icons/layla_6arom.svg",
       hotkey:["b","alt+6"]
     },
     C7: { 
       caption:"7-C",
-      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloHeptaneRing)),
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHeptaneRing)),
       icon:"icons/layla_7c.svg",
       hotkey:"7"
     },
     C8: { 
       caption:"8-C",
-      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.Structure.CycloOctaneRing)),
+      raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloOctaneRing)),
       icon:"icons/layla_8c.svg",
       hotkey:"8"
     },
