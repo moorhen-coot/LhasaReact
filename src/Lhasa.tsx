@@ -569,61 +569,61 @@ export function LhasaComponent() {
     },
     C: { 
       caption:"C",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.C)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.C)),
       // icon:"",
       hotkey:"c"
     },
     N: { 
       caption:"N",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.N)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.N)),
       // icon:"",
       hotkey:"n"
     },
     O: { 
       caption:"O",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.O)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.O)),
       // icon:"",
       hotkey:"o"
     },
     S: { 
       caption:"S",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.S)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.S)),
       // icon:"",
       hotkey:"alt+s"
     },
     P: { 
       caption:"P",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.P)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.P)),
       // icon:"",
       hotkey:"p"
     },
     H: { 
       caption:"H",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.H)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.H)),
       // icon:"",
       hotkey:"h"
     },
     F: { 
       caption:"F",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.F)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.F)),
       // icon:"",
       hotkey:"alt+i"
     },
     Cl: { 
       caption:"Cl",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Cl)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Cl)),
       // icon:"",
       hotkey:"alt+c"
     },
     Br: { 
       caption:"Br",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.Br)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Br)),
       // icon:"",
       hotkey:"alt+b"
     },
     I: { 
       caption:"I",
-      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.Element.I)),
+      raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.I)),
       // icon:"",
       hotkey:"i"
     },
