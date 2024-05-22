@@ -1,6 +1,5 @@
 import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
 import { HotKeys } from "react-hotkeys"
-// import './_App.css'
 import './index.css';
 import { Lhasa } from './main.tsx'
 import * as d3 from "d3";
