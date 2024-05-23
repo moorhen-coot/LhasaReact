@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import './index.css';
 import { Canvas, Color } from './lhasa';
 // This needs to be changed somehow
-const Lhasa = await import('/baby-gru/moorhen.js');
+const Lhasa = await import('/baby-gru/moorhen.js?url');
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
