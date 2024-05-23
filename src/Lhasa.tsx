@@ -450,6 +450,7 @@ export function LhasaComponent({Lhasa}) {
     }
   })
 
+  // @ts-ignore
   const tool_button_data = useRef({
     Move: { 
       caption:"Move",
@@ -782,7 +783,7 @@ export function LhasaComponent({Lhasa}) {
                   lh.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
                 }}
 
-                // dangerouslySetInnerHTML={st.svg_node != null ? {__html:st.svg_node.outerHTML} : undefined}
+                // @ts-ignore
                 ref={svgRef}
 
               >
