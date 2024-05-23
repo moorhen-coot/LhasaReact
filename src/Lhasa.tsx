@@ -2,10 +2,9 @@ import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, u
 import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.css';
-import { Canvas, Color, MainModule } from './lhasa';
+import { Canvas, Color } from './lhasa';
 // This needs to be changed somehow
-import Module from '/baby-gru/moorhen.js?url';
-const Lhasa : MainModule = await Module();
+const Lhasa = await import('/baby-gru/moorhen.js?url');
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
