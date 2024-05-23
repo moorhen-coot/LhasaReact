@@ -32,7 +32,7 @@ function ToolButton(props:ToolButtonProps) {
 }
 
 
-export function LhasaComponent(Lhasa: MainModule) {
+export function LhasaComponent({Lhasa}) {
   function on_render(lh: Canvas, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
