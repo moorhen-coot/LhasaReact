@@ -2,9 +2,7 @@ import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, u
 import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.css';
-import { Canvas, Color } from './lhasa';
-// This needs to be changed somehow
-const Lhasa = await import('/public/baby-gru/moorhen.js?url');
+import { Canvas, Color, MainModule } from './lhasa';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -33,247 +31,247 @@ function ToolButton(props:ToolButtonProps) {
   )
 }
 
-function on_render(lh: Canvas, text_measurement_worker_div: string) {
-  console.debug("on_render() called.");
 
-  const css_color_from_lhasa_color = (lhasa_color: Color) => {
-    return 'rgba(' + lhasa_color.r * 255 + ','+ lhasa_color.g * 255 + ',' + lhasa_color.b * 255 + ',' + lhasa_color.a + ')';
-  }
-  const lhasa_text_to_d3js = (msvg, text) => {
-    const style_to_attrstring = (style) => {
-      let style_string = "";
-      if(style.specifies_color) {
-        style_string += "fill:";
-        style_string += css_color_from_lhasa_color(style.color);
-        style_string += ";";
-      }
-      // font-size:75%;baseline-shift:sub / super
-      switch(style.positioning) {
-        case Lhasa.TextPositioning.Normal:
-          if(style.size != "") {
-            style_string += "font-size:";
-            style_string += style.size;
-            style_string += ";";
+export function LhasaComponent({Lhasa}) {
+  function on_render(lh: Canvas, text_measurement_worker_div: string) {
+    console.debug("on_render() called.");
+  
+    const css_color_from_lhasa_color = (lhasa_color: Color) => {
+      return 'rgba(' + lhasa_color.r * 255 + ','+ lhasa_color.g * 255 + ',' + lhasa_color.b * 255 + ',' + lhasa_color.a + ')';
+    }
+    const lhasa_text_to_d3js = (msvg, text) => {
+      const style_to_attrstring = (style) => {
+        let style_string = "";
+        if(style.specifies_color) {
+          style_string += "fill:";
+          style_string += css_color_from_lhasa_color(style.color);
+          style_string += ";";
+        }
+        // font-size:75%;baseline-shift:sub / super
+        switch(style.positioning) {
+          case Lhasa.TextPositioning.Normal:
+            if(style.size != "") {
+              style_string += "font-size:";
+              style_string += style.size;
+              style_string += ";";
+            }
+            break;
+          case Lhasa.TextPositioning.Sub:
+            style_string += "font-size:75%;baseline-shift:sub;";
+            break;
+          case Lhasa.TextPositioning.Super:
+            style_string += "font-size:75%;baseline-shift:super;";
+            break;
+        }
+        if(style.weight != "") {
+          style_string += "font-weight:";
+          style_string += style.weight;
+          style_string += ";";
+        }
+        return style_string;
+      };
+      const append_spans_to_node = (spans, text_node) => {
+        for(let i = 0; i < spans.size(); i++) {
+          const span = spans.get(i);
+          let child = text_node
+            // .enter()
+            .append("tspan");
+          if(span.specifies_style) {
+            child.attr("style", style_to_attrstring(span.style));
           }
-          break;
-        case Lhasa.TextPositioning.Sub:
-          style_string += "font-size:75%;baseline-shift:sub;";
-          break;
-        case Lhasa.TextPositioning.Super:
-          style_string += "font-size:75%;baseline-shift:super;";
-          break;
-      }
-      if(style.weight != "") {
-        style_string += "font-weight:";
-        style_string += style.weight;
-        style_string += ";";
-      }
-      return style_string;
-    };
-    const append_spans_to_node = (spans, text_node) => {
-      for(let i = 0; i < spans.size(); i++) {
-        const span = spans.get(i);
-        let child = text_node
-          // .enter()
-          .append("tspan");
-        if(span.specifies_style) {
-          child.attr("style", style_to_attrstring(span.style));
+          if(span.has_subspans()) {
+            append_spans_to_node(span.as_subspans(), child);
+          } else {
+            const caption = span.as_caption();
+            child.text(caption);
+          }
         }
-        if(span.has_subspans()) {
-          append_spans_to_node(span.as_subspans(), child);
-        } else {
-          const caption = span.as_caption();
-          child.text(caption);
-        }
+        // return ret;
       }
-      // return ret;
-    }
-    const ret = msvg.append("text")
-      .attr("x", text.origin.x)
-      .attr("y", text.origin.y);
-    
-    const style_string = style_to_attrstring(text.style);
-    if(style_string != "") {
-      ret.attr("style", style_string);
-    } else {
-      // console.warn("Empty style string!");
-    }
-    if(text.spans.size() == 0) {
-      console.warn("Text contains no spans!");
-    }
-    append_spans_to_node(text.spans, ret);
-    return ret;
-  };
-  const text_measure_function = (text) => {
-    // let size_info = new Lhasa.TextSize;
-    let size_info = {
-      'width': 0,
-      'height': 0
+      const ret = msvg.append("text")
+        .attr("x", text.origin.x)
+        .attr("y", text.origin.y);
+      
+      const style_string = style_to_attrstring(text.style);
+      if(style_string != "") {
+        ret.attr("style", style_string);
+      } else {
+        // console.warn("Empty style string!");
+      }
+      if(text.spans.size() == 0) {
+        console.warn("Text contains no spans!");
+      }
+      append_spans_to_node(text.spans, ret);
+      return ret;
     };
-    try{
-      //const domNode = document.createElement("div");
-      const domNode = document.getElementById(text_measurement_worker_div);
-      if (domNode == null) {
-        // todo: do something with this.
+    const text_measure_function = (text) => {
+      // let size_info = new Lhasa.TextSize;
+      let size_info = {
+        'width': 0,
+        'height': 0
+      };
+      try{
+        //const domNode = document.createElement("div");
+        const domNode = document.getElementById(text_measurement_worker_div);
+        if (domNode == null) {
+          // todo: do something with this.
+          return size_info;
+        }
+        const msvg = d3.create("svg")
+          .attr("width", 100)
+          .attr("height", 100)
+          .attr("id", "measurement_temporary");
+        const text_elem = lhasa_text_to_d3js(msvg, text);
+        domNode.append(msvg.node());
+        const node = text_elem.node();
+        // This has awful performance but I don't really have a choice
+        const bbox = node.getBBox();
+        size_info.width = Math.ceil(bbox.width);
+        size_info.height = Math.ceil(bbox.height);
+        // console.log("measurement returning:", size_info);
+        msvg.remove();
+      } catch(err) {
+        console.error('Error occured in text measurement: ', err);
+      } finally {
         return size_info;
       }
-      const msvg = d3.create("svg")
-        .attr("width", 100)
-        .attr("height", 100)
-        .attr("id", "measurement_temporary");
-      const text_elem = lhasa_text_to_d3js(msvg, text);
-      domNode.append(msvg.node());
-      const node = text_elem.node();
-      // This has awful performance but I don't really have a choice
-      const bbox = node.getBBox();
-      size_info.width = Math.ceil(bbox.width);
-      size_info.height = Math.ceil(bbox.height);
-      // console.log("measurement returning:", size_info);
-      msvg.remove();
-    } catch(err) {
-      console.error('Error occured in text measurement: ', err);
-    } finally {
-      return size_info;
-    }
-    
-  };
-  const ren = new Lhasa.Renderer(text_measure_function);
-  lh.render(ren);
-  const commands = ren.get_commands();
-  const get_width = () => {
-    const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
-    const min_size = 300;
-    if(measured < min_size) {
-      return min_size;
-    }
-    return measured;
-  };
-  const get_height = () => {
-    const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
-    const min_size = 320;
-    if(measured < min_size) {
-      return min_size;
-    }
-    return measured;
-  };
-  const svg = d3.create("svg")
-    .attr("class", "lhasa_drawing")
-    .attr("width", get_width())
-    .attr("height", get_height());
-
-  for(var i = 0; i < commands.size(); i++) {
-    const command = commands.get(i);
-    if(command.is_path()) {
-      const path = command.as_path();
-      // this causes a crash
-      // if(path.commands.empty()) {
-      //   // console.warn("Empty path!");
-      //   // return;
-      // }
-      // TODO: COMPLETE REWRITE 
-      const path_node = svg.append("path");
-      let path_started = false;
-      let d_string = "";
-      // This should be just a reference
-      const elements = path.get_elements();
-      for(var j = 0; j < elements.size(); j++) {
-        const element = elements.get(j);
-        if(element.is_arc()) {
-          const arc = element.as_arc();
-
-          // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-          function polarToCartesian(centerX, centerY, radius, angleInRadians) {
-            //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
-    
-            return {
-              x: centerX + (radius * Math.cos(angleInRadians)),
-              y: centerY + (radius * Math.sin(angleInRadians))
-            };
-          }
-    
-          function describeArc(x, y, radius, startAngle, endAngle){
-    
-              var start = polarToCartesian(x, y, radius, endAngle);
-              var end = polarToCartesian(x, y, radius, startAngle);
-    
-              var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
-              //var largeArcFlag = "1";
-    
-              // From the SVG reference:
-              //
-              // If sweep-flag is '1', 
-              // then the arc will be drawn in a "positive-angle" direction 
-              // (i.e., the ellipse formula x=cx+rx*cos(theta) and y=cy+ry*sin(theta) 
-              // is evaluated such that theta starts at an angle corresponding 
-              // to the current point and increases positively until the arc reaches (x,y)). 
-              // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
-              // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
-              const sweep = 1;
-              var p = path_started ? [] : ["M", start.x, start.y];
-              var d = p.concat([
-                  "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
-                  // "L", x,y,
-                  // "L", start.x, start.y,
-                  // "Z"
-              ]).join(" ");
-              // console.log("d", d);
-    
-              return d;       
-          }
-
-          d_string += describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two) + " "; 
       
-        } if(element.is_line()) {
-          const line = element.as_line();
-
-          function describeLine(x1, y1, x2, y2) {
-            var p = path_started ? [] : ["M", x1, y1];
-            var d = p.concat(["L", x2, y2]).join(" ");
-            return d;
-          }
-
-          d_string += describeLine(line.start.x, line.start.y, line.end.x, line.end.y) + " ";
-        } else {
-          console.error("Unknown path element type");
-          console.log(element);
-        }
-
-        path_started = true;
+    };
+    const ren = new Lhasa.Renderer(text_measure_function);
+    lh.render(ren);
+    const commands = ren.get_commands();
+    const get_width = () => {
+      const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
+      const min_size = 300;
+      if(measured < min_size) {
+        return min_size;
       }
-
-      //Breaks wavy bond
-      //d_string += "Z";
-      
-      path_node.attr("d", d_string);
-
-      let style_str = '';
-
-      if(path.has_fill) {
-        style_str += "fill: " + css_color_from_lhasa_color(path.fill_color) + ";";
-      } else {
-        style_str += "fill: none;";
+      return measured;
+    };
+    const get_height = () => {
+      const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
+      const min_size = 320;
+      if(measured < min_size) {
+        return min_size;
       }
-      if(path.has_stroke) {
-        style_str += "stroke:" + css_color_from_lhasa_color(path.stroke_style.color) + ";";
-        style_str += "stroke-width:" + path.stroke_style.line_width + ";";
-      }
-
-      path_node.attr("style", style_str);
-
-
-    } else if(command.is_text()) {
-      const text = command.as_text();
-      lhasa_text_to_d3js(svg, text);
-    }
-  }
-  commands.delete();
-  ren.delete();
+      return measured;
+    };
+    const svg = d3.create("svg")
+      .attr("class", "lhasa_drawing")
+      .attr("width", get_width())
+      .attr("height", get_height());
   
-  const node = svg.node();
-  return node;
-};
-
-export function LhasaComponent() {
+    for(var i = 0; i < commands.size(); i++) {
+      const command = commands.get(i);
+      if(command.is_path()) {
+        const path = command.as_path();
+        // this causes a crash
+        // if(path.commands.empty()) {
+        //   // console.warn("Empty path!");
+        //   // return;
+        // }
+        // TODO: COMPLETE REWRITE 
+        const path_node = svg.append("path");
+        let path_started = false;
+        let d_string = "";
+        // This should be just a reference
+        const elements = path.get_elements();
+        for(var j = 0; j < elements.size(); j++) {
+          const element = elements.get(j);
+          if(element.is_arc()) {
+            const arc = element.as_arc();
+  
+            // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
+            function polarToCartesian(centerX, centerY, radius, angleInRadians) {
+              //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+      
+              return {
+                x: centerX + (radius * Math.cos(angleInRadians)),
+                y: centerY + (radius * Math.sin(angleInRadians))
+              };
+            }
+      
+            function describeArc(x, y, radius, startAngle, endAngle){
+      
+                var start = polarToCartesian(x, y, radius, endAngle);
+                var end = polarToCartesian(x, y, radius, startAngle);
+      
+                var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+                //var largeArcFlag = "1";
+      
+                // From the SVG reference:
+                //
+                // If sweep-flag is '1', 
+                // then the arc will be drawn in a "positive-angle" direction 
+                // (i.e., the ellipse formula x=cx+rx*cos(theta) and y=cy+ry*sin(theta) 
+                // is evaluated such that theta starts at an angle corresponding 
+                // to the current point and increases positively until the arc reaches (x,y)). 
+                // A value of 0 causes the arc to be drawn in a "negative-angle" direction 
+                // (i.e., theta starts at an angle value corresponding to the current point and decreases until the arc reaches (x,y)).
+                const sweep = 1;
+                var p = path_started ? [] : ["M", start.x, start.y];
+                var d = p.concat([
+                    "A", radius, radius, 0, largeArcFlag, sweep, end.x, end.y,
+                    // "L", x,y,
+                    // "L", start.x, start.y,
+                    // "Z"
+                ]).join(" ");
+                // console.log("d", d);
+      
+                return d;       
+            }
+  
+            d_string += describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two) + " "; 
+        
+          } if(element.is_line()) {
+            const line = element.as_line();
+  
+            function describeLine(x1, y1, x2, y2) {
+              var p = path_started ? [] : ["M", x1, y1];
+              var d = p.concat(["L", x2, y2]).join(" ");
+              return d;
+            }
+  
+            d_string += describeLine(line.start.x, line.start.y, line.end.x, line.end.y) + " ";
+          } else {
+            console.error("Unknown path element type");
+            console.log(element);
+          }
+  
+          path_started = true;
+        }
+  
+        //Breaks wavy bond
+        //d_string += "Z";
+        
+        path_node.attr("d", d_string);
+  
+        let style_str = '';
+  
+        if(path.has_fill) {
+          style_str += "fill: " + css_color_from_lhasa_color(path.fill_color) + ";";
+        } else {
+          style_str += "fill: none;";
+        }
+        if(path.has_stroke) {
+          style_str += "stroke:" + css_color_from_lhasa_color(path.stroke_style.color) + ";";
+          style_str += "stroke-width:" + path.stroke_style.line_width + ";";
+        }
+  
+        path_node.attr("style", style_str);
+  
+  
+      } else if(command.is_text()) {
+        const text = command.as_text();
+        lhasa_text_to_d3js(svg, text);
+      }
+    }
+    commands.delete();
+    ren.delete();
+    
+    const node = svg.node();
+    return node;
+  };
   const text_measurement_worker_div = useId();
   const smiles_input = useId();
   const x_element_symbol_input = useId();
