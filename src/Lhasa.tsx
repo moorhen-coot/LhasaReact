@@ -663,6 +663,7 @@ export function LhasaComponent({Lhasa}) {
       m_tool_buttons.set(k, ToolButton({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
+        // @ts-ignore
         icon: v.icon ?? null,
         action_name: k
       }));
