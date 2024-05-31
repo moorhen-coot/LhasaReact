@@ -35,10 +35,11 @@ class LhasaComponentProps {
   Lhasa: MainModule | any;
   show_top_panel: boolean = false;
   show_footer: boolean = true;
+  icons_path_prefix: string = '';
 }
 
 
-export function LhasaComponent({Lhasa, show_top_panel, show_footer} : LhasaComponentProps) {
+export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_prefix} : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
@@ -461,7 +462,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer} : LhasaCompo
     Move: { 
       caption:"Move",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
-      icon:"icons/layla_move_tool.svg",
+      icon: icons_path_prefix + "icons/layla_move_tool.svg",
       hotkey:"m"
     },
     Rotate: { 
@@ -485,43 +486,43 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer} : LhasaCompo
     Delete_hydrogens: { 
       caption:"Delete hydrogens",
       raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
-      icon:"icons/layla_delete_hydrogens_tool.svg",
+      icon: icons_path_prefix + "icons/layla_delete_hydrogens_tool.svg",
       hotkey:"alt+delete"
     },
     Format: { 
       caption:"Format",
       raw_handler:() => switch_tool(new Lhasa.FormatTool()),
-      icon:"icons/layla_format_tool.svg",
+      icon: icons_path_prefix + "icons/layla_format_tool.svg",
       hotkey:"f"
     },
     Single_Bond: { 
       caption:"Single Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
-      icon:"icons/layla_single_bond.svg",
+      icon: icons_path_prefix + "icons/layla_single_bond.svg",
       hotkey:"s"
     },
     Double_Bond: { 
       caption:"Double Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
-      icon:"icons/layla_double_bond.svg",
+      icon: icons_path_prefix + "icons/layla_double_bond.svg",
       hotkey:"d"
     },
     Triple_Bond: { 
       caption:"Triple Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
-      icon:"icons/layla_triple_bond.svg",
+      icon: icons_path_prefix + "icons/layla_triple_bond.svg",
       hotkey:"t"
     },
     Geometry: { 
       caption:"Geometry",
       raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
-      icon:"icons/layla_geometry_tool.svg",
+      icon: icons_path_prefix + "icons/layla_geometry_tool.svg",
       hotkey:"g"
     },
     Charge: { 
       caption:"Charge",
       raw_handler:() => switch_tool(new Lhasa.ChargeModifier()),
-      icon:"icons/layla_charge_tool.svg",
+      icon: icons_path_prefix + "icons/layla_charge_tool.svg",
       hotkey:"v"
     },
     Delete: { 
@@ -533,43 +534,43 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer} : LhasaCompo
     C3: { 
       caption:"3-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPropaneRing)),
-      icon:"icons/layla_3c.svg",
+      icon: icons_path_prefix + "icons/layla_3c.svg",
       hotkey:"3"
     },
     C4: { 
       caption:"4-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloButaneRing)),
-      icon:"icons/layla_4c.svg",
+      icon: icons_path_prefix + "icons/layla_4c.svg",
       hotkey:"4"
     },
     C5: { 
       caption:"5-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPentaneRing)),
-      icon:"icons/layla_5c.svg",
+      icon: icons_path_prefix + "icons/layla_5c.svg",
       hotkey:"5"
     },
     C6: { 
       caption:"6-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHexaneRing)),
-      icon:"icons/layla_6c.svg",
+      icon: icons_path_prefix + "icons/layla_6c.svg",
       hotkey:"6"
     },
     Arom6: { 
       caption:"6-Arom",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.BenzeneRing)),
-      icon:"icons/layla_6arom.svg",
+      icon: icons_path_prefix + "icons/layla_6arom.svg",
       hotkey:["b","alt+6"]
     },
     C7: { 
       caption:"7-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHeptaneRing)),
-      icon:"icons/layla_7c.svg",
+      icon: icons_path_prefix + "icons/layla_7c.svg",
       hotkey:"7"
     },
     C8: { 
       caption:"8-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloOctaneRing)),
-      icon:"icons/layla_8c.svg",
+      icon: icons_path_prefix + "icons/layla_8c.svg",
       hotkey:"8"
     },
     C: { 
@@ -697,7 +698,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer} : LhasaCompo
           <div className="lhasa_editor">
             {show_top_panel &&
               <div className="horizontal_container">
-                <img src="/icons/icons/hicolor_apps_scalable_coot-layla.svg" />
+                <img src={icons_path_prefix + "/icons/icons/hicolor_apps_scalable_coot-layla.svg"} />
                 <div /*id_="lhasa_hello"*/ >
                   <h3>Welcome to Lhasa!</h3>
                   <p>
