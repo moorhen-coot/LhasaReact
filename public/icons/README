@@ -1,0 +1,7 @@
+Icon names staring with `layla/` are copied directly from Coot repo.
+Icon names starting with `lhasa/` are custom web-only icons.
+
+The desktop version uses some system-wide icons, unavailable for the web.
+
+All files copied from Coot sources retain their original filenames and paths (this is why there's an `icons/` folder inside the `icons/` folder)
+making any future updates to them doable via a single copy-and-overwrite operation.
