@@ -18,6 +18,7 @@ export function App() {
      <LhasaComponent 
         Lhasa={lhasa_module} 
         show_top_panel={true}
+        show_footer={true}
      />
     </>
   )

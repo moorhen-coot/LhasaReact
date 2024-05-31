@@ -34,10 +34,11 @@ function ToolButton(props:ToolButtonProps) {
 class LhasaComponentProps {
   Lhasa: MainModule | any;
   show_top_panel: boolean = false;
+  show_footer: boolean = true;
 }
 
 
-export function LhasaComponent({Lhasa, show_top_panel} : LhasaComponentProps) {
+export function LhasaComponent({Lhasa, show_top_panel, show_footer} : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
@@ -859,9 +860,11 @@ export function LhasaComponent({Lhasa, show_top_panel} : LhasaComponentProps) {
                 <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
               </div>
             </div>
-            <div className="lhasa_footer">
-              <i>Written by Jakub Smulski</i>
-            </div>
+            {show_footer &&
+              <div className="lhasa_footer">
+                <i>Written by Jakub Smulski</i>
+              </div>
+            }
           </div>
         </HotKeys>
       </ActiveToolContext.Provider>
