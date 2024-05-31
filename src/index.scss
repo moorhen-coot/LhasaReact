@@ -5,8 +5,8 @@ $lhasa_button_color: color.adjust($lhasa_background_color, $lightness: -10%);
 $lhasa_button_hover_color: color.adjust($lhasa_button_color, $lightness: -10%);
 $lhasa_button_active_color: color.adjust($lhasa_button_color, $lightness: -18%);
 $lhasa_text_color: black;
-$lhasa_border_color: rgb(66, 66, 66);
-$lhasa_toolbar_border_color: darkred;
+$lhasa_border_color: rgb(161, 161, 161);
+$lhasa_toolbar_border_color: rgb(193, 158, 158);
 $lhasa_error_color: red;
 
 .editor_canvas_container {
