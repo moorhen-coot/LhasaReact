@@ -15,7 +15,10 @@ export function App() {
 
   return (
     <>
-     <LhasaComponent Lhasa={lhasa_module} />
+     <LhasaComponent 
+        Lhasa={lhasa_module} 
+        show_top_panel={true}
+     />
     </>
   )
 }

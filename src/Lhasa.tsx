@@ -31,8 +31,13 @@ function ToolButton(props:ToolButtonProps) {
   )
 }
 
+class LhasaComponentProps {
+  Lhasa: MainModule | any;
+  show_top_panel: boolean = false;
+}
 
-export function LhasaComponent({Lhasa}) {
+
+export function LhasaComponent({Lhasa, show_top_panel} : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
@@ -689,19 +694,21 @@ export function LhasaComponent({Lhasa}) {
       <ActiveToolContext.Provider value={st.active_tool_name}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <div className="lhasa_editor">
-            <div className="horizontal_container">
-              <img src="/icons/icons/hicolor_apps_scalable_coot-layla.svg" />
-              <div /*id_="lhasa_hello"*/ >
-                <h3>Welcome to Lhasa!</h3>
-                <p>
-                  Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
-                  Lhasa is experimental software.
-                </p>
-                <p>
-                  This is a demo UI for development purposes.
-                </p>
+            {show_top_panel &&
+              <div className="horizontal_container">
+                <img src="/icons/icons/hicolor_apps_scalable_coot-layla.svg" />
+                <div /*id_="lhasa_hello"*/ >
+                  <h3>Welcome to Lhasa!</h3>
+                  <p>
+                    Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
+                    Lhasa is experimental software.
+                  </p>
+                  <p>
+                    This is a demo UI for development purposes.
+                  </p>
+                </div>
               </div>
-            </div>
+            }
             <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
               { tool_buttons.get("Move") }
               { tool_buttons.get("Rotate") }
