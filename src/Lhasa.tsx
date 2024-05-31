@@ -468,19 +468,19 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
     Rotate: { 
       caption:"Rotate",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation)),
-      // icon:"",
+      icon: icons_path_prefix + "/lhasa_rotate_tool.svg",
       hotkey:"r"
     },
     Flip_around_X: { 
       caption:"Flip around X",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal)),
-      // icon:"",
+      icon: icons_path_prefix + "/lhasa_flip_x_tool.svg",
       hotkey:"alt+f"
     },
     Flip_around_Y: { 
       caption:"Flip around Y",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical)),
-      // icon:"",
+      icon: icons_path_prefix + "/lhasa_flip_y_tool.svg",
       hotkey:"ctrl+alt+f"
     },
     Delete_hydrogens: { 
@@ -528,7 +528,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
     Delete: { 
       caption:"Delete",
       raw_handler:() => switch_tool(new Lhasa.DeleteTool()),
-      // icon:"",
+      icon: icons_path_prefix + "/lhasa_delete_tool.svg",
       hotkey:"delete"
     },
     C3: { 
