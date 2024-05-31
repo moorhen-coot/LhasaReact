@@ -1,20 +1,16 @@
-/* :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@use 'sass:color';
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-} */
+$lhasa_background_color: rgb(0, 0, 66);
+$lhasa_button_color: color.adjust($lhasa_background_color, $lightness: +10%);
+$lhasa_button_hover_color: color.adjust($lhasa_button_color, $lightness: +10%);
+$lhasa_button_active_color: color.adjust($lhasa_button_color, $lightness: +18%);
+$lhasa_text_color: yellow;
+$lhasa_border_color: limegreen;
+$lhasa_toolbar_border_color: darkred;
+$lhasa_error_color: red;
 
 .editor_canvas_container {
-    border: greenyellow 1px solid;
+    border: $lhasa_border_color 1px solid;
     /* Padding here breaks relative coords */
     /* padding: 5px; */
     cursor: default;
@@ -34,21 +30,21 @@
 
 .lhasa_editor {
     font-family: sans-serif;
-    background-color: rgb(0, 0, 66);
-    color: yellow;
+    background-color: $lhasa_background_color;
+    color: $lhasa_text_color;
     font-size: small;
     padding: 10px;
     width: fit-content;
 }
 
 .toolbar {
-    border: darkred 1px solid;
+    border: $lhasa_toolbar_border_color 1px solid;
     padding: 5px;
     /* align-items: center; */
 }
 
 .panel {
-    border: limegreen 1px solid;
+    border: $lhasa_border_color 1px solid;
     padding: 5px;
 }
 
@@ -73,9 +69,9 @@
 
 .error_display {
     margin-bottom: 5px;
-    color: red;
+    color: $lhasa_error_color;
     font-weight: bold;
-    border: red 1px solid;
+    border: $lhasa_error_color 1px solid;
     padding: 5px;
 }
 
@@ -104,8 +100,8 @@
 }
 
 .button {
-    border: yellowgreen 2px outset;
-    background-color: rgb(0, 0, 110);
+    border: $lhasa_border_color 2px outset;
+    background-color: $lhasa_button_color;
     padding: 2px;
     text-align: center;
     display: flex;
@@ -118,19 +114,19 @@
 }
 
 .tool_button {
-    border: limegreen 1px outset !important;
+    border: $lhasa_border_color 1px outset !important;
 }
 
 .button:hover {
-    background-color: rgb(0, 0, 148);
+    background-color: $lhasa_button_hover_color;
 }
 
 .button:active {
-    background-color: rgb(0, 0, 175);
+    background-color: $lhasa_button_active_color;
 }
 
 .active_tool {
-    background-color: rgb(0, 0, 175) !important;
+    background-color: $lhasa_button_active_color !important;
 }
 
 .smiles_display {
@@ -149,8 +145,8 @@
 
 .lhasa_editor input {
     font-family: sans-serif;
-    background-color: rgb(0, 0, 66);
-    color: yellow;
+    background-color: $lhasa_background_color;
+    color: $lhasa_text_color;
     font-size: small;
     border-style: ridge;
 }
@@ -164,10 +160,10 @@
 }
 
 .pre_render_message {
-    color: yellow;
+    color: $lhasa_text_color;
     font-weight: bold;
     font-size: 200%;
-    background-color: rgb(0, 0, 66);
+    background-color: $lhasa_background_color;
 }
 
 .text_measurement_worker_div {

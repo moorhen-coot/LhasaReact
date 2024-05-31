@@ -1,7 +1,7 @@
 import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
 import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
-import './index.css';
+import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
 
 class ToolButtonProps {
