@@ -19,7 +19,7 @@ export function App() {
         Lhasa={lhasa_module} 
         show_top_panel={true}
         show_footer={true}
-        icons_path_prefix=''
+        icons_path_prefix='/icons'
      />
     </>
   )
