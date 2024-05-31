@@ -1,6 +1,6 @@
 @use 'sass:color';
 
-$lhasa_background_color: rgb(226, 226, 226);
+$lhasa_background_color: rgb(255, 255, 255);
 $lhasa_button_color: color.adjust($lhasa_background_color, $lightness: -10%);
 $lhasa_button_hover_color: color.adjust($lhasa_button_color, $lightness: -10%);
 $lhasa_button_active_color: color.adjust($lhasa_button_color, $lightness: -18%);
