@@ -205,6 +205,7 @@ export interface Canvas extends ImplWidgetCoreData {
   on_right_click_released(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
   get_smiles(): string;
   get_smiles_for_molecule(_0: number): string;
+  get_pickled_molecule(_0: number): string;
   connect(_0: ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string, _1: any): void;
   delete(): void;
 }
@@ -280,6 +281,7 @@ interface EmbindModule {
   ImplWidgetCoreData: {};
   Canvas: {new(): Canvas};
   append_from_smiles(_0: Canvas, _1: ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string): void;
+  append_from_pickle(_0: Canvas, _1: ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string): void;
   element_insertion_from_symbol(_0: ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string): ElementInsertion;
   make_active_tool(_0: any): ActiveTool;
 }
