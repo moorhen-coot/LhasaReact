@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
+import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo, useLayoutEffect } from 'react'
 import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
@@ -356,6 +356,17 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
     //Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
     return lh;
   });
+
+  // This unfortunately does not work
+  // useLayoutEffect(() => {
+  //   // This tries to prevent the memory leak
+  //   // upon component unmounting
+  //   return () => {
+  //     lh.delete();
+  //   };
+  // }, []);
+
+
   const chLh = (func: () => void) => {
     func();
     // This probably does nothing
@@ -455,7 +466,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
       // immediately disappear.
       st.error_message_content = null;
     }
-  })
+  });
 
   // @ts-ignore
   const tool_button_data = useRef({
