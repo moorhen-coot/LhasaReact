@@ -33,13 +33,14 @@ function ToolButton(props:ToolButtonProps) {
 
 class LhasaComponentProps {
   Lhasa: MainModule | any;
-  show_top_panel: boolean = false;
-  show_footer: boolean = true;
-  icons_path_prefix: string = '';
+  show_top_panel?: boolean;
+  show_footer?: boolean;
+  icons_path_prefix?: string;
+  rdkit_molecule_pickle?: Uint8Array;
 }
 
 
-export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_prefix} : LhasaComponentProps) {
+export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = true, icons_path_prefix = '', rdkit_molecule_pickle} : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
@@ -354,6 +355,10 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
 
     //console.log('Adding demo molecule.');
     //Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
+
+    if(true) {
+
+    }
     return lh;
   });
 
