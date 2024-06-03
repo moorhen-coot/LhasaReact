@@ -356,8 +356,8 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
     //console.log('Adding demo molecule.');
     //Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
 
-    if(true) {
-
+    if(rdkit_molecule_pickle !== undefined) {
+      Lhasa.append_from_pickle(lh, rdkit_molecule_pickle);
     }
     return lh;
   });
