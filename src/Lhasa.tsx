@@ -28,8 +28,9 @@ function ToolButton(props:ToolButtonProps) {
         //   {props.caption}
         // </div>
         <Button 
-          variant="contained"
+          variant="outlined"
           onClick={props.onclick}
+          className={"button tool_button " + (active_tool_name == props.action_name ? 'active_tool' : '')}
         >
           {props.icon && 
             <>
