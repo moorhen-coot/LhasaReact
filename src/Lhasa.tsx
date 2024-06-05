@@ -36,11 +36,11 @@ class LhasaComponentProps {
   show_top_panel?: boolean;
   show_footer?: boolean;
   icons_path_prefix?: string;
-  rdkit_molecule_pickle?: Uint8Array;
+  rdkit_molecule_pickle_map?: Map<string,Uint8Array>;
 }
 
 
-export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = true, icons_path_prefix = '', rdkit_molecule_pickle} : LhasaComponentProps) {
+export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = true, icons_path_prefix = '', rdkit_molecule_pickle_map} : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
@@ -297,7 +297,8 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
       /// This is only used for user feedback,
       /// i.e. when the user inputs something invalid
       error_message_content: null,
-      active_tool_name: ''
+      active_tool_name: '',
+      appended_pickles: new Set<string>()
     };
   });
   const [lh, setLh] = useState(() => {
@@ -356,11 +357,26 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
     //console.log('Adding demo molecule.');
     //Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
 
-    if(rdkit_molecule_pickle !== undefined) {
-      Lhasa.append_from_pickle(lh, rdkit_molecule_pickle);
-    }
     return lh;
   });
+
+  useEffect(() => {
+      if(rdkit_molecule_pickle_map !== undefined) {
+        for(let entry of rdkit_molecule_pickle_map.entries()) {
+          if(! st.appended_pickles.has(entry[0])) {
+            Lhasa.append_from_pickle(lh, entry[1]);
+            const new_appended_pickles = st.appended_pickles;
+            new_appended_pickles.add(entry[0]);
+            setSt(pst =>{
+                return {
+                ...pst,
+                appended_pickles: new_appended_pickles
+              };
+            });
+          }
+        }
+      }
+  }, [rdkit_molecule_pickle_map]);
 
   // This unfortunately does not work
   // useLayoutEffect(() => {
