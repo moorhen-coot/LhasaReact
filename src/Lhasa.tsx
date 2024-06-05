@@ -3,6 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
+import Button from '@mui/material/Button';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -18,14 +19,25 @@ function ToolButton(props:ToolButtonProps) {
   return (
     <ActiveToolContext.Consumer>
       {active_tool_name => (
-        <div className={"button tool_button " + (active_tool_name == props.action_name ? 'active_tool' : '')} onClick={props.onclick}>
+        // <div className={"button tool_button " + (active_tool_name == props.action_name ? 'active_tool' : '')} onClick={props.onclick}>
+        //   {props.icon && 
+        //     <>
+        //       <img src={props.icon} width="24px" />
+        //       <br/>
+        //     </>}
+        //   {props.caption}
+        // </div>
+        <Button 
+          variant="contained"
+          onClick={props.onclick}
+        >
           {props.icon && 
             <>
               <img src={props.icon} width="24px" />
               <br/>
             </>}
           {props.caption}
-        </div>
+        </Button>
       )}
     </ActiveToolContext.Consumer>
   )
