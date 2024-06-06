@@ -19,14 +19,6 @@ function ToolButton(props:ToolButtonProps) {
   return (
     <ActiveToolContext.Consumer>
       {active_tool_name => (
-        // <div className={"button tool_button " + (active_tool_name == props.action_name ? 'active_tool' : '')} onClick={props.onclick}>
-        //   {props.icon && 
-        //     <>
-        //       <img src={props.icon} width="24px" />
-        //       <br/>
-        //     </>}
-        //   {props.caption}
-        // </div>
         <ToggleButton
           variant="outlined"
           selected={active_tool_name == props.action_name}
