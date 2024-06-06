@@ -104,6 +104,10 @@ $lhasa_font_size: small;
     gap: $lhasa_base_padding;
 }
 
+.horizontal_container {
+    @include horizontal_container;
+}
+
 @mixin vertical_container {
     @include vertical_flex;
     gap: $lhasa_base_padding;
