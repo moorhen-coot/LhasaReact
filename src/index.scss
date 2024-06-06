@@ -1,9 +1,6 @@
 @use 'sass:color';
 
 $lhasa_background_color: rgb(255, 255, 255);
-$lhasa_button_color: color.adjust($lhasa_background_color, $lightness: -10%);
-$lhasa_button_hover_color: color.adjust($lhasa_button_color, $lightness: -10%);
-$lhasa_button_active_color: color.adjust($lhasa_button_color, $lightness: -18%);
 $lhasa_text_color: black;
 $lhasa_border_color: rgb(161, 161, 161);
 $lhasa_toolbar_border_color: rgb(193, 158, 158);
@@ -141,35 +138,12 @@ $lhasa_font_size: small;
     width: 24px;
 }
 
-.button {
-    @include vertical_flex;
-    @include center_vertical_flex;
-    border: $lhasa_border_color $lhasa_padding_minor outset;
-    background-color: $lhasa_button_color;
-    padding: $lhasa_padding_minor;
-    gap: $lhasa_padding_minor;
-    cursor: pointer;
-}
-
 .tool_button {
     @include vertical_container;
     @include center_vertical_flex;
     @include lhasa_disable_MUI_swelling;
     gap: $lhasa_padding_minor;
     padding: $lhasa_base_padding;
-}
-
-.button:hover {
-    background-color: $lhasa_button_hover_color;
-}
-
-.button:active {
-    background-color: $lhasa_button_active_color;
-}
-
-.active_tool {
-    background-color: $lhasa_button_active_color !important;
-    border-width: $lhasa_padding_minor !important;
 }
 
 .smiles_display {

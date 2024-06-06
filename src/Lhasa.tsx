@@ -840,14 +840,12 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 <div className="horizontal_toolbar">
                   <Button
                     variant="outlined" 
-                    className="button" 
                     onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
                   >
                     <b>-</b>
                   </Button>
                   <Button
                     variant="outlined" 
-                    className="button" 
                     onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
                   >
                     <b>+</b>
@@ -880,14 +878,12 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
             <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar">
               <Button 
                 variant="outlined"
-                className="button" 
                 onClick={() => handler_map['Undo']()}
                >
                 Undo
               </Button>
               <Button 
-                variant="outlined"
-                className="button" 
+                variant="outlined" 
                 onClick={() => handler_map['Redo']()}
                >
                 Redo
@@ -896,8 +892,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 {/* SMILES:  */}
                 <input id={smiles_input} className="smiles_input" />
                 <Button 
-                  variant="outlined"
-                  className="button" 
+                  variant="outlined" 
                   onClick={() => on_smiles_import_button()} 
                 >
                   Import SMILES
