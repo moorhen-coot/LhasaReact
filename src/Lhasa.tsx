@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -821,15 +821,14 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
               <span /*id_="status_display"*/>{ st.status_text }</span>
             </div>
             <div className="invalid_molecules_panel horizontal_panel">
-              <label>
-                <input 
-                type="checkbox" 
-                /*id_="allow_invalid_molecules_checkbox" */
-                name="allow_invalid_molecules"
-                onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
+              <FormGroup>
+                <FormControlLabel 
+                  label="Allow Invalid Molecules" 
+                  control={<Switch />}
+                  // @ts-ignore
+                  onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
                 />
-                Allow invalid molecules
-              </label>
+              </FormGroup>
             </div>
             <div /*id_="info_block"*/ className="horizontal_panel">
               <div className="scale_panel vertical_panel">
