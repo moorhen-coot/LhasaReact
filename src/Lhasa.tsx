@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import Button from '@mui/material/Button';
+import { ToggleButton, Button } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -27,18 +27,23 @@ function ToolButton(props:ToolButtonProps) {
         //     </>}
         //   {props.caption}
         // </div>
-        <Button 
+        <ToggleButton
           variant="outlined"
-          onClick={props.onclick}
-          className={"button tool_button " + (active_tool_name == props.action_name ? 'active_tool' : '')}
+          selected={active_tool_name == props.action_name}
+          // @ts-ignore
+          onChange={props.onclick}
+          // Doesn't work: autoCapitalize='false'
+          style={{textTransform: 'none'}}
         >
-          {props.icon && 
+          <div className='vertical_container'>
+          {props.icon &&
             <>
               <img src={props.icon} width="24px" />
-              <br/>
+              <br />
             </>}
           {props.caption}
-        </Button>
+          </div>
+        </ToggleButton>
       )}
     </ActiveToolContext.Consumer>
   )

@@ -77,15 +77,24 @@ $lhasa_error_color: red;
 }
 
 
-.horizontal_container {
+@mixin horizontal_flex {
     display: flex;
     flex-direction: row;
+}
+
+@mixin vertical_flex {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.horizontal_container {
+    @include horizontal_flexbox;
     gap: 5px;
 }
 
 .vertical_container {
-    display: flex;
-    flex-direction: column;
+    @include vertical_flex;
     gap: 5px;
 }
 
