@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -853,19 +853,30 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
               </div>
               <div className="display_mode_panel vertical_panel">
                 <b>DISPLAY MODE</b>
+                <FormControl>
+                  <RadioGroup
+                    name="display_mode"
+                    defaultValue="standard"
+                    onChange={ (_event, value) => switch_display_mode(value)}
+                  >
+                    <FormControlLabel 
+                      label="Standard"
+                      control={<Radio/>}
+                      value="standard"
+                    />
+                    <FormControlLabel 
+                      label="Atom Indices"
+                      control={<Radio/>}
+                      value="atom_indices"
+                    />
+                    <FormControlLabel 
+                      label="Atom Names"
+                      control={<Radio/>}
+                      value="atom_names"
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <br/>
-                <label>
-                  {/* Not sure how to avod redundancy with value in React */}
-                  <input type="radio" name="display_mode" defaultChecked={true} value="standard" onChange={() => switch_display_mode("standard")} />
-                  Standard
-                </label>
-                <br/>
-                <label>
-                  {/* Not sure how to avod redundancy with value in React */}
-                  <input type="radio" name="display_mode" value="atom_indices" onChange={() => switch_display_mode("atom_indices")} />
-                  Atom Indices
-                </label>
-                {/* <!-- <input type="radio" name="display_mode" id_="display_mode_atom_names">Atom Names</input> --> */}
               </div>
               <div className="smiles_display_outer vertical_panel">
                 <b>SMILES</b>
