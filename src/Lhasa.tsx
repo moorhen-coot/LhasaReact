@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -304,13 +304,12 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
       scale: 1.0,
       status_text: '',
       x_element_input_shown: false,
-      /// This is only used for user feedback,
-      /// i.e. when the user inputs something invalid
-      error_message_content: null,
       active_tool_name: '',
       appended_pickles: new Set<string>()
     };
   });
+  const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
+  const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
   const [lh, setLh] = useState(() => {
     const lh = new Lhasa.Canvas();
     lh.connect("queue_redraw", () => {
@@ -421,15 +420,11 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
       const smiles_input_el = document.getElementById(smiles_input) as HTMLInputElement;
       chLh(() => {
         try {
-          Lhasa.append_from_smiles(lh, smiles_input_el.value)
+          Lhasa.append_from_smiles(lh, smiles_input_el.value);
+          setSmilesErrorString(null);
         } catch(err) {
           console.warn("Could not import molecule from SMILES: ", err);
-          setSt(pst =>{
-            return {
-              ...pst,
-              error_message_content: "Could not load import molecule from SMILES. Is your SMILES valid?"
-            }
-          });
+          setSmilesErrorString("Could not load import molecule from SMILES. Is your SMILES valid?");
         }
       });
   }
@@ -445,14 +440,10 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
           x_element_input_shown: false
         }
       });
+      setXElementErrorString(null);
     }catch(err) {
       console.warn("Could not set custom element: ", err);
-      setSt(pst =>{
-        return {
-          ...pst,
-          error_message_content: "Could not load ElementInsertion tool. Is your symbol valid?"
-        }
-      });
+      setXElementErrorString("Could not custom element. The symbol must be invalid.");
     }
   }
 
@@ -485,16 +476,6 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
       }
     }
   },[st]);
-
-  useEffect(()=>{
-    if(st.error_message_content) {
-      // Note that we're not calling 'setSt'.
-      // This is on purpose. We don't want React to re-render things now.
-      // Otherwise the error message would pop-up and then
-      // immediately disappear.
-      st.error_message_content = null;
-    }
-  });
 
   // @ts-ignore
   const tool_button_data = useRef({
@@ -778,8 +759,14 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
             {st.x_element_input_shown && 
               <>
                 <div className="x_element_panel horizontal_panel" >
-                  <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
-                  <input id={x_element_symbol_input}></input>
+                  <TextField
+                    label="Custom element symbol"
+                    id={x_element_symbol_input}
+                    variant="outlined"
+                    error={x_element_error_string != null}
+                    helperText={x_element_error_string}
+                    style={{alignSelf: "center", flexGrow: "1"}}
+                  />
                   <Button
                   variant='contained'
                   // className='x_element_submit_button'
@@ -789,11 +776,6 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                   </Button>
                 </div>
               </>
-            }
-            {st.error_message_content &&
-              <div className="error_display vertical_toolbar">
-                {st.error_message_content}
-              </div>
             }
             <div /*id_="main_horizontal_container"*/ className="horizontal_panel">
               <div /*id_="element_toolbar"*/ className="vertical_toolbar">
@@ -944,7 +926,13 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
               </Button>
               <div style={{"flexGrow": 1}} className="horizontal_toolbar">
                 {/* SMILES:  */}
-                <input id={smiles_input} className="smiles_input" />
+                <TextField
+                  label="SMILES"
+                  id={smiles_input}
+                  variant="outlined"
+                  error={smiles_error_string != null}
+                  helperText={smiles_error_string}
+                />
                 <Button 
                   variant="contained" 
                   onClick={() => on_smiles_import_button()} 
