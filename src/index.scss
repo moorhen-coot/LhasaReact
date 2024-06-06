@@ -8,6 +8,9 @@ $lhasa_text_color: black;
 $lhasa_border_color: rgb(161, 161, 161);
 $lhasa_toolbar_border_color: rgb(193, 158, 158);
 $lhasa_error_color: red;
+$lhasa_base_padding: 5px;
+$lhasa_padding_minor: 2px;
+$lhasa_font_size: small;
 
 .editor_canvas_container {
     border: $lhasa_border_color 1px solid;
@@ -25,55 +28,55 @@ $lhasa_error_color: red;
 .lhasa_drawing {
     background-color: white;
     /* Removes weird, empty margin-like area */
-    margin-bottom: -5px;
+    margin-bottom: -$lhasa_base_padding;
 }
 
 .lhasa_editor {
     font-family: sans-serif;
     background-color: $lhasa_background_color;
     color: $lhasa_text_color;
-    font-size: small;
-    padding: 10px;
+    font-size: $lhasa_font_size;
+    padding: 2 * $lhasa_base_padding;
     width: fit-content;
     text-align: left;
 }
 
 .toolbar {
     border: $lhasa_toolbar_border_color 1px solid;
-    padding: 5px;
+    padding: $lhasa_base_padding;
     /* align-items: center; */
 }
 
 .panel {
     border: $lhasa_border_color 1px solid;
-    padding: 5px;
+    padding: $lhasa_base_padding;
 }
 
 .invalid_molecules_panel, 
 .scale_panel,  
 .display_mode_panel,
 .status_display_panel {
-    margin-bottom: 5px;
+    margin-bottom: $lhasa_base_padding;
 }
 
 .smiles_display_outer {
-    margin-bottom: 5px;
+    margin-bottom: $lhasa_base_padding;
     flex-grow: 1;
 }
 
 .x_element_panel,
 .x_element_submit_button {
-    margin-bottom: 5px;
+    margin-bottom: $lhasa_base_padding;
     /* display: none; */
 }
 
 
 .error_display {
-    margin-bottom: 5px;
+    margin-bottom: $lhasa_base_padding;
     color: $lhasa_error_color;
     font-weight: bold;
     border: $lhasa_error_color 1px solid;
-    padding: 5px;
+    padding: $lhasa_base_padding;
 }
 
 
@@ -85,22 +88,34 @@ $lhasa_error_color: red;
 @mixin vertical_flex {
     display: flex;
     flex-direction: column;
-    
+}
+
+@mixin lhasa_disable_MUI_swelling {
+    font-size: $lhasa_font_size;
+    line-height: normal;
+    letter-spacing: 0em;
+}
+
+@mixin center_verical_flex {
+    text-align: center;
+    justify-content: center;
+    /* CSS is weird */
+    align-items: center;
 }
 
 .horizontal_container {
-    @include horizontal_flexbox;
-    gap: 5px;
+    @include horizontal_flex;
+    gap: $lhasa_base_padding;
 }
 
 .vertical_container {
     @include vertical_flex;
-    gap: 5px;
+    gap: $lhasa_base_padding;
 }
 
 .horizontal_toolbar {
-    margin-bottom: 2px;
-    margin-top: 2px;
+    margin-bottom: $lhasa_padding_minor;
+    margin-top: $lhasa_padding_minor;
 }
 
 .vertical_toolbar {
@@ -109,22 +124,26 @@ $lhasa_error_color: red;
     align-items: normal;
 }
 
+.lhasa_icon {
+    width: 24px;
+}
+
 .button {
-    border: $lhasa_border_color 2px outset;
+    @include vertical_flex;
+    @include center_verical_flex;
+    border: $lhasa_border_color $lhasa_padding_minor outset;
     background-color: $lhasa_button_color;
-    padding: 2px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    justify-content: center;
-    /* CSS is weird */
-    align-items: center;
+    padding: $lhasa_padding_minor;
+    gap: $lhasa_padding_minor;
     cursor: pointer;
 }
 
 .tool_button {
-    border: $lhasa_border_color 1px outset !important;
+    @include vertical_flex;
+    @include center_verical_flex;
+    @include lhasa_disable_MUI_swelling;
+    gap: $lhasa_padding_minor;
+    padding: $lhasa_base_padding;
 }
 
 .button:hover {
@@ -137,28 +156,28 @@ $lhasa_error_color: red;
 
 .active_tool {
     background-color: $lhasa_button_active_color !important;
-    border-width: 2px !important;
+    border-width: $lhasa_padding_minor !important;
 }
 
 .smiles_display {
-    padding: 5px;
+    padding: $lhasa_base_padding;
     font-family: monospace;
 }
 
 .scale_display {
-    padding: 5px;
+    padding: $lhasa_base_padding;
 }
 
 .status_display_panel {
-    padding: 10px;
-    margin-top: 5px;
+    padding: 2 * $lhasa_base_padding;
+    margin-top: $lhasa_base_padding;
 }
 
 .lhasa_editor input {
     font-family: sans-serif;
     background-color: $lhasa_background_color;
     color: $lhasa_text_color;
-    font-size: small;
+    font-size: $lhasa_font_size;
     border-style: ridge;
 }
 
@@ -167,7 +186,7 @@ $lhasa_error_color: red;
 }
 
 .lhasa_footer {
-    margin-top: 20px;
+    margin-top: 4 * $lhasa_base_padding;
 }
 
 .pre_render_message {
@@ -180,5 +199,5 @@ $lhasa_error_color: red;
 .text_measurement_worker_div {
     /* Cancels out the gap in the owning container 
     so that we get nice alignment */
-    margin-left: -5px;
+    margin-left: -$lhasa_base_padding;
 }

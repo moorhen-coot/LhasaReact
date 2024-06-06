@@ -25,12 +25,12 @@ function ToolButton(props:ToolButtonProps) {
           // @ts-ignore
           onChange={props.onclick}
           // Doesn't work: autoCapitalize='false'
-          style={{textTransform: 'none'}}
+          style={{textTransform: 'none', padding: '0px'}}
         >
-          <div className='vertical_container'>
+          <div className='tool_button'>
           {props.icon &&
             <>
-              <img src={props.icon} width="24px" />
+              <img src={props.icon} className="lhasa_icon" />
               <br />
             </>}
           {props.caption}
