@@ -1,9 +1,9 @@
 @use 'sass:color';
 
-$lhasa_background_color: rgb(255, 255, 255);
+$lhasa_background_color: rgba(255, 225, 0, 0);
 $lhasa_text_color: black;
-$lhasa_border_color: rgb(161, 161, 161);
-$lhasa_toolbar_border_color: rgb(193, 158, 158);
+$lhasa_border_color: rgba(0, 0, 0, 0.123);
+$lhasa_toolbar_border_color: rgba(184, 0, 0, 0.093);
 $lhasa_error_color: red;
 $lhasa_base_padding: 5px;
 $lhasa_padding_minor: 2px;
@@ -40,12 +40,14 @@ $lhasa_font_size: small;
 
 @mixin toolbar {
     border: $lhasa_toolbar_border_color 1px solid;
+    border-radius: 4px;
     padding: $lhasa_base_padding;
     /* align-items: center; */
 }
 
 @mixin panel {
     border: $lhasa_border_color 1px solid;
+    border-radius: 4px;
     padding: $lhasa_base_padding;
 }
 
