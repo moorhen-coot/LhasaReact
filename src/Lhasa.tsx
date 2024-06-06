@@ -748,8 +748,14 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 <div className="x_element_panel horizontal_panel" >
                   <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
                   <input id={x_element_symbol_input}></input>
+                  <Button
+                  variant='outlined'
+                  // className='x_element_submit_button'
+                  onClick={() => on_x_element_submit_button()}
+                  >
+                    Submit
+                  </Button>
                 </div>
-                <div className="button x_element_submit_button" onClick={() => on_x_element_submit_button()}>Submit</div>
               </>
             }
             {st.error_message_content &&
@@ -832,8 +838,20 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                   {st.scale.toFixed(2)}
                 </div>
                 <div className="horizontal_toolbar">
-                  <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}><b>-</b></div>
-                  <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}><b>+</b></div>
+                  <Button
+                    variant="outlined" 
+                    className="button" 
+                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
+                  >
+                    <b>-</b>
+                  </Button>
+                  <Button
+                    variant="outlined" 
+                    className="button" 
+                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
+                  >
+                    <b>+</b>
+                  </Button>
                 </div>
               </div>
               <div className="display_mode_panel vertical_panel">
@@ -860,12 +878,30 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
               </div>
             </div>
             <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar">
-              <div className="button" onClick={() => handler_map['Undo']()} >Undo</div>
-              <div className="button" onClick={() => handler_map['Redo']()} >Redo</div>
+              <Button 
+                variant="outlined"
+                className="button" 
+                onClick={() => handler_map['Undo']()}
+               >
+                Undo
+              </Button>
+              <Button 
+                variant="outlined"
+                className="button" 
+                onClick={() => handler_map['Redo']()}
+               >
+                Redo
+              </Button>
               <div style={{"flexGrow": 1}} className="horizontal_toolbar">
                 {/* SMILES:  */}
                 <input id={smiles_input} className="smiles_input" />
-                <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
+                <Button 
+                  variant="outlined"
+                  className="button" 
+                  onClick={() => on_smiles_import_button()} 
+                >
+                  Import SMILES
+                </Button>
               </div>
             </div>
             {show_footer &&
