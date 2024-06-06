@@ -749,7 +749,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                   <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
                   <input id={x_element_symbol_input}></input>
                   <Button
-                  variant='outlined'
+                  variant='contained'
                   // className='x_element_submit_button'
                   onClick={() => on_x_element_submit_button()}
                   >
@@ -891,7 +891,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 {/* SMILES:  */}
                 <input id={smiles_input} className="smiles_input" />
                 <Button 
-                  variant="outlined" 
+                  variant="contained" 
                   onClick={() => on_smiles_import_button()} 
                 >
                   Import SMILES
