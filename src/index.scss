@@ -41,13 +41,13 @@ $lhasa_font_size: small;
     text-align: left;
 }
 
-.toolbar {
+@mixin toolbar {
     border: $lhasa_toolbar_border_color 1px solid;
     padding: $lhasa_base_padding;
     /* align-items: center; */
 }
 
-.panel {
+@mixin panel {
     border: $lhasa_border_color 1px solid;
     padding: $lhasa_base_padding;
 }
@@ -96,32 +96,46 @@ $lhasa_font_size: small;
     letter-spacing: 0em;
 }
 
-@mixin center_verical_flex {
+@mixin center_vertical_flex {
     text-align: center;
     justify-content: center;
     /* CSS is weird */
     align-items: center;
 }
 
-.horizontal_container {
+@mixin horizontal_container {
     @include horizontal_flex;
     gap: $lhasa_base_padding;
 }
 
-.vertical_container {
+@mixin vertical_container {
     @include vertical_flex;
     gap: $lhasa_base_padding;
 }
 
 .horizontal_toolbar {
+    @include toolbar;
+    @include horizontal_container;
     margin-bottom: $lhasa_padding_minor;
     margin-top: $lhasa_padding_minor;
 }
 
 .vertical_toolbar {
+    @include toolbar;
+    @include vertical_container;
     /* margin-right: 2px;
     margin-left: 2px; */
     align-items: normal;
+}
+
+.vertical_panel {
+    @include vertical_container;
+    @include panel;
+}
+
+.horizontal_panel {
+    @include horizontal_container;
+    @include panel;
 }
 
 .lhasa_icon {
@@ -130,7 +144,7 @@ $lhasa_font_size: small;
 
 .button {
     @include vertical_flex;
-    @include center_verical_flex;
+    @include center_vertical_flex;
     border: $lhasa_border_color $lhasa_padding_minor outset;
     background-color: $lhasa_button_color;
     padding: $lhasa_padding_minor;
@@ -139,8 +153,8 @@ $lhasa_font_size: small;
 }
 
 .tool_button {
-    @include vertical_flex;
-    @include center_verical_flex;
+    @include vertical_container;
+    @include center_vertical_flex;
     @include lhasa_disable_MUI_swelling;
     gap: $lhasa_padding_minor;
     padding: $lhasa_base_padding;

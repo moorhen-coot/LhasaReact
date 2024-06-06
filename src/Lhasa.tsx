@@ -373,11 +373,9 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
   };
 
   function switch_tool(tool : any) {
-    // Making the buttons appear as "active" happens in the button event handlers.
     chLh(() => lh.set_active_tool(Lhasa.make_active_tool(tool)));
   };
 
-  // todo pressed buttons
   function on_x_element_button() {
     setSt(pst =>{
       return {
@@ -406,7 +404,6 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
 
   function on_x_element_submit_button() {
     const symbol_input = document.getElementById(x_element_symbol_input) as HTMLInputElement;
-    // const x_button = document.getElementById("x_element_button");
     try {
       const el_ins = Lhasa.element_insertion_from_symbol(symbol_input.value);
       switch_tool(el_ins);
@@ -721,7 +718,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 </div>
               </div>
             }
-            <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">
               { tool_buttons.get("Move") }
               { tool_buttons.get("Rotate") }
               { tool_buttons.get("Flip_around_X") }
@@ -729,7 +726,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
               { tool_buttons.get("Delete_hydrogens") }
               { tool_buttons.get("Format") }
             </div>
-            <div /*id_="main_tools_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            <div /*id_="main_tools_toolbar"*/ className="horizontal_toolbar">
               { tool_buttons.get("Single_Bond") }
               { tool_buttons.get("Double_Bond") }
               { tool_buttons.get("Triple_Bond") }
@@ -737,7 +734,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
               { tool_buttons.get("Charge") }
               { tool_buttons.get("Delete") }
             </div>
-            <div /*id_="structure_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            <div /*id_="structure_toolbar"*/ className="horizontal_toolbar">
               { tool_buttons.get("C3") }
               { tool_buttons.get("C4") }
               { tool_buttons.get("C5") }
@@ -748,7 +745,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
             </div>
             {st.x_element_input_shown && 
               <>
-                <div className="x_element_panel panel horizontal_container" >
+                <div className="x_element_panel horizontal_panel" >
                   <span style={{alignSelf: "center", flexGrow: "1"}}>Custom element symbol: </span>
                   <input id={x_element_symbol_input}></input>
                 </div>
@@ -756,12 +753,12 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
               </>
             }
             {st.error_message_content &&
-              <div className="error_display vertical_container vertical_toolbar">
+              <div className="error_display vertical_toolbar">
                 {st.error_message_content}
               </div>
             }
-            <div /*id_="main_horizontal_container"*/ className="horizontal_container">
-              <div /*id_="element_toolbar"*/ className="vertical_toolbar toolbar vertical_container">
+            <div /*id_="main_horizontal_container"*/ className="horizontal_panel">
+              <div /*id_="element_toolbar"*/ className="vertical_toolbar">
               { tool_buttons.get("C") }
               { tool_buttons.get("N") }
               { tool_buttons.get("O") }
@@ -813,11 +810,11 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 {/* Ugly, I know */}
               </div>
             </div>
-            <div className="status_display_panel panel">
+            <div className="status_display_panel horizontal_panel">
               <span>▶</span>
               <span /*id_="status_display"*/>{ st.status_text }</span>
             </div>
-            <div className="invalid_molecules_panel panel">
+            <div className="invalid_molecules_panel horizontal_panel">
               <label>
                 <input 
                 type="checkbox" 
@@ -828,18 +825,18 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 Allow invalid molecules
               </label>
             </div>
-            <div /*id_="info_block"*/ className="horizontal_container">
-              <div className="scale_panel panel">
+            <div /*id_="info_block"*/ className="horizontal_panel">
+              <div className="scale_panel vertical_panel">
                 <b>SCALE</b>
                 <div className="scale_display">
                   {st.scale.toFixed(2)}
                 </div>
-                <div className="toolbar horizontal_toolbar horizontal_container">
+                <div className="horizontal_toolbar">
                   <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}><b>-</b></div>
                   <div className="button" onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}><b>+</b></div>
                 </div>
               </div>
-              <div className="display_mode_panel panel">
+              <div className="display_mode_panel vertical_panel">
                 <b>DISPLAY MODE</b>
                 <br/>
                 <label>
@@ -855,17 +852,17 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 </label>
                 {/* <!-- <input type="radio" name="display_mode" id_="display_mode_atom_names">Atom Names</input> --> */}
               </div>
-              <div className="smiles_display_outer panel">
+              <div className="smiles_display_outer vertical_panel">
                 <b>SMILES</b>
                 <div className="smiles_display">
                   {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
                 </div>
               </div>
             </div>
-            <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar toolbar horizontal_container">
+            <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar">
               <div className="button" onClick={() => handler_map['Undo']()} >Undo</div>
               <div className="button" onClick={() => handler_map['Redo']()} >Redo</div>
-              <div style={{"flexGrow": 1}} className="horizontal_container toolbar">
+              <div style={{"flexGrow": 1}} className="horizontal_toolbar">
                 {/* SMILES:  */}
                 <input id={smiles_input} className="smiles_input" />
                 <div className="button" onClick={() => on_smiles_import_button()} >Import SMILES</div>
