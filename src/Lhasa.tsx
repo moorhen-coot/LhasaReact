@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -350,7 +350,7 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
       console.log("Molecule with id " + mol_id + " has been deleted.");
     });
     lh.connect("scale_changed", function (new_scale) {
-      console.log('ns', new_scale);
+      console.log('new scale: ', new_scale);
       setSt(pst =>{
           return {
           ...pst,
@@ -830,34 +830,46 @@ export function LhasaComponent({Lhasa, show_top_panel, show_footer, icons_path_p
                 />
               </FormGroup>
             </div>
-            <div /*id_="info_block"*/ className="horizontal_panel">
-              <div className="scale_panel vertical_panel">
-                <b>SCALE</b>
-                <div className="scale_display">
-                  {st.scale.toFixed(2)}
-                </div>
-                <div className="horizontal_toolbar">
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
-                  >
-                    <b>-</b>
-                  </Button>
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
-                  >
-                    <b>+</b>
-                  </Button>
-                </div>
+            <div className="scale_panel vertical_panel">
+              <b>SCALE</b>
+              <Slider 
+                value={lh.get_scale()}
+                max={18}
+                min={0.1}
+                step={0.0001}
+                marks={[0.5,1,2]}
+                // todo: scale
+                // scale={(v) => Math.sqrt(v)}
+                // valueLabelDisplay="auto"
+                // valueLabelFormat={(v) => v.toFixed(2)}
+                onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale))}}
+              />
+              <div className="scale_display">
+                {st.scale.toFixed(2)}
               </div>
+              {/* <div className="horizontal_toolbar">
+                <Button
+                  variant="outlined" 
+                  onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
+                >
+                  <b>-</b>
+                </Button>
+                <Button
+                  variant="outlined" 
+                  onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
+                >
+                  <b>+</b>
+                </Button>
+              </div> */}
+            </div>
+            <div /*id_="info_block"*/ className="horizontal_panel">
               <div className="display_mode_panel vertical_panel">
                 <b>DISPLAY MODE</b>
                 <FormControl>
                   <RadioGroup
                     name="display_mode"
                     defaultValue="standard"
-                    onChange={ (_event, value) => switch_display_mode(value)}
+                    onChange={(_event, value) => switch_display_mode(value)}
                   >
                     <FormControlLabel 
                       label="Standard"
