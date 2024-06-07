@@ -3,42 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, createTheme, ThemeProvider } from '@mui/material';
-
-const theme = createTheme({
-  components: {
-    MuiFormControlLabel: {
-      styleOverrides: {
-        root: {
-          marginLeft: "0px"
-        }
-      }
-    },
-    MuiRadio: {
-      styleOverrides: {
-        root: {
-          padding: "2px"
-        }
-      }
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          padding: "5px",
-          textTransform: "none"
-        }
-      }
-    },
-  },
-  typography: {
-    button: {
-      fontSize: "small",
-    },
-    body1: {
-      fontSize: "small"
-    }
-  }
-});
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -750,240 +715,238 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
     <>
       <ActiveToolContext.Provider value={st.active_tool_name}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
-          <ThemeProvider theme={theme}>
-            <div className="lhasa_editor">
-              {show_top_panel &&
-                <div className="horizontal_container">
-                  <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
-                  <div /*id_="lhasa_hello"*/ >
-                    <h3>Welcome to Lhasa!</h3>
-                    <p>
-                      Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
-                      Lhasa is experimental software.
-                    </p>
-                    <p>
-                      This is a demo UI for development purposes.
-                    </p>
-                  </div>
-                </div>
-              }
-              <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">
-                { tool_buttons.get("Move") }
-                { tool_buttons.get("Rotate") }
-                { tool_buttons.get("Flip_around_X") }
-                { tool_buttons.get("Flip_around_Y") }
-                { tool_buttons.get("Delete_hydrogens") }
-                { tool_buttons.get("Format") }
-              </div>
-              <div /*id_="main_tools_toolbar"*/ className="horizontal_toolbar">
-                { tool_buttons.get("Single_Bond") }
-                { tool_buttons.get("Double_Bond") }
-                { tool_buttons.get("Triple_Bond") }
-                { tool_buttons.get("Geometry") }
-                { tool_buttons.get("Charge") }
-                { tool_buttons.get("Delete") }
-              </div>
-              <div /*id_="structure_toolbar"*/ className="horizontal_toolbar">
-                { tool_buttons.get("C3") }
-                { tool_buttons.get("C4") }
-                { tool_buttons.get("C5") }
-                { tool_buttons.get("C6") }
-                { tool_buttons.get("Arom6") }
-                { tool_buttons.get("C7") }
-                { tool_buttons.get("C8") }
-              </div>
-              {st.x_element_input_shown && 
-                <>
-                  <div className="x_element_panel horizontal_panel" >
-                    <TextField
-                      label="Custom element symbol"
-                      id={x_element_symbol_input}
-                      variant="outlined"
-                      error={x_element_error_string != null}
-                      helperText={x_element_error_string}
-                      style={{alignSelf: "center", flexGrow: "1"}}
-                    />
-                    <Button
-                    variant='contained'
-                    // className='x_element_submit_button'
-                    onClick={() => on_x_element_submit_button()}
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </>
-              }
-              <div /*id_="main_horizontal_container"*/ className="horizontal_panel">
-                <div /*id_="element_toolbar"*/ className="vertical_toolbar">
-                { tool_buttons.get("C") }
-                { tool_buttons.get("N") }
-                { tool_buttons.get("O") }
-                { tool_buttons.get("S") }
-                { tool_buttons.get("P") }
-                { tool_buttons.get("H") }
-                { tool_buttons.get("F") }
-                { tool_buttons.get("Cl") }
-                { tool_buttons.get("Br") }
-                { tool_buttons.get("I") }
-                { tool_buttons.get("X") }
-                </div>
-                <div 
-                  className="editor_canvas_container"
-                  onContextMenu={(e) => {e.preventDefault();}}
-                  onMouseMove={(event) => {
-                    // console.log('Mousemove');
-                    lh.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
-                  }}
-                  onMouseDown={(event) => {
-                    if(event.button == 0) {
-                      //console.log('lclick');
-                      lh.on_left_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-                    } else if(event.button == 2) {
-                      //console.log('rclick');
-                      lh.on_right_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-                    }
-                  }}
-                  onMouseUp={(event) => {
-                    if(event.button == 0) {
-                      //console.log('lreleased');
-                      lh.on_left_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-                    } else if(event.button == 2) {
-                      //console.log('rreleased');
-                      lh.on_right_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
-                    }
-                  }}
-                  onWheel={(event) => {
-                    lh.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
-                  }}
-
-                  // @ts-ignore
-                  ref={svgRef}
-
-                >
-                  <div className="pre_render_message">Lhasa not rendered.</div>
-                </div>
-                <div id={text_measurement_worker_div} className="text_measurement_worker_div">
-                  {/* Ugly, I know */}
+          <div className="lhasa_editor">
+            {show_top_panel &&
+              <div className="horizontal_container">
+                <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
+                <div /*id_="lhasa_hello"*/ >
+                  <h3>Welcome to Lhasa!</h3>
+                  <p>
+                    Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
+                    Lhasa is experimental software.
+                  </p>
+                  <p>
+                    This is a demo UI for development purposes.
+                  </p>
                 </div>
               </div>
-              <div className="status_display_panel horizontal_panel">
-                <span>▶</span>
-                <span /*id_="status_display"*/>{ st.status_text }</span>
-              </div>
-              <div className="invalid_molecules_panel horizontal_panel">
-                <FormGroup>
-                  <FormControlLabel 
-                    label="Allow Invalid Molecules" 
-                    control={<Switch />}
-                    // @ts-ignore
-                    onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
-                  />
-                </FormGroup>
-              </div>
-              <div className="scale_panel vertical_panel">
-                <b>SCALE</b>
-                <Slider 
-                  value={lh.get_scale()}
-                  max={18}
-                  min={0.1}
-                  step={0.0001}
-                  marks={[0.5,1,2]}
-                  // todo: scale
-                  // scale={(v) => Math.sqrt(v)}
-                  // valueLabelDisplay="auto"
-                  // valueLabelFormat={(v) => v.toFixed(2)}
-                  onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale))}}
-                />
-                <div className="scale_display">
-                  {st.scale.toFixed(2)}
-                </div>
-                {/* <div className="horizontal_toolbar">
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
-                  >
-                    <b>-</b>
-                  </Button>
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
-                  >
-                    <b>+</b>
-                  </Button>
-                </div> */}
-              </div>
-              <div /*id_="info_block"*/ className="horizontal_panel">
-                <div className="display_mode_panel vertical_panel">
-                  <b>DISPLAY MODE</b>
-                  <FormControl>
-                    <RadioGroup
-                      name="display_mode"
-                      defaultValue="standard"
-                      onChange={(_event, value) => switch_display_mode(value)}
-                    >
-                      <FormControlLabel 
-                        label="Standard"
-                        control={<Radio/>}
-                        value="standard"
-                      />
-                      <FormControlLabel 
-                        label="Atom Indices"
-                        control={<Radio/>}
-                        value="atom_indices"
-                      />
-                      <FormControlLabel 
-                        label="Atom Names"
-                        control={<Radio/>}
-                        value="atom_names"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                  <br/>
-                </div>
-                <div className="smiles_display_outer vertical_panel">
-                  <b>SMILES</b>
-                  <div className="smiles_display">
-                    {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
-                  </div>
-                </div>
-              </div>
-              <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar">
-                <Button 
-                  variant="outlined"
-                  onClick={() => handler_map['Undo']()}
-                >
-                  Undo
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  onClick={() => handler_map['Redo']()}
-                >
-                  Redo
-                </Button>
-                <div style={{"flexGrow": 1}} className="horizontal_toolbar">
-                  {/* SMILES:  */}
-                  <TextField
-                    label="SMILES"
-                    id={smiles_input}
-                    variant="outlined"
-                    error={smiles_error_string != null}
-                    helperText={smiles_error_string}
-                  />
-                  <Button 
-                    variant="contained" 
-                    onClick={() => on_smiles_import_button()} 
-                  >
-                    Import SMILES
-                  </Button>
-                </div>
-              </div>
-              {show_footer &&
-                <div className="lhasa_footer">
-                  <i>Written by Jakub Smulski</i>
-                </div>
-              }
+            }
+            <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">
+              { tool_buttons.get("Move") }
+              { tool_buttons.get("Rotate") }
+              { tool_buttons.get("Flip_around_X") }
+              { tool_buttons.get("Flip_around_Y") }
+              { tool_buttons.get("Delete_hydrogens") }
+              { tool_buttons.get("Format") }
             </div>
-          </ThemeProvider>
+            <div /*id_="main_tools_toolbar"*/ className="horizontal_toolbar">
+              { tool_buttons.get("Single_Bond") }
+              { tool_buttons.get("Double_Bond") }
+              { tool_buttons.get("Triple_Bond") }
+              { tool_buttons.get("Geometry") }
+              { tool_buttons.get("Charge") }
+              { tool_buttons.get("Delete") }
+            </div>
+            <div /*id_="structure_toolbar"*/ className="horizontal_toolbar">
+              { tool_buttons.get("C3") }
+              { tool_buttons.get("C4") }
+              { tool_buttons.get("C5") }
+              { tool_buttons.get("C6") }
+              { tool_buttons.get("Arom6") }
+              { tool_buttons.get("C7") }
+              { tool_buttons.get("C8") }
+            </div>
+            {st.x_element_input_shown && 
+              <>
+                <div className="x_element_panel horizontal_panel" >
+                  <TextField
+                    label="Custom element symbol"
+                    id={x_element_symbol_input}
+                    variant="outlined"
+                    error={x_element_error_string != null}
+                    helperText={x_element_error_string}
+                    style={{alignSelf: "center", flexGrow: "1"}}
+                  />
+                  <Button
+                  variant='contained'
+                  // className='x_element_submit_button'
+                  onClick={() => on_x_element_submit_button()}
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </>
+            }
+            <div /*id_="main_horizontal_container"*/ className="horizontal_panel">
+              <div /*id_="element_toolbar"*/ className="vertical_toolbar">
+              { tool_buttons.get("C") }
+              { tool_buttons.get("N") }
+              { tool_buttons.get("O") }
+              { tool_buttons.get("S") }
+              { tool_buttons.get("P") }
+              { tool_buttons.get("H") }
+              { tool_buttons.get("F") }
+              { tool_buttons.get("Cl") }
+              { tool_buttons.get("Br") }
+              { tool_buttons.get("I") }
+              { tool_buttons.get("X") }
+              </div>
+              <div 
+                className="editor_canvas_container"
+                onContextMenu={(e) => {e.preventDefault();}}
+                onMouseMove={(event) => {
+                  // console.log('Mousemove');
+                  lh.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
+                }}
+                onMouseDown={(event) => {
+                  if(event.button == 0) {
+                    //console.log('lclick');
+                    lh.on_left_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                  } else if(event.button == 2) {
+                    //console.log('rclick');
+                    lh.on_right_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                  }
+                }}
+                onMouseUp={(event) => {
+                  if(event.button == 0) {
+                    //console.log('lreleased');
+                    lh.on_left_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                  } else if(event.button == 2) {
+                    //console.log('rreleased');
+                    lh.on_right_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                  }
+                }}
+                onWheel={(event) => {
+                  lh.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
+                }}
+
+                // @ts-ignore
+                ref={svgRef}
+
+              >
+                <div className="pre_render_message">Lhasa not rendered.</div>
+              </div>
+              <div id={text_measurement_worker_div} className="text_measurement_worker_div">
+                {/* Ugly, I know */}
+              </div>
+            </div>
+            <div className="status_display_panel horizontal_panel">
+              <span>▶</span>
+              <span /*id_="status_display"*/>{ st.status_text }</span>
+            </div>
+            <div className="invalid_molecules_panel horizontal_panel">
+              <FormGroup>
+                <FormControlLabel 
+                  label="Allow Invalid Molecules" 
+                  control={<Switch />}
+                  // @ts-ignore
+                  onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
+                />
+              </FormGroup>
+            </div>
+            <div className="scale_panel vertical_panel">
+              <b>SCALE</b>
+              <Slider 
+                value={lh.get_scale()}
+                max={18}
+                min={0.1}
+                step={0.0001}
+                marks={[0.5,1,2]}
+                // todo: scale
+                // scale={(v) => Math.sqrt(v)}
+                // valueLabelDisplay="auto"
+                // valueLabelFormat={(v) => v.toFixed(2)}
+                onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale))}}
+              />
+              <div className="scale_display">
+                {st.scale.toFixed(2)}
+              </div>
+              {/* <div className="horizontal_toolbar">
+                <Button
+                  variant="outlined" 
+                  onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
+                >
+                  <b>-</b>
+                </Button>
+                <Button
+                  variant="outlined" 
+                  onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
+                >
+                  <b>+</b>
+                </Button>
+              </div> */}
+            </div>
+            <div /*id_="info_block"*/ className="horizontal_panel">
+              <div className="display_mode_panel vertical_panel">
+                <b>DISPLAY MODE</b>
+                <FormControl>
+                  <RadioGroup
+                    name="display_mode"
+                    defaultValue="standard"
+                    onChange={(_event, value) => switch_display_mode(value)}
+                  >
+                    <FormControlLabel 
+                      label="Standard"
+                      control={<Radio/>}
+                      value="standard"
+                    />
+                    <FormControlLabel 
+                      label="Atom Indices"
+                      control={<Radio/>}
+                      value="atom_indices"
+                    />
+                    <FormControlLabel 
+                      label="Atom Names"
+                      control={<Radio/>}
+                      value="atom_names"
+                    />
+                  </RadioGroup>
+                </FormControl>
+                <br/>
+              </div>
+              <div className="smiles_display_outer vertical_panel">
+                <b>SMILES</b>
+                <div className="smiles_display">
+                  {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
+                </div>
+              </div>
+            </div>
+            <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar">
+              <Button 
+                variant="outlined"
+                onClick={() => handler_map['Undo']()}
+               >
+                Undo
+              </Button>
+              <Button 
+                variant="outlined" 
+                onClick={() => handler_map['Redo']()}
+               >
+                Redo
+              </Button>
+              <div style={{"flexGrow": 1}} className="horizontal_toolbar">
+                {/* SMILES:  */}
+                <TextField
+                  label="SMILES"
+                  id={smiles_input}
+                  variant="outlined"
+                  error={smiles_error_string != null}
+                  helperText={smiles_error_string}
+                />
+                <Button 
+                  variant="contained" 
+                  onClick={() => on_smiles_import_button()} 
+                >
+                  Import SMILES
+                </Button>
+              </div>
+            </div>
+            {show_footer &&
+              <div className="lhasa_footer">
+                <i>Written by Jakub Smulski</i>
+              </div>
+            }
+          </div>
         </HotKeys>
       </ActiveToolContext.Provider>
     </>
