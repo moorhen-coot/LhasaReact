@@ -36,7 +36,8 @@ class LhasaComponentProps {
   show_top_panel?: boolean;
   show_footer?: boolean;
   icons_path_prefix?: string;
-  rdkit_molecule_pickle_map?: Map<string,Uint8Array>;
+  /// Base64-encoded pickles
+  rdkit_molecule_pickle_map?: Map<string, string>;
 }
 
 
