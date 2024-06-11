@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -732,6 +732,34 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 </div>
               </div>
             }
+            <div className="horizontal_toolbar">
+              <Button>
+                Options
+              </Button>
+              <Menu
+                open={true}
+              >
+                <MenuItem>
+                  Display Mode
+                </MenuItem>
+                <MenuItem>
+                  Allow invalid molecules
+                </MenuItem>
+              </Menu>
+              <Button>
+                Edit
+              </Button>
+              <Menu
+                open={true}
+              >
+                <MenuItem>
+                  Undo
+                </MenuItem>
+                <MenuItem>
+                  Redo
+                </MenuItem>
+              </Menu>
+            </div>
             <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">
               { tool_buttons.get("Move") }
               { tool_buttons.get("Rotate") }
