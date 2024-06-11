@@ -46,7 +46,8 @@ class LhasaComponentProps {
   show_top_panel?: boolean;
   show_footer?: boolean;
   icons_path_prefix?: string;
-  rdkit_molecule_pickle_map?: Map<string,Uint8Array>;
+  /// Base64-encoded pickles
+  rdkit_molecule_pickle_map?: Map<string, string>;
 }
 
 
@@ -373,7 +374,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
       if(rdkit_molecule_pickle_map !== undefined) {
         for(let entry of rdkit_molecule_pickle_map.entries()) {
           if(! st.appended_pickles.has(entry[0])) {
-            Lhasa.append_from_pickle(lh, entry[1]);
+            Lhasa.append_from_pickle_base64(lh, entry[1]);
             const new_appended_pickles = st.appended_pickles;
             new_appended_pickles.add(entry[0]);
             setSt(pst =>{
