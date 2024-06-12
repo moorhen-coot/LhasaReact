@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Divider, Popover } from '@mui/material';
+import { ArrowRight, Redo, Undo } from '@mui/icons-material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -457,8 +458,23 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
       case 'atom_indices':
         chLh(() => lh.set_display_mode(Lhasa.DisplayMode.AtomIndices));
         break;
+      case 'atom_names':
+        chLh(() => lh.set_display_mode(Lhasa.DisplayMode.AtomNames));
+        break;
     }
   };
+
+  function display_mode_to_value_name(value: Lhasa.DisplayMode) {
+    switch(value) {
+      default:
+      case Lhasa.DisplayMode.Standard:
+        return 'standard';
+      case Lhasa.DisplayMode.AtomIndices:
+        return 'atom_indices';
+      case Lhasa.DisplayMode.AtomNames:
+        return 'atom_names';
+    }
+  }
   
   const svgRef = useRef<Element>(null);
   // defers the callback to run after render, which is crucial for text measurement
@@ -718,6 +734,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   const optionOpened = Boolean(optionAnchorEl);
   const [displayModeAnchorEl, setDisplayModeAnchorEl] = useState<null | HTMLElement>(null);
   const displayModeOpened = Boolean(displayModeAnchorEl);
+  const [aimChecked, setAimChecked] = useState<boolean>(() => lh.get_allow_invalid_molecules());
 
   return (
     <>
@@ -754,9 +771,11 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 onClose={() => setEditAnchorEl(null)}
               >
                 <MenuItem onClick={() => handler_map["Undo"]()} >
+                  <Undo />
                   Undo
                 </MenuItem>
                 <MenuItem onClick={() => handler_map["Redo"]()} >
+                  <Redo />
                   Redo
                 </MenuItem>
               </Menu>
@@ -773,20 +792,43 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 anchorEl={optionAnchorEl}
                 onClose={() => setOptionAnchorEl(null)}
               >
-                <MenuItem onClick={(ev) => setDisplayModeAnchorEl(ev.currentTarget)}>
-                  Display Mode
+                <MenuItem>
+                  <FormGroup>
+                    <FormControlLabel 
+                      label="Allow Invalid Molecules" 
+                      control={<Switch />}
+                      checked={aimChecked}
+                      // @ts-ignore
+                      onChange={(_e) => {
+                        const new_val = !lh.get_allow_invalid_molecules();
+                        chLh(() => lh.set_allow_invalid_molecules(new_val));
+                        setAimChecked(new_val);
+                      }}
+                    />
+                  </FormGroup>
+                </MenuItem>
+                <MenuItem>
+                  <Button 
+                    variant='flat'
+                    endIcon={<ArrowRight/>}
+                    onMouseOver={(ev) => {if(!displayModeOpened) { setDisplayModeAnchorEl(ev.currentTarget)}}}
+                    onClick={(ev) => {if(!displayModeOpened) { setDisplayModeAnchorEl(ev.currentTarget)}}}
+                  >
+                    Display Mode
+                  </Button>
                 </MenuItem>
                 <Popover
                  open={displayModeOpened}
                  anchorEl={displayModeAnchorEl}
                  anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                  onClose={() => setDisplayModeAnchorEl(null)}
+                 onMouseLeave={(_ev) => setDisplayModeAnchorEl(null)}
                 >
                   <FormControl>
                     <RadioGroup
                       name="display_mode"
-                      defaultValue="standard"
                       onChange={(_event, value) => switch_display_mode(value)}
+                      value={display_mode_to_value_name(lh.get_display_mode())}
                     >
                       <FormControlLabel 
                         label="Standard"
@@ -806,16 +848,6 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                     </RadioGroup>
                   </FormControl>
                 </Popover>
-                <MenuItem>
-                  <FormGroup>
-                    <FormControlLabel 
-                      label="Allow Invalid Molecules" 
-                      control={<Switch />}
-                      // @ts-ignore
-                      onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
-                    />
-                  </FormGroup>
-                </MenuItem>
               </Menu>
             </div>
             <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">
