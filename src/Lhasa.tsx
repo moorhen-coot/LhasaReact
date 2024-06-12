@@ -807,22 +807,19 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                     />
                   </FormGroup>
                 </MenuItem>
-                <MenuItem>
-                  <Button 
-                    variant='flat'
-                    endIcon={<ArrowRight/>}
-                    onMouseOver={(ev) => {if(!displayModeOpened) { setDisplayModeAnchorEl(ev.currentTarget)}}}
+                <MenuItem
+                    // onMouseOver={(ev) => {if(!displayModeOpened) { setDisplayModeAnchorEl(ev.currentTarget)}}}
                     onClick={(ev) => {if(!displayModeOpened) { setDisplayModeAnchorEl(ev.currentTarget)}}}
-                  >
-                    Display Mode
-                  </Button>
+                >
+                    Display Mode...
+                    {/* <ArrowRight/> */}
                 </MenuItem>
                 <Popover
                  open={displayModeOpened}
                  anchorEl={displayModeAnchorEl}
                  anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                  onClose={() => setDisplayModeAnchorEl(null)}
-                 onMouseLeave={(_ev) => setDisplayModeAnchorEl(null)}
+                //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                 >
                   <FormControl>
                     <RadioGroup
