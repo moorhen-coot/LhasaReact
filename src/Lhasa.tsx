@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Divider } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Divider, Popover } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -776,9 +776,10 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 <MenuItem onClick={(ev) => setDisplayModeAnchorEl(ev.currentTarget)}>
                   Display Mode
                 </MenuItem>
-                <Menu
+                <Popover
                  open={displayModeOpened}
                  anchorEl={displayModeAnchorEl}
+                 anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                  onClose={() => setDisplayModeAnchorEl(null)}
                 >
                   <FormControl>
@@ -804,7 +805,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                       />
                     </RadioGroup>
                   </FormControl>
-                </Menu>
+                </Popover>
                 <MenuItem>
                   <FormGroup>
                     <FormControlLabel 
