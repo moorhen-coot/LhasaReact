@@ -57,11 +57,6 @@ $lhasa_font_size: small;
     margin-bottom: $lhasa_base_padding;
 }
 
-.smiles_display_outer {
-    margin-bottom: $lhasa_base_padding;
-    flex-grow: 1;
-}
-
 .x_element_panel {
     margin-bottom: $lhasa_base_padding;
     /* display: none; */
@@ -145,6 +140,7 @@ $lhasa_font_size: small;
 .smiles_display {
     padding: $lhasa_base_padding;
     font-family: monospace;
+    margin-bottom: $lhasa_base_padding * 2;
 }
 
 .scale_display {

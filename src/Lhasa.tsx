@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Divider } from '@mui/material';
 
 class ToolButtonProps {
   onclick: MouseEventHandler<HTMLDivElement> | undefined;
@@ -716,6 +716,8 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   const editOpened = Boolean(editAnchorEl);
   const [optionAnchorEl, setOptionAnchorEl] = useState<null | HTMLElement>(null);
   const optionOpened = Boolean(optionAnchorEl);
+  const [displayModeAnchorEl, setDisplayModeAnchorEl] = useState<null | HTMLElement>(null);
+  const displayModeOpened = Boolean(displayModeAnchorEl);
 
   return (
     <>
@@ -771,11 +773,47 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 anchorEl={optionAnchorEl}
                 onClose={() => setOptionAnchorEl(null)}
               >
-                <MenuItem>
+                <MenuItem onClick={(ev) => setDisplayModeAnchorEl(ev.currentTarget)}>
                   Display Mode
                 </MenuItem>
+                <Menu
+                 open={displayModeOpened}
+                 anchorEl={displayModeAnchorEl}
+                 onClose={() => setDisplayModeAnchorEl(null)}
+                >
+                  <FormControl>
+                    <RadioGroup
+                      name="display_mode"
+                      defaultValue="standard"
+                      onChange={(_event, value) => switch_display_mode(value)}
+                    >
+                      <FormControlLabel 
+                        label="Standard"
+                        control={<Radio/>}
+                        value="standard"
+                      />
+                      <FormControlLabel 
+                        label="Atom Indices"
+                        control={<Radio/>}
+                        value="atom_indices"
+                      />
+                      <FormControlLabel 
+                        label="Atom Names"
+                        control={<Radio/>}
+                        value="atom_names"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Menu>
                 <MenuItem>
-                  Allow invalid molecules
+                  <FormGroup>
+                    <FormControlLabel 
+                      label="Allow Invalid Molecules" 
+                      control={<Switch />}
+                      // @ts-ignore
+                      onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
+                    />
+                  </FormGroup>
                 </MenuItem>
               </Menu>
             </div>
@@ -882,16 +920,6 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
               <span>▶</span>
               <span /*id_="status_display"*/>{ st.status_text }</span>
             </div>
-            <div className="invalid_molecules_panel horizontal_panel">
-              <FormGroup>
-                <FormControlLabel 
-                  label="Allow Invalid Molecules" 
-                  control={<Switch />}
-                  // @ts-ignore
-                  onChange={(e) => chLh(() => lh.set_allow_invalid_molecules(e.target.checked))}
-                />
-              </FormGroup>
-            </div>
             <div className="scale_panel vertical_panel">
               <b>SCALE</b>
               <Slider 
@@ -924,58 +952,34 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 </Button>
               </div> */}
             </div>
-            <div /*id_="info_block"*/ className="horizontal_panel">
-              <div className="display_mode_panel vertical_panel">
-                <b>DISPLAY MODE</b>
-                <FormControl>
-                  <RadioGroup
-                    name="display_mode"
-                    defaultValue="standard"
-                    onChange={(_event, value) => switch_display_mode(value)}
-                  >
-                    <FormControlLabel 
-                      label="Standard"
-                      control={<Radio/>}
-                      value="standard"
-                    />
-                    <FormControlLabel 
-                      label="Atom Indices"
-                      control={<Radio/>}
-                      value="atom_indices"
-                    />
-                    <FormControlLabel 
-                      label="Atom Names"
-                      control={<Radio/>}
-                      value="atom_names"
-                    />
-                  </RadioGroup>
-                </FormControl>
-                <br/>
-              </div>
-              <div className="smiles_display_outer vertical_panel">
+            <Accordion>
+              <AccordionSummary>
                 <b>SMILES</b>
-                <div className="smiles_display">
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className="smiles_display vertical_panel">
                   {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
                 </div>
-              </div>
-            </div>
-            <div className="horizontal_toolbar">
-              {/* SMILES:  */}
-              <TextField
-                label="SMILES"
-                id={smiles_input}
-                variant="outlined"
-                error={smiles_error_string != null}
-                helperText={smiles_error_string}
-                style={{"flexGrow": 1}}
-              />
-              <Button 
-                variant="contained" 
-                onClick={() => on_smiles_import_button()} 
-              >
-                Import SMILES
-              </Button>
-            </div>
+                {/* <Divider /> */}
+                <div className="horizontal_toolbar">
+                  {/* SMILES:  */}
+                  <TextField
+                    label="SMILES"
+                    id={smiles_input}
+                    variant="outlined"
+                    error={smiles_error_string != null}
+                    helperText={smiles_error_string}
+                    style={{"flexGrow": 1}}
+                  />
+                  <Button 
+                    variant="contained" 
+                    onClick={() => on_smiles_import_button()} 
+                  >
+                    Import SMILES
+                  </Button>
+                </div>
+              </AccordionDetails>
+            </Accordion>
             {show_footer &&
               <div className="lhasa_footer">
                 <i>Written by Jakub Smulski</i>
