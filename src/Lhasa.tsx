@@ -712,6 +712,11 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
     return ret;
   }, [tool_button_data.current]);
 
+  const [editAnchorEl, setEditAnchorEl] = useState<null | HTMLElement>(null);
+  const editOpened = Boolean(editAnchorEl);
+  const [optionAnchorEl, setOptionAnchorEl] = useState<null | HTMLElement>(null);
+  const optionOpened = Boolean(optionAnchorEl);
+
   return (
     <>
       <ActiveToolContext.Provider value={st.active_tool_name}>
@@ -733,30 +738,44 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
               </div>
             }
             <div className="horizontal_toolbar">
-              <Button>
+              <Button 
+                // variant="contained"
+                disableElevation
+                onClick={(ev) => setEditAnchorEl(ev.currentTarget)}
+
+              >
+                Edit
+              </Button>
+              <Menu
+                open={editOpened}
+                anchorEl={editAnchorEl}
+                onClose={() => setEditAnchorEl(null)}
+              >
+                <MenuItem onClick={() => handler_map["Undo"]()} >
+                  Undo
+                </MenuItem>
+                <MenuItem onClick={() => handler_map["Redo"]()} >
+                  Redo
+                </MenuItem>
+              </Menu>
+              <Button 
+                // variant="contained"
+                disableElevation
+                onClick={(ev) => setOptionAnchorEl(ev.currentTarget)}
+
+              >
                 Options
               </Button>
               <Menu
-                open={true}
+                open={optionOpened}
+                anchorEl={optionAnchorEl}
+                onClose={() => setOptionAnchorEl(null)}
               >
                 <MenuItem>
                   Display Mode
                 </MenuItem>
                 <MenuItem>
                   Allow invalid molecules
-                </MenuItem>
-              </Menu>
-              <Button>
-                Edit
-              </Button>
-              <Menu
-                open={true}
-              >
-                <MenuItem>
-                  Undo
-                </MenuItem>
-                <MenuItem>
-                  Redo
                 </MenuItem>
               </Menu>
             </div>
@@ -940,35 +959,22 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 </div>
               </div>
             </div>
-            <div /*id_="bottom_toolbar"*/ className="horizontal_toolbar">
-              <Button 
+            <div className="horizontal_toolbar">
+              {/* SMILES:  */}
+              <TextField
+                label="SMILES"
+                id={smiles_input}
                 variant="outlined"
-                onClick={() => handler_map['Undo']()}
-               >
-                Undo
-              </Button>
+                error={smiles_error_string != null}
+                helperText={smiles_error_string}
+                style={{"flexGrow": 1}}
+              />
               <Button 
-                variant="outlined" 
-                onClick={() => handler_map['Redo']()}
-               >
-                Redo
+                variant="contained" 
+                onClick={() => on_smiles_import_button()} 
+              >
+                Import SMILES
               </Button>
-              <div style={{"flexGrow": 1}} className="horizontal_toolbar">
-                {/* SMILES:  */}
-                <TextField
-                  label="SMILES"
-                  id={smiles_input}
-                  variant="outlined"
-                  error={smiles_error_string != null}
-                  helperText={smiles_error_string}
-                />
-                <Button 
-                  variant="contained" 
-                  onClick={() => on_smiles_import_button()} 
-                >
-                  Import SMILES
-                </Button>
-              </div>
             </div>
             {show_footer &&
               <div className="lhasa_footer">
