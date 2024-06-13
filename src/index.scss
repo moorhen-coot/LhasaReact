@@ -144,7 +144,8 @@ $lhasa_font_size: small;
 }
 
 .scale_display {
-    padding: $lhasa_base_padding;
+    flex-grow: 1;
+    margin-left: $lhasa_base_padding * 4;
 }
 
 .status_display_panel {

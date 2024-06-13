@@ -951,7 +951,12 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
               <span /*id_="status_display"*/>{ st.status_text }</span>
             </div>
             <div className="scale_panel vertical_panel">
-              <b>SCALE</b>
+              <div className='horizontal_container'>
+                <b>SCALE</b>
+                <div className="scale_display">
+                  {st.scale.toFixed(2)}
+                </div>
+              </div>
               <Slider 
                 value={lh.get_scale()}
                 max={18}
@@ -964,9 +969,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 // valueLabelFormat={(v) => v.toFixed(2)}
                 onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale))}}
               />
-              <div className="scale_display">
-                {st.scale.toFixed(2)}
-              </div>
+             
               {/* <div className="horizontal_toolbar">
                 <Button
                   variant="outlined" 
