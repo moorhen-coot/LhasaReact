@@ -42,6 +42,11 @@ function ToolButton(props:ToolButtonProps) {
   )
 }
 
+// Parameters for scaling the slider
+// It's made so that leftmost edge is min_scale
+// rightmost edge is max_scale
+// and the value of 1 is in the middle
+
 const max_scale = 18;
 const min_scale = 0.1;
 const c_const = (min_scale*max_scale-1) / (min_scale+max_scale-2);
