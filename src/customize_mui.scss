@@ -1,5 +1,37 @@
 @import 'index.scss';
 
+@mixin normalize_text {
+    font-size: $lhasa_font_size;
+    line-height: normal;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+@mixin normalize_padding {
+    padding-right: $lhasa_base_padding;
+    padding-left: $lhasa_base_padding;
+    padding-top: $lhasa_padding_minor;
+    padding-bottom: $lhasa_padding_minor;
+}
+
 .MuiAccordion-root {
     background-color: $lhasa_background_color;
+}
+
+.MuiFormGroup-root {
+    margin-left: $lhasa_base_padding;
+}
+
+.MuiButtonBase-root {
+    @include normalize_text;
+    @include normalize_padding;
+}
+
+.MuiTypography-root {
+    @include normalize_text;
+}
+
+.MuiSwitch-thumb {
+    margin-left: $lhasa_base_padding;
+    margin-top: $lhasa_base_padding;
 }
