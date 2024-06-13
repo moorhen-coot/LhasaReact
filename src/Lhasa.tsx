@@ -42,6 +42,14 @@ function ToolButton(props:ToolButtonProps) {
   )
 }
 
+const max_scale = 18;
+const min_scale = 0.1;
+const c_const = (min_scale*max_scale-1) / (min_scale+max_scale-2);
+const d_bottom = (1 - max_scale) / (min_scale - 1);
+const d_top= (min_scale-1)**2 / (min_scale+max_scale-2);
+const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
+const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
+
 class LhasaComponentProps {
   Lhasa: MainModule | any;
   show_top_panel?: boolean;
@@ -736,6 +744,15 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   const displayModeOpened = Boolean(displayModeAnchorEl);
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.get_allow_invalid_molecules());
 
+
+  const scale_mapper = (x) => {
+    return theta_const ** (x + d_const) + c_const;
+  };
+
+  const reverse_scale_mapper = (f) => {
+    return Math.log(f - c_const) / Math.log(theta_const) - d_const;
+  };
+
   return (
     <>
       <ActiveToolContext.Provider value={st.active_tool_name}>
@@ -958,16 +975,15 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 </div>
               </div>
               <Slider 
-                value={lh.get_scale()}
-                max={18}
-                min={0.1}
+                value={reverse_scale_mapper(lh.get_scale())}
+                max={1}
+                min={0}
                 step={0.0001}
-                marks={[0.5,1,2]}
-                // todo: scale
-                // scale={(v) => Math.sqrt(v)}
+                // marks={[0.5,1,2]}
+                scale={scale_mapper}
                 // valueLabelDisplay="auto"
                 // valueLabelFormat={(v) => v.toFixed(2)}
-                onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale))}}
+                onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale_mapper(scale)))}}
               />
              
               {/* <div className="horizontal_toolbar">
