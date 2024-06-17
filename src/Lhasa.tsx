@@ -327,7 +327,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
   const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
 
-  const [lh, setLh] = useState(() => {
+  const setupLhasaCanvas = () => {
     const lh = new Lhasa.Canvas();
     lh.connect("queue_redraw", () => {
       const node = on_render(lh, text_measurement_worker_div);
@@ -384,7 +384,26 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
     //Lhasa.append_from_smiles(lh, "O=C(C)Oc1ccccc1C(=O)O");
 
     return lh;
-  });
+  };
+
+  let [lh, setLh] = useState(() => setupLhasaCanvas());
+
+  // // This unfortunately does not work
+  // if(lh === null) {
+  //   console.warn("Strict mode! Overriding null lh!");
+  //   lh = setupLhasaCanvas();
+  // }
+    
+  // // This unfortunately does not work
+  // useLayoutEffect(() => {
+  //   // This tries to prevent the memory leak
+  //   // upon component unmounting
+  //   return () => {
+  //     console.warn("Deleting stuff...");
+  //     lh.delete();
+  //     lh = null;
+  //   };
+  // }, []);
 
   useEffect(() => {
       if(rdkit_molecule_pickle_map !== undefined) {
@@ -403,15 +422,6 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
         }
       }
   }, [rdkit_molecule_pickle_map]);
-
-  // This unfortunately does not work
-  useLayoutEffect(() => {
-    // This tries to prevent the memory leak
-    // upon component unmounting
-    return () => {
-      lh.delete();
-    };
-  }, []);
 
 
   const chLh = (func: () => void) => {
