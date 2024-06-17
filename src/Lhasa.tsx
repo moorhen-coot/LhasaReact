@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import './index.scss';
 import './customize_mui.scss';
 import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Divider, Popover, StyledEngineProvider } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Divider, Popover, StyledEngineProvider, IconButton } from '@mui/material';
 import { ArrowRight, Redo, Undo } from '@mui/icons-material';
 
 class ToolButtonProps {
@@ -898,39 +898,36 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 { tool_buttons.get("C7") }
                 { tool_buttons.get("C8") }
                 <div className="scale_panel vertical_panel">
-                <div className='horizontal_container'>
-                  <b>SCALE</b>
-                  <div className="scale_display">
-                    {st.scale.toFixed(2)}
+                  <div className='horizontal_container'>
+                    <b>SCALE</b>
+                    <div className="scale_display">
+                      {st.scale.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="horizontal_panel" style={{border: "0px", padding: "0px"}}>
+                    <IconButton
+                      onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
+                    >
+                      <b>-</b>
+                    </IconButton>
+                    <Slider 
+                      value={reverse_scale_mapper(lh.get_scale())}
+                      max={1}
+                      min={0}
+                      step={0.0001}
+                      // marks={[0.5,1,2]}
+                      scale={scale_mapper}
+                      // valueLabelDisplay="auto"
+                      // valueLabelFormat={(v) => v.toFixed(2)}
+                      onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale_mapper(scale)))}}
+                    />
+                    <IconButton
+                      onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
+                    >
+                      <b>+</b>
+                    </IconButton>
                   </div>
                 </div>
-                <Slider 
-                  value={reverse_scale_mapper(lh.get_scale())}
-                  max={1}
-                  min={0}
-                  step={0.0001}
-                  // marks={[0.5,1,2]}
-                  scale={scale_mapper}
-                  // valueLabelDisplay="auto"
-                  // valueLabelFormat={(v) => v.toFixed(2)}
-                  onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale_mapper(scale)))}}
-                />
-              
-                {/* <div className="horizontal_toolbar">
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
-                  >
-                    <b>-</b>
-                  </Button>
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
-                  >
-                    <b>+</b>
-                  </Button>
-                </div> */}
-              </div>
               </div>
               {st.x_element_input_shown && 
                 <>
