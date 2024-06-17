@@ -394,14 +394,14 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   //   lh = setupLhasaCanvas();
   // }
     
-  // This unfortunately does not work
+  // This breaks StrictMode
   useLayoutEffect(() => {
-    // This tries to prevent the memory leak
+    // This prevents the memory leak
     // upon component unmounting
     return () => {
-      console.warn("At this point, LhasaCanvas would have been deleted. But it breaks StrictMode and so memory does not get freed. Memory leak!");
-      // lh.delete();
-      // lh = null;
+      console.warn("Cleaning up component unmount. Warning! StrictMode is not supported!!!");
+      lh.delete();
+      lh = null;
     };
   }, []);
 
