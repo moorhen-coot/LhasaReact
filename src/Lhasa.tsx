@@ -326,6 +326,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   });
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
   const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
+
   const [lh, setLh] = useState(() => {
     const lh = new Lhasa.Canvas();
     lh.connect("queue_redraw", () => {
@@ -404,13 +405,13 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   }, [rdkit_molecule_pickle_map]);
 
   // This unfortunately does not work
-  // useLayoutEffect(() => {
-  //   // This tries to prevent the memory leak
-  //   // upon component unmounting
-  //   return () => {
-  //     lh.delete();
-  //   };
-  // }, []);
+  useLayoutEffect(() => {
+    // This tries to prevent the memory leak
+    // upon component unmounting
+    return () => {
+      lh.delete();
+    };
+  }, []);
 
 
   const chLh = (func: () => void) => {
