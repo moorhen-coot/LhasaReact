@@ -26,6 +26,7 @@ function ToolButton(props:ToolButtonProps) {
           selected={active_tool_name == props.action_name}
           // @ts-ignore
           onChange={props.onclick}
+          value={'dummy'}
           // Doesn't work: autoCapitalize='false'
           style={{textTransform: 'none', padding: '0px'}}
         >
