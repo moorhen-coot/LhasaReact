@@ -21,6 +21,7 @@ function ToolButton(props:ToolButtonProps) {
   return (
     <ActiveToolContext.Consumer>
       {active_tool_name => (
+        // @ts-ignore
         <ToggleButton
           variant="outlined"
           selected={active_tool_name == props.action_name}
