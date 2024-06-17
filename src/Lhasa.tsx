@@ -490,6 +490,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
     }
   };
 
+  // @ts-ignore
   function display_mode_to_value_name(value: Lhasa.DisplayMode) {
     switch(value) {
       default:
