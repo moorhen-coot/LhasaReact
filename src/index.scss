@@ -50,8 +50,11 @@ $lhasa_font_size: small;
     padding: $lhasa_base_padding;
 }
 
-.invalid_molecules_panel, 
-.scale_panel,  
+.scale_panel {
+    flex-grow: 1;
+}
+
+.invalid_molecules_panel,   
 .display_mode_panel,
 .status_display_panel {
     margin-bottom: $lhasa_base_padding;

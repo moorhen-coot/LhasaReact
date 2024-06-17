@@ -48,8 +48,8 @@ function ToolButton(props:ToolButtonProps) {
 // rightmost edge is max_scale
 // and the value of 1 is in the middle
 
-const max_scale = 18;
-const min_scale = 0.1;
+const max_scale = 4;
+const min_scale = 0.4;
 const c_const = (min_scale*max_scale-1) / (min_scale+max_scale-2);
 const d_bottom = (1 - max_scale) / (min_scale - 1);
 const d_top= (min_scale-1)**2 / (min_scale+max_scale-2);
@@ -897,6 +897,40 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 { tool_buttons.get("Arom6") }
                 { tool_buttons.get("C7") }
                 { tool_buttons.get("C8") }
+                <div className="scale_panel vertical_panel">
+                <div className='horizontal_container'>
+                  <b>SCALE</b>
+                  <div className="scale_display">
+                    {st.scale.toFixed(2)}
+                  </div>
+                </div>
+                <Slider 
+                  value={reverse_scale_mapper(lh.get_scale())}
+                  max={1}
+                  min={0}
+                  step={0.0001}
+                  // marks={[0.5,1,2]}
+                  scale={scale_mapper}
+                  // valueLabelDisplay="auto"
+                  // valueLabelFormat={(v) => v.toFixed(2)}
+                  onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale_mapper(scale)))}}
+                />
+              
+                {/* <div className="horizontal_toolbar">
+                  <Button
+                    variant="outlined" 
+                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
+                  >
+                    <b>-</b>
+                  </Button>
+                  <Button
+                    variant="outlined" 
+                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
+                  >
+                    <b>+</b>
+                  </Button>
+                </div> */}
+              </div>
               </div>
               {st.x_element_input_shown && 
                 <>
@@ -975,40 +1009,6 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
               <div className="status_display_panel horizontal_panel">
                 <span>▶</span>
                 <span /*id_="status_display"*/>{ st.status_text }</span>
-              </div>
-              <div className="scale_panel vertical_panel">
-                <div className='horizontal_container'>
-                  <b>SCALE</b>
-                  <div className="scale_display">
-                    {st.scale.toFixed(2)}
-                  </div>
-                </div>
-                <Slider 
-                  value={reverse_scale_mapper(lh.get_scale())}
-                  max={1}
-                  min={0}
-                  step={0.0001}
-                  // marks={[0.5,1,2]}
-                  scale={scale_mapper}
-                  // valueLabelDisplay="auto"
-                  // valueLabelFormat={(v) => v.toFixed(2)}
-                  onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale_mapper(scale)))}}
-                />
-              
-                {/* <div className="horizontal_toolbar">
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
-                  >
-                    <b>-</b>
-                  </Button>
-                  <Button
-                    variant="outlined" 
-                    onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
-                  >
-                    <b>+</b>
-                  </Button>
-                </div> */}
               </div>
               <Accordion>
                 <AccordionSummary>
