@@ -65,10 +65,22 @@ class LhasaComponentProps {
   icons_path_prefix?: string;
   /// Base64-encoded pickles
   rdkit_molecule_pickle_map?: Map<string, string>;
+  /// When Lhasa is embedded, what is it embedded in?
+  name_of_host_program?: string;
+  /// TODO: Consistent IDs
+  smiles_callback?: (id: string, smiles: string) => void;
 }
 
 
-export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = true, icons_path_prefix = '', rdkit_molecule_pickle_map} : LhasaComponentProps) {
+export function LhasaComponent({
+  Lhasa, 
+  show_top_panel = false, 
+  show_footer = true, 
+  icons_path_prefix = '', 
+  rdkit_molecule_pickle_map,
+  name_of_host_program = 'Moorhen',
+  smiles_callback
+} : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
@@ -1030,7 +1042,10 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                 </AccordionSummary>
                 <AccordionDetails>
                   <div className="smiles_display vertical_panel">
-                    {st.smiles.map(smiles => <div key={smiles}>{smiles}</div>)}
+                    {st.smiles.map((smiles, idx) => <div key={smiles} className='horizontal_container'>
+                      {smiles_callback && <Button variant="contained" onClick={() => smiles_callback(idx.toString(), smiles)}>Send to {name_of_host_program}</Button>}
+                      {smiles}
+                      </div>)}
                   </div>
                   {/* <Divider /> */}
                   <div className="horizontal_toolbar">
