@@ -394,16 +394,16 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
   //   lh = setupLhasaCanvas();
   // }
     
-  // // This unfortunately does not work
-  // useLayoutEffect(() => {
-  //   // This tries to prevent the memory leak
-  //   // upon component unmounting
-  //   return () => {
-  //     console.warn("Deleting stuff...");
-  //     lh.delete();
-  //     lh = null;
-  //   };
-  // }, []);
+  // This unfortunately does not work
+  useLayoutEffect(() => {
+    // This tries to prevent the memory leak
+    // upon component unmounting
+    return () => {
+      console.warn("At this point, LhasaCanvas would have been deleted. But it breaks StrictMode and so memory does not get freed. Memory leak!");
+      // lh.delete();
+      // lh = null;
+    };
+  }, []);
 
   useEffect(() => {
       if(rdkit_molecule_pickle_map !== undefined) {
@@ -501,10 +501,13 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
     }
   }
   
+  // From what I understand, this becomes non-null
+  // after the first render at which point it
+  // should point to the "editor_canvas_container" div.
   const svgRef = useRef<Element>(null);
   // defers the callback to run after render, which is crucial for text measurement
   // to work after the first render (we need to render it again after the first render)
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     if(svgRef.current && st.svg_node) {
       svgRef.current.replaceChildren(st.svg_node);
       if(st.first_render === true) {
