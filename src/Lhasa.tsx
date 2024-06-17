@@ -764,7 +764,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
       <ActiveToolContext.Provider value={st.active_tool_name}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
-            <div className="lhasa_editor">
+            <div className="lhasa_editor LhasaMuiStyling">
               {show_top_panel &&
                 <div className="horizontal_container">
                   <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
@@ -785,7 +785,6 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                   // variant="contained"
                   disableElevation
                   onClick={(ev) => setEditAnchorEl(ev.currentTarget)}
-
                 >
                   Edit
                 </Button>
@@ -793,6 +792,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                   open={editOpened}
                   anchorEl={editAnchorEl}
                   onClose={() => setEditAnchorEl(null)}
+                  className="LhasaMuiStyling"
                 >
                   <MenuItem onClick={() => handler_map["Undo"]()} >
                     <Undo />
@@ -815,6 +815,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                   open={optionOpened}
                   anchorEl={optionAnchorEl}
                   onClose={() => setOptionAnchorEl(null)}
+                  className="LhasaMuiStyling"
                 >
                   <MenuItem>
                     <FormGroup>
@@ -843,6 +844,7 @@ export function LhasaComponent({Lhasa, show_top_panel = false, show_footer = tru
                   anchorEl={displayModeAnchorEl}
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                   onClose={() => setDisplayModeAnchorEl(null)}
+                  className="LhasaMuiStyling"
                   //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                   >
                     <FormControl>

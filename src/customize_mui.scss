@@ -14,24 +14,29 @@
     padding-bottom: $lhasa_padding_minor;
 }
 
-.MuiAccordion-root {
+// This is a dummy
+.LhasaMuiStyling {
+    text-align: left;
+}
+
+.LhasaMuiStyling .MuiAccordion-root {
     background-color: $lhasa_background_color;
 }
 
-.MuiFormGroup-root {
+.LhasaMuiStyling .MuiFormGroup-root {
     margin-left: $lhasa_base_padding;
 }
 
-.MuiButtonBase-root {
+.LhasaMuiStyling .MuiButtonBase-root {
     @include normalize_text;
     @include normalize_padding;
 }
 
-.MuiTypography-root {
+.LhasaMuiStyling .MuiTypography-root {
     @include normalize_text;
 }
 
-.MuiSwitch-thumb {
+.LhasaMuiStyling .MuiSwitch-thumb {
     margin-left: $lhasa_base_padding;
     margin-top: $lhasa_base_padding;
 }
