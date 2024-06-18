@@ -400,22 +400,18 @@ export function LhasaComponent({
     return lh;
   };
 
-  let [lh, setLh] = useState(() => setupLhasaCanvas());
+  const lh = useRef<any>(null);
 
-  // // This unfortunately does not work
-  // if(lh === null) {
-  //   console.warn("Strict mode! Overriding null lh!");
-  //   lh = setupLhasaCanvas();
-  // }
-    
-  // This breaks StrictMode
-  useLayoutEffect(() => {
-    // This prevents the memory leak
-    // upon component unmounting
+  useEffect(() => {
+    if (lh.current === null || lh.current?.isDeleted()) {
+      console.log("Setting up LhasaCanvas.");
+      lh.current = setupLhasaCanvas();
+    }
     return () => {
-      console.warn("Cleaning up component unmount. Warning! StrictMode is not supported!!!");
-      lh.delete();
-      lh = null;
+      if (lh.current !== null && !lh.current?.isDeleted()) {
+        console.warn("Cleaning up component unmount. Warning! StrictMode is not supported!!!");
+        lh.current?.delete();
+      }
     };
   }, []);
 
@@ -423,7 +419,7 @@ export function LhasaComponent({
       if(rdkit_molecule_pickle_map !== undefined) {
         for(let entry of rdkit_molecule_pickle_map.entries()) {
           if(! st.appended_pickles.has(entry[0])) {
-            Lhasa.append_from_pickle_base64(lh, entry[1]);
+            Lhasa.append_from_pickle_base64(lh.current, entry[1]);
             const new_appended_pickles = st.appended_pickles;
             new_appended_pickles.add(entry[0]);
             setSt(pst =>{
@@ -437,15 +433,8 @@ export function LhasaComponent({
       }
   }, [rdkit_molecule_pickle_map]);
 
-
-  const chLh = (func: () => void) => {
-    func();
-    // This probably does nothing
-    setLh(lh);
-  };
-
   function switch_tool(tool : any) {
-    chLh(() => lh.set_active_tool(Lhasa.make_active_tool(tool)));
+    lh.current?.set_active_tool(Lhasa.make_active_tool(tool));
   };
 
   function on_x_element_button() {
@@ -459,15 +448,13 @@ export function LhasaComponent({
 
   function on_smiles_import_button() {
       const smiles_input_el = document.getElementById(smiles_input) as HTMLInputElement;
-      chLh(() => {
-        try {
-          Lhasa.append_from_smiles(lh, smiles_input_el.value);
-          setSmilesErrorString(null);
-        } catch(err) {
-          console.warn("Could not import molecule from SMILES: ", err);
-          setSmilesErrorString("Could not load import molecule from SMILES. Is your SMILES valid?");
-        }
-      });
+      try {
+        Lhasa.append_from_smiles(lh.current, smiles_input_el.value);
+        setSmilesErrorString(null);
+      } catch(err) {
+        console.warn("Could not import molecule from SMILES: ", err);
+        setSmilesErrorString("Could not load import molecule from SMILES. Is your SMILES valid?");
+      }
   }
 
   function on_x_element_submit_button() {
@@ -492,13 +479,13 @@ export function LhasaComponent({
     switch(value) {
       default:
       case 'standard':
-        chLh(() => lh.set_display_mode(Lhasa.DisplayMode.Standard));
+        lh.current?.set_display_mode(Lhasa.DisplayMode.Standard);
         break;
       case 'atom_indices':
-        chLh(() => lh.set_display_mode(Lhasa.DisplayMode.AtomIndices));
+        lh.current?.set_display_mode(Lhasa.DisplayMode.AtomIndices);
         break;
       case 'atom_names':
-        chLh(() => lh.set_display_mode(Lhasa.DisplayMode.AtomNames));
+        lh.current?.set_display_mode(Lhasa.DisplayMode.AtomNames);
         break;
     }
   };
@@ -529,7 +516,7 @@ export function LhasaComponent({
         setSt(pst => {
           return {
             ...pst,
-            svg_node: on_render(lh, text_measurement_worker_div),
+            svg_node: on_render(lh.current, text_measurement_worker_div),
             first_render: false
           }
         });
@@ -739,8 +726,8 @@ export function LhasaComponent({
         .map(([k,v]) => [k, wrap_handler(k,v["raw_handler"])])
     );
     // Those are not tool buttons. We handle them manually.
-    ret['Undo'] = () => chLh(() => lh.undo_edition());
-    ret['Redo'] = () => chLh(() => lh.redo_edition());
+    ret['Undo'] = () => lh.current?.undo_edition();
+    ret['Redo'] = () => lh.current?.redo_edition();
     return ret;
   }, [tool_button_data.current]);
 
@@ -777,7 +764,7 @@ export function LhasaComponent({
   const optionOpened = Boolean(optionAnchorEl);
   const [displayModeAnchorEl, setDisplayModeAnchorEl] = useState<null | HTMLElement>(null);
   const displayModeOpened = Boolean(displayModeAnchorEl);
-  const [aimChecked, setAimChecked] = useState<boolean>(() => lh.get_allow_invalid_molecules());
+  const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
 
 
   const scale_mapper = (x) => {
@@ -854,8 +841,8 @@ export function LhasaComponent({
                         checked={aimChecked}
                         // @ts-ignore
                         onChange={(_e) => {
-                          const new_val = !lh.get_allow_invalid_molecules();
-                          chLh(() => lh.set_allow_invalid_molecules(new_val));
+                          const new_val = !lh.current?.get_allow_invalid_molecules();
+                          lh.current?.set_allow_invalid_molecules(new_val);
                           setAimChecked(new_val);
                         }}
                       />
@@ -880,7 +867,7 @@ export function LhasaComponent({
                       <RadioGroup
                         name="display_mode"
                         onChange={(_event, value) => switch_display_mode(value)}
-                        value={display_mode_to_value_name(lh.get_display_mode())}
+                        value={display_mode_to_value_name(lh.current?.get_display_mode())}
                       >
                         <FormControlLabel 
                           label="Standard"
@@ -935,12 +922,12 @@ export function LhasaComponent({
                   </div>
                   <div className="horizontal_panel" style={{border: "0px", padding: "0px"}}>
                     <IconButton
-                      onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s-0.05);})}
+                      onClick={() => {const s = lh.current?.get_scale(); lh.current?.set_scale(s-0.05);}}
                     >
                       <b>-</b>
                     </IconButton>
                     <Slider 
-                      value={reverse_scale_mapper(lh.get_scale())}
+                      value={reverse_scale_mapper(lh.current?.get_scale())}
                       max={1}
                       min={0}
                       step={0.0001}
@@ -948,10 +935,10 @@ export function LhasaComponent({
                       scale={scale_mapper}
                       // valueLabelDisplay="auto"
                       // valueLabelFormat={(v) => v.toFixed(2)}
-                      onChange={(_ev, scale)=>{chLh(() => lh.set_scale(scale_mapper(scale)))}}
+                      onChange={(_ev, scale)=>{ lh.current?.set_scale(scale_mapper(scale))}}
                     />
                     <IconButton
-                      onClick={() => chLh(() => {const s = lh.get_scale(); lh.set_scale(s+0.05);})}
+                      onClick={() => {const s = lh.current?.get_scale(); lh.current?.set_scale(s+0.05);}}
                     >
                       <b>+</b>
                     </IconButton>
@@ -998,28 +985,28 @@ export function LhasaComponent({
                   onContextMenu={(e) => {e.preventDefault();}}
                   onMouseMove={(event) => {
                     // console.log('Mousemove');
-                    lh.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
+                    lh.current?.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
                   }}
                   onMouseDown={(event) => {
                     if(event.button == 0) {
                       //console.log('lclick');
-                      lh.on_left_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                      lh.current?.on_left_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
                     } else if(event.button == 2) {
                       //console.log('rclick');
-                      lh.on_right_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                      lh.current?.on_right_click(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
                     }
                   }}
                   onMouseUp={(event) => {
                     if(event.button == 0) {
                       //console.log('lreleased');
-                      lh.on_left_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                      lh.current?.on_left_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
                     } else if(event.button == 2) {
                       //console.log('rreleased');
-                      lh.on_right_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
+                      lh.current?.on_right_click_released(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey, event.shiftKey);
                     }
                   }}
                   onWheel={(event) => {
-                    lh.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
+                    lh.current?.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
                   }}
 
                   // @ts-ignore
