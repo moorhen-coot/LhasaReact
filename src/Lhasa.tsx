@@ -832,7 +832,6 @@ export function LhasaComponent({
                         label="Allow Invalid Molecules" 
                         control={<Switch />}
                         checked={aimChecked}
-                        // @ts-ignore
                         onChange={(_e) => {
                           const new_val = !lh.current?.get_allow_invalid_molecules();
                           lh.current?.set_allow_invalid_molecules(new_val);
