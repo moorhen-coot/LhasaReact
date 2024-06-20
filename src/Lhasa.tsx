@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo, useLayoutEffect } from 'react'
+import { useEffect, useId, useRef, useState, createContext, useMemo, useLayoutEffect } from 'react'
 import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
@@ -8,7 +8,7 @@ import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl,
 import { Redo, Undo } from '@mui/icons-material';
 
 class ToolButtonProps {
-  onclick: MouseEventHandler<HTMLDivElement> | undefined;
+  onclick?: () => void;
   action_name: string | undefined;
   caption: string | undefined;
   icon: string | undefined | null;
@@ -21,11 +21,8 @@ function ToolButton(props:ToolButtonProps) {
   return (
     <ActiveToolContext.Consumer>
       {active_tool_name => (
-        // @ts-ignore
         <ToggleButton
-          variant="outlined"
           selected={active_tool_name == props.action_name}
-          // @ts-ignore
           onChange={props.onclick}
           value={'dummy'}
           // Doesn't work: autoCapitalize='false'
