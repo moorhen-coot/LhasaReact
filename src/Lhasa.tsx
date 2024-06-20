@@ -1,14 +1,14 @@
-import { MouseEventHandler, useEffect, useId, useRef, useState, createContext, useMemo, useLayoutEffect } from 'react'
+import { useEffect, useId, useRef, useState, createContext, useMemo, useLayoutEffect } from 'react'
 import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, MainModule } from './lhasa';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Divider, Popover, StyledEngineProvider, IconButton } from '@mui/material';
-import { ArrowRight, Redo, Undo } from '@mui/icons-material';
+import { Canvas, Color, DisplayMode, MainModule } from './types';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton } from '@mui/material';
+import { Redo, Undo } from '@mui/icons-material';
 
 class ToolButtonProps {
-  onclick: MouseEventHandler<HTMLDivElement> | undefined;
+  onclick?: () => void;
   action_name: string | undefined;
   caption: string | undefined;
   icon: string | undefined | null;
@@ -21,11 +21,8 @@ function ToolButton(props:ToolButtonProps) {
   return (
     <ActiveToolContext.Consumer>
       {active_tool_name => (
-        // @ts-ignore
         <ToggleButton
-          variant="outlined"
           selected={active_tool_name == props.action_name}
-          // @ts-ignore
           onChange={props.onclick}
           value={'dummy'}
           // Doesn't work: autoCapitalize='false'
@@ -489,8 +486,7 @@ export function LhasaComponent({
     }
   };
 
-  // @ts-ignore
-  function display_mode_to_value_name(value: Lhasa.DisplayMode) {
+  function display_mode_to_value_name(value: DisplayMode) {
     switch(value) {
       default:
       case Lhasa.DisplayMode.Standard:
@@ -505,7 +501,7 @@ export function LhasaComponent({
   // From what I understand, this becomes non-null
   // after the first render at which point it
   // should point to the "editor_canvas_container" div.
-  const svgRef = useRef<Element>(null);
+  const svgRef = useRef<HTMLDivElement>(null);
   // defers the callback to run after render, which is crucial for text measurement
   // to work after the first render (we need to render it again after the first render)
   useLayoutEffect(()=>{
@@ -523,7 +519,6 @@ export function LhasaComponent({
     }
   },[st]);
 
-  // @ts-ignore
   const tool_button_data = useRef({
     Move: { 
       caption:"Move",
@@ -642,67 +637,67 @@ export function LhasaComponent({
     C: { 
       caption:"C",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.C)),
-      // icon:"",
+      icon: null,
       hotkey:"c"
     },
     N: { 
       caption:"N",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.N)),
-      // icon:"",
+      icon: null,
       hotkey:"n"
     },
     O: { 
       caption:"O",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.O)),
-      // icon:"",
+      icon: null,
       hotkey:"o"
     },
     S: { 
       caption:"S",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.S)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+s"
     },
     P: { 
       caption:"P",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.P)),
-      // icon:"",
+      icon: null,
       hotkey:"p"
     },
     H: { 
       caption:"H",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.H)),
-      // icon:"",
+      icon: null,
       hotkey:"h"
     },
     F: { 
       caption:"F",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.F)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+i"
     },
     Cl: { 
       caption:"Cl",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Cl)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+c"
     },
     Br: { 
       caption:"Br",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Br)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+b"
     },
     I: { 
       caption:"I",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.I)),
-      // icon:"",
+      icon: null,
       hotkey:"i"
     },
     X: { 
       caption:"X",
       raw_handler:() => on_x_element_button(),
-      // icon:"",
+      icon: null,
       hotkey:"x"
     }
   });
@@ -736,8 +731,7 @@ export function LhasaComponent({
       m_tool_buttons.set(k, ToolButton({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
-        // @ts-ignore
-        icon: v.icon ?? null,
+        icon: v.icon,
         action_name: k
       }));
     }
@@ -838,7 +832,6 @@ export function LhasaComponent({
                         label="Allow Invalid Molecules" 
                         control={<Switch />}
                         checked={aimChecked}
-                        // @ts-ignore
                         onChange={(_e) => {
                           const new_val = !lh.current?.get_allow_invalid_molecules();
                           lh.current?.set_allow_invalid_molecules(new_val);
@@ -1008,7 +1001,6 @@ export function LhasaComponent({
                     lh.current?.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
                   }}
 
-                  // @ts-ignore
                   ref={svgRef}
 
                 >
