@@ -44,6 +44,10 @@ export interface PathElementVector {
   delete(): void;
 }
 
+export interface TextMeasurementCache {
+  delete(): void;
+}
+
 export interface Renderer {
   get_commands(): DrawingCommandVector;
   delete(): void;
@@ -272,7 +276,8 @@ interface EmbindModule {
   DisplayMode: {Standard: DisplayModeValue<0>, AtomIndices: DisplayModeValue<1>, AtomNames: DisplayModeValue<2>};
   DrawingCommandVector: {new(): DrawingCommandVector};
   PathElementVector: {new(): PathElementVector};
-  Renderer: {new(_0: any): Renderer};
+  TextMeasurementCache: {new(): TextMeasurementCache};
+  Renderer: {new(_0: any): Renderer; new(_0: any, _1: TextMeasurementCache): Renderer};
   PathElement: {};
   Path: {};
   TextPositioning: {Normal: TextPositioningValue<0>, Sub: TextPositioningValue<1>, Super: TextPositioningValue<2>};
