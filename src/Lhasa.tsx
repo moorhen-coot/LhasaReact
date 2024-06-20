@@ -35,7 +35,6 @@ function ToolButton(props:ToolButtonProps) {
           {props.icon &&
             <>
               <img src={props.icon} className="lhasa_icon" />
-              <br />
             </>}
           {props.caption}
           </div>
