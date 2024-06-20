@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, MainModule } from './types';
+import { Canvas, Color, DisplayMode, MainModule } from './types';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
 
@@ -486,8 +486,7 @@ export function LhasaComponent({
     }
   };
 
-  // @ts-ignore
-  function display_mode_to_value_name(value: Lhasa.DisplayMode) {
+  function display_mode_to_value_name(value: DisplayMode) {
     switch(value) {
       default:
       case Lhasa.DisplayMode.Standard:
