@@ -501,7 +501,7 @@ export function LhasaComponent({
   // From what I understand, this becomes non-null
   // after the first render at which point it
   // should point to the "editor_canvas_container" div.
-  const svgRef = useRef<Element>(null);
+  const svgRef = useRef<HTMLDivElement>(null);
   // defers the callback to run after render, which is crucial for text measurement
   // to work after the first render (we need to render it again after the first render)
   useLayoutEffect(()=>{
@@ -1001,7 +1001,6 @@ export function LhasaComponent({
                     lh.current?.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
                   }}
 
-                  // @ts-ignore
                   ref={svgRef}
 
                 >
