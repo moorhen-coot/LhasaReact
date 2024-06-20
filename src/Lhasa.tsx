@@ -408,7 +408,7 @@ export function LhasaComponent({
     }
     return () => {
       if (lh.current !== null && !lh.current?.isDeleted()) {
-        console.warn("Cleaning up component unmount. Warning! StrictMode is not supported!!!");
+        console.warn("Cleaning up component upon unmounting.");
         lh.current?.delete();
       }
     };
