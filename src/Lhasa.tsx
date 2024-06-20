@@ -519,7 +519,6 @@ export function LhasaComponent({
     }
   },[st]);
 
-  // @ts-ignore
   const tool_button_data = useRef({
     Move: { 
       caption:"Move",
@@ -638,67 +637,67 @@ export function LhasaComponent({
     C: { 
       caption:"C",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.C)),
-      // icon:"",
+      icon: null,
       hotkey:"c"
     },
     N: { 
       caption:"N",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.N)),
-      // icon:"",
+      icon: null,
       hotkey:"n"
     },
     O: { 
       caption:"O",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.O)),
-      // icon:"",
+      icon: null,
       hotkey:"o"
     },
     S: { 
       caption:"S",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.S)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+s"
     },
     P: { 
       caption:"P",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.P)),
-      // icon:"",
+      icon: null,
       hotkey:"p"
     },
     H: { 
       caption:"H",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.H)),
-      // icon:"",
+      icon: null,
       hotkey:"h"
     },
     F: { 
       caption:"F",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.F)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+i"
     },
     Cl: { 
       caption:"Cl",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Cl)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+c"
     },
     Br: { 
       caption:"Br",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Br)),
-      // icon:"",
+      icon: null,
       hotkey:"alt+b"
     },
     I: { 
       caption:"I",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.I)),
-      // icon:"",
+      icon: null,
       hotkey:"i"
     },
     X: { 
       caption:"X",
       raw_handler:() => on_x_element_button(),
-      // icon:"",
+      icon: null,
       hotkey:"x"
     }
   });
@@ -732,8 +731,7 @@ export function LhasaComponent({
       m_tool_buttons.set(k, ToolButton({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
-        // @ts-ignore
-        icon: v.icon ?? null,
+        icon: v.icon,
         action_name: k
       }));
     }
