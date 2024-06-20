@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, DisplayMode, MainModule } from './types';
+import { Canvas, Color, DisplayMode, MainModule, TextMeasurementCache } from './types';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
 
@@ -77,7 +77,7 @@ export function LhasaComponent({
   name_of_host_program = 'Moorhen',
   smiles_callback
 } : LhasaComponentProps) {
-  function on_render(lh: Canvas, text_measurement_worker_div: string) {
+  function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
   
     const css_color_from_lhasa_color = (lhasa_color: Color) => {
@@ -181,7 +181,7 @@ export function LhasaComponent({
       }
       
     };
-    const ren = new Lhasa.Renderer(text_measure_function);
+    const ren = new Lhasa.Renderer(text_measure_function, text_measurement_cache);
     lh.render(ren);
     const commands = ren.get_commands();
     const get_width = () => {
@@ -337,10 +337,10 @@ export function LhasaComponent({
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
   const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
 
-  const setupLhasaCanvas = () => {
+  const setupLhasaCanvas = (tmc: TextMeasurementCache) => {
     const lh = new Lhasa.Canvas();
     lh.connect("queue_redraw", () => {
-      const node = on_render(lh, text_measurement_worker_div);
+      const node = on_render(lh, tmc, text_measurement_worker_div);
       setSt(pst =>{
           return {
           ...pst,
@@ -397,16 +397,26 @@ export function LhasaComponent({
   };
 
   const lh = useRef<any>(null);
+  // Text measurement cache
+  const tmc = useRef<any>(null);
 
   useEffect(() => {
+    if (tmc.current === null || tmc.current?.isDeleted()) {
+      console.log("Creating text measurement cache.");
+      tmc.current = new Lhasa.TextMeasurementCache();
+    }
     if (lh.current === null || lh.current?.isDeleted()) {
       console.log("Setting up LhasaCanvas.");
-      lh.current = setupLhasaCanvas();
+      lh.current = setupLhasaCanvas(tmc.current);
     }
     return () => {
       if (lh.current !== null && !lh.current?.isDeleted()) {
         console.warn("Cleaning up component upon unmounting.");
         lh.current?.delete();
+      }
+      if (tmc.current !== null && !tmc.current?.isDeleted()) {
+        console.warn("Deletnig text measurement cache.");
+        tmc.current?.delete();
       }
     };
   }, []);
@@ -511,7 +521,7 @@ export function LhasaComponent({
         setSt(pst => {
           return {
             ...pst,
-            svg_node: on_render(lh.current, text_measurement_worker_div),
+            svg_node: on_render(lh.current, tmc.current, text_measurement_worker_div),
             first_render: false
           }
         });
