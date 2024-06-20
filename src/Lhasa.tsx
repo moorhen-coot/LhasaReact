@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, MainModule } from './lhasa';
+import { Canvas, Color, MainModule } from './types';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
 
