@@ -64,7 +64,7 @@ class LhasaComponentProps {
   /// When Lhasa is embedded, what is it embedded in?
   name_of_host_program?: string;
   /// TODO: Consistent IDs
-  smiles_callback?: (internal_id: string, id_from_prop: string | null, smiles: string) => void;
+  smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
 }
 
 
