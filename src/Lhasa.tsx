@@ -331,7 +331,9 @@ export function LhasaComponent({
       status_text: '',
       x_element_input_shown: false,
       active_tool_name: '',
-      appended_pickles: new Set<string>()
+      appended_pickles: new Set<string>(),
+      // Assigns internal molecule IDs to external pickle IDs as given by rdkit_molecule_pickle_map
+      canvas_ids_to_prop_ids: new Map<number, string>()
     };
   });
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
@@ -429,14 +431,22 @@ export function LhasaComponent({
   useEffect(() => {
       if(rdkit_molecule_pickle_map !== undefined) {
         for(let entry of rdkit_molecule_pickle_map.entries()) {
-          if(! st.appended_pickles.has(entry[0])) {
-            Lhasa.append_from_pickle_base64(lh.current, entry[1]);
+          const external_id = entry[0];
+          const pickle = entry[1];
+          if(! st.appended_pickles.has(external_id)) {
+            const internal_id = Lhasa.append_from_pickle_base64(lh.current, pickle);
+
             const new_appended_pickles = st.appended_pickles;
-            new_appended_pickles.add(entry[0]);
+            new_appended_pickles.add(external_id);
+
+            const new_canvas_ids_to_prop_ids = st.canvas_ids_to_prop_ids;
+            new_canvas_ids_to_prop_ids.set(internal_id, external_id);
+
             setSt(pst =>{
                 return {
                 ...pst,
-                appended_pickles: new_appended_pickles
+                appended_pickles: new_appended_pickles,
+                canvas_ids_to_prop_ids: new_canvas_ids_to_prop_ids
               };
             });
           }
@@ -1036,7 +1046,14 @@ export function LhasaComponent({
                 <AccordionDetails>
                   <div className="smiles_display vertical_panel">
                     {st.smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
-                      {smiles_callback && <Button variant="contained" onClick={() => smiles_callback(smiles_tuple[0].toString(), null, smiles_tuple[1])}>Send to {name_of_host_program}</Button>}
+                      {smiles_callback && <Button variant="contained" onClick={() => {
+                        const lookup_result = st.canvas_ids_to_prop_ids.get(smiles_tuple[0]);
+                        let external_id = null;
+                        if(lookup_result !== undefined) {
+                          external_id = lookup_result;
+                        }
+                        smiles_callback(smiles_tuple[0], external_id, smiles_tuple[1])
+                      }}>Send to {name_of_host_program}</Button>}
                       {smiles_tuple[1]}
                       </div>)}
                   </div>
