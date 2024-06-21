@@ -64,7 +64,7 @@ class LhasaComponentProps {
   /// When Lhasa is embedded, what is it embedded in?
   name_of_host_program?: string;
   /// TODO: Consistent IDs
-  smiles_callback?: (id: string, smiles: string) => void;
+  smiles_callback?: (internal_id: string, id_from_prop: string | null, smiles: string) => void;
 }
 
 
@@ -1036,7 +1036,7 @@ export function LhasaComponent({
                 <AccordionDetails>
                   <div className="smiles_display vertical_panel">
                     {st.smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
-                      {smiles_callback && <Button variant="contained" onClick={() => smiles_callback(smiles_tuple[0].toString(), smiles_tuple[1])}>Send to {name_of_host_program}</Button>}
+                      {smiles_callback && <Button variant="contained" onClick={() => smiles_callback(smiles_tuple[0].toString(), null, smiles_tuple[1])}>Send to {name_of_host_program}</Button>}
                       {smiles_tuple[1]}
                       </div>)}
                   </div>

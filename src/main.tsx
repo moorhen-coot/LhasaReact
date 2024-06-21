@@ -30,7 +30,7 @@ export function App() {
         show_top_panel={true}
         // show_footer={true}
         icons_path_prefix='/icons'
-        smiles_callback={(id, smiles) => console.log("ID=",id," SMILES=",smiles)}
+        smiles_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
       />}
     </>
   )
