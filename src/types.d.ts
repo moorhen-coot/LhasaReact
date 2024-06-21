@@ -245,6 +245,23 @@ export interface ImplWidgetCoreData {
   delete(): void;
 }
 
+export interface SmilesMap {
+  size(): number;
+  get(_0: number): EmbindString | undefined;
+  set(_0: number, _1: EmbindString): void;
+  keys(): MoleculeIdVector;
+  delete(): void;
+}
+
+export interface MoleculeIdVector {
+  push_back(_0: number): void;
+  resize(_0: number, _1: number): void;
+  size(): number;
+  get(_0: number): number | undefined;
+  set(_0: number, _1: number): boolean;
+  delete(): void;
+}
+
 export interface Canvas extends ImplWidgetCoreData {
   set_active_tool(_0: ActiveTool): void;
   set_scale(_0: number): void;
@@ -252,11 +269,13 @@ export interface Canvas extends ImplWidgetCoreData {
   undo_edition(): void;
   redo_edition(): void;
   get_molecule_count(): number;
+  get_idx_of_first_molecule(): number;
+  get_max_molecule_idx(): number;
   set_allow_invalid_molecules(_0: boolean): void;
   get_allow_invalid_molecules(): boolean;
   get_display_mode(): DisplayMode;
   set_display_mode(_0: DisplayMode): void;
-  get_smiles(): string;
+  get_smiles(): SmilesMap;
   get_smiles_for_molecule(_0: number): string;
   get_pickled_molecule(_0: number): string;
   get_pickled_molecule_base64(_0: number): string;
@@ -306,6 +325,8 @@ interface EmbindModule {
   make_active_tool(_0: any): ActiveTool;
   MeasurementDirection: {HORIZONTAL: MeasurementDirectionValue<0>, VERTICAL: MeasurementDirectionValue<1>};
   ImplWidgetCoreData: {};
+  SmilesMap: {new(): SmilesMap};
+  MoleculeIdVector: {new(): MoleculeIdVector};
   Canvas: {new(): Canvas};
   append_from_smiles(_0: Canvas, _1: EmbindString): void;
   append_from_pickle_base64(_0: Canvas, _1: EmbindString): void;

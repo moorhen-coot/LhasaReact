@@ -362,11 +362,16 @@ export function LhasaComponent({
     };
     lh.connect("status_updated", on_status_updated);
     lh.connect("smiles_changed", function () {
-      const smiles_raw = lh.get_smiles();
-
-      const smiles_array = smiles_raw.split("\n");
-      console.log(smiles_array);
-      // todo: fix
+      const smiles_array = [];
+      const smiles_map = lh.get_smiles();
+      const smiles_keys = smiles_map.keys();
+      for(let i = 0; i < smiles_keys.size(); i++) {
+        const mol_id = smiles_keys.get(i);
+        const smiles_tuple = [mol_id, smiles_map.get(mol_id)];
+        smiles_array.push(smiles_tuple);
+      }
+      smiles_keys.delete();
+      smiles_map.delete();
       setSt(pst =>{
           return {
           ...pst,
@@ -1030,9 +1035,9 @@ export function LhasaComponent({
                 </AccordionSummary>
                 <AccordionDetails>
                   <div className="smiles_display vertical_panel">
-                    {st.smiles.map((smiles, idx) => <div key={smiles} className='horizontal_container'>
-                      {smiles_callback && <Button variant="contained" onClick={() => smiles_callback(idx.toString(), smiles)}>Send to {name_of_host_program}</Button>}
-                      {smiles}
+                    {st.smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
+                      {smiles_callback && <Button variant="contained" onClick={() => smiles_callback(smiles_tuple[0].toString(), smiles_tuple[1])}>Send to {name_of_host_program}</Button>}
+                      {smiles_tuple[1]}
                       </div>)}
                   </div>
                   {/* <Divider /> */}
