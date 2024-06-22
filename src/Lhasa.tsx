@@ -3,8 +3,8 @@ import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, DisplayMode, MainModule, TextMeasurementCache } from './types';
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton } from '@mui/material';
+import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
 
 class ToolButtonProps {
@@ -338,6 +338,7 @@ export function LhasaComponent({
   });
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
   const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
+  const [qedInfo, setQedInfo] = useState<Map<number, QEDInfo>>(new Map<number, QEDInfo>());
 
   const setupLhasaCanvas = (tmc: TextMeasurementCache) => {
     const lh = new Lhasa.Canvas();
@@ -381,10 +382,13 @@ export function LhasaComponent({
         };
       });
     });
-    lh.connect("molecule_deleted", function (mol_id) {
+    lh.connect("molecule_deleted", function (mol_id: number) {
       console.log("Molecule with id " + mol_id + " has been deleted.");
+      const newQedInfo = qedInfo;
+      newQedInfo.delete(mol_id);
+      setQedInfo(newQedInfo);
     });
-    lh.connect("scale_changed", function (new_scale) {
+    lh.connect("scale_changed", function (new_scale: number) {
       console.log('new scale: ', new_scale);
       setSt(pst =>{
           return {
@@ -392,6 +396,11 @@ export function LhasaComponent({
           scale: new_scale
         };
       });
+    });
+    lh.connect("qed_info_updated", function (mol_id: number, qed_info_for_mol: QEDInfo) {
+      const newQedInfo = qedInfo;
+      newQedInfo.set(mol_id, qed_info_for_mol);
+      setQedInfo(newQedInfo);
     });
 
     const default_scale = 1.0;
@@ -784,6 +793,9 @@ export function LhasaComponent({
   const displayModeOpened = Boolean(displayModeAnchorEl);
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
 
+  const [showQedChecked, setShowQedChecked] = useState<boolean>(false);
+  const [qedTab, setQedTab] = useState<number>(0);
+
 
   const scale_mapper = (x) => {
     return theta_const ** (x + d_const) + c_const;
@@ -861,6 +873,14 @@ export function LhasaComponent({
                           const new_val = !lh.current?.get_allow_invalid_molecules();
                           lh.current?.set_allow_invalid_molecules(new_val);
                           setAimChecked(new_val);
+                        }}
+                      />
+                      <FormControlLabel 
+                        label="Show QED" 
+                        control={<Switch />}
+                        checked={showQedChecked}
+                        onChange={(e) => {
+                          setShowQedChecked(!showQedChecked);
                         }}
                       />
                     </FormGroup>
@@ -1077,6 +1097,70 @@ export function LhasaComponent({
                   </div>
                 </AccordionDetails>
               </Accordion>
+              {showQedChecked &&
+                <div className="vertical_toolbar qed_panel">
+                  <b>QED</b>
+                  <Tabs value={qedTab} onChange={(event, value) => setQedTab(value)}>
+
+                  {Array.from(qedInfo.keys()).map((mol_id) => {
+                    // Counter-intuitively, a "Tab" here is what Gtk considers to be a tab label
+                    return <Tab 
+                      label={mol_id.toString()}
+                      value={mol_id}
+                    />;
+                  })}
+                  </Tabs>
+                  {Array.from(qedInfo.keys()).map((mol_id) => {
+                    // This is the proper tab
+                    return <div hidden={qedTab !== mol_id} role="tabpanel">
+                      <div className="horizontal_container">
+                        <div className="vertical_panel" style={{flexGrow: 1}}>    
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">QED score:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.qed_score.toFixed(4)}</span>
+                          </span>
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">MW:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.molecular_weight.toFixed(4)}</span>
+                          </span>
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">PSA:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.molecular_polar_surface_area.toFixed(4)}</span>
+                          </span>
+                        </div>
+                        <div className="vertical_panel" style={{flexGrow: 1}}>  
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">cLogP:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.alogp.toFixed(4)}</span>
+                          </span>
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">#ALERTS:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_alerts}</span>
+                          </span>
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">#HBA:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_hydrogen_bond_acceptors}</span>
+                          </span>
+                        </div>
+                        <div className="vertical_panel" style={{flexGrow: 1}}>    
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">#HBD:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_hydrogen_bond_donors}</span>
+                          </span>
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">#AROM:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_aromatic_rings}</span>
+                          </span>
+                          <span className="qed_property_field">
+                            <span className="qed_property_label">#RotBonds:</span>
+                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_rotatable_bonds}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>;
+                  })}
+                </div>
+              }
               {show_footer &&
                 <div className="lhasa_footer">
                   <i>Written by Jakub Smulski</i>

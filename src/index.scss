@@ -2,6 +2,7 @@
 
 $lhasa_background_color: rgba(119, 119, 119, 0.076);
 $lhasa_text_color: black;
+$lhasa_qed_value_color: color.adjust($lhasa_text_color, $saturation: +50%, $lightness: +50%, $hue: 196);
 $lhasa_border_color: rgba(0, 0, 0, 0.24);
 $lhasa_toolbar_border_color: rgba(184, 0, 0, 0.181);
 $lhasa_base_padding: 5px;
@@ -153,9 +154,20 @@ $lhasa_font_size: small;
     margin-left: $lhasa_base_padding * 4;
 }
 
-.status_display_panel {
+.status_display_panel,
+.qed_panel {
     padding: 2 * $lhasa_base_padding;
     margin-top: $lhasa_base_padding;
+}
+
+.qed_property_value {
+    color: $lhasa_qed_value_color;
+    margin-left: $lhasa_padding_minor;
+    font-weight: bold;
+}
+
+.qed_property_label {
+    font-weight: bolder;
 }
 
 .lhasa_editor input {
