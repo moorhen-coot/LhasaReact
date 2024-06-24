@@ -434,6 +434,13 @@ export function LhasaComponent({
         console.warn("Deletnig text measurement cache.");
         tmc.current?.delete();
       }
+      setSt(pst =>{
+        return {
+        ...pst,
+        appended_pickles: new Set<string>(),
+        canvas_ids_to_prop_ids: new Map<number, string>()
+      };
+    });
     };
   }, []);
 

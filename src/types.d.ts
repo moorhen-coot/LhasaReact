@@ -265,6 +265,7 @@ export interface MoleculeIdVector {
 
 export interface Canvas extends ImplWidgetCoreData {
   set_active_tool(_0: ActiveTool): void;
+  update_molecule_from_smiles(_0: number, _1: EmbindString): void;
   set_scale(_0: number): void;
   get_scale(): number;
   undo_edition(): void;
