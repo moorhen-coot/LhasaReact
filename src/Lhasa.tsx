@@ -907,7 +907,7 @@ export function LhasaComponent({
                       <b>-</b>
                     </IconButton>
                     <Slider 
-                      value={reverse_scale_mapper(lh.current?.get_scale())}
+                      value={reverse_scale_mapper(lh.current?.get_scale() ?? 1.0)}
                       max={1}
                       min={0}
                       step={0.0001}
