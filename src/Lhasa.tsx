@@ -321,7 +321,6 @@ export function LhasaComponent({
   const x_element_symbol_input = useId();
 
   const isFirstRenderRef = useRef<boolean>(false);
-  const appendedPicklesRef = useRef<Set<string>>(new Set<string>());
   const canvasIdsToPropsIdsRef = useRef<Map<number, string>>(new Map<number, string>());
 
   const [svgNode, setSvgNode] = useState(null);
@@ -409,7 +408,6 @@ export function LhasaComponent({
         console.warn("Deletnig text measurement cache.");
         tmc.current?.delete();
       }
-      appendedPicklesRef.current = new Set<string>();
       canvasIdsToPropsIdsRef.current = new Map<number, string>();
     };
   }, []);
@@ -417,9 +415,8 @@ export function LhasaComponent({
   useEffect(() => {
       if(rdkit_molecule_pickle_list !== undefined) {
         rdkit_molecule_pickle_list.forEach(item => {
-          if(! appendedPicklesRef.current.has(item.id)) {
+          if(! Array.from(canvasIdsToPropsIdsRef.current.values()).some(id => id === item.id) ) {
             const internalId = Lhasa.append_from_pickle_base64(lh.current, item.pickle);
-            appendedPicklesRef.current.add(item.id);
             canvasIdsToPropsIdsRef.current.set(internalId, item.id);
           }
         })
