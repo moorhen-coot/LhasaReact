@@ -1048,6 +1048,7 @@ export function LhasaComponent({
                   {Array.from(qedInfo.keys()).map((mol_id) => {
                     // Counter-intuitively, a "Tab" here is what Gtk considers to be a tab label
                     return <Tab 
+                      key={mol_id}
                       label={mol_id.toString()}
                       value={mol_id}
                     />;
@@ -1055,7 +1056,7 @@ export function LhasaComponent({
                   </Tabs>
                   {Array.from(qedInfo.keys()).map((mol_id) => {
                     // This is the proper tab
-                    return <div hidden={qedTab !== mol_id} role="tabpanel">
+                    return <div hidden={qedTab !== mol_id} role="tabpanel" key={mol_id}>
                       <div className="horizontal_container">
                         <div className="vertical_panel" style={{flexGrow: 1}}>    
                           <span className="qed_property_field">
