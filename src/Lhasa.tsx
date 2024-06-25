@@ -320,7 +320,11 @@ export function LhasaComponent({
   const smiles_input = useId();
   const x_element_symbol_input = useId();
 
+  // Text measurement relies on elements with certain IDs being in the DOM already.
+  // This means that text measurement will be incorrect (zeroed) for the first render
+  // meaning that if 'first_render' is true, we should re-render immediately
   const isFirstRenderRef = useRef<boolean>(false);
+  // Assigns internal molecule IDs to external pickle IDs as given by rdkit_molecule_pickle_map
   const canvasIdsToPropsIdsRef = useRef<Map<number, string>>(new Map<number, string>());
 
   const [svgNode, setSvgNode] = useState(null);
@@ -405,7 +409,7 @@ export function LhasaComponent({
         lh.current?.delete();
       }
       if (tmc.current !== null && !tmc.current?.isDeleted()) {
-        console.warn("Deletnig text measurement cache.");
+        console.warn("Deleting text measurement cache.");
         tmc.current?.delete();
       }
       canvasIdsToPropsIdsRef.current = new Map<number, string>();
@@ -732,7 +736,7 @@ export function LhasaComponent({
   const optionButtonRef = useRef<HTMLButtonElement | null>(null)
   const [optionOpened, setOptionOpen] = useState<boolean>(false);
 
-  const displayModeButtonRef = useRef<HTMLLIElement | null>(null)
+  const displayModeButtonRef = useRef<HTMLLIElement | null>(null);
   const [displayModeOpened, setDisplayModeOpen] = useState<boolean>(false);
   
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
