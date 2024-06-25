@@ -350,17 +350,17 @@ export function LhasaComponent({
     };
     lh.connect("status_updated", on_status_updated);
     lh.connect("smiles_changed", function () {
-      const smiles_array: string[][] = [];
+      const smiles_array: [number, string][] = [];
       const smiles_map = lh.get_smiles();
       const smiles_keys = smiles_map.keys();
       for(let i = 0; i < smiles_keys.size(); i++) {
         const mol_id = smiles_keys.get(i);
-        const smiles_tuple = [mol_id, smiles_map.get(mol_id)];
+        const smiles_tuple = [mol_id, smiles_map.get(mol_id)] as [number, string];
         smiles_array.push(smiles_tuple);
       }
       smiles_keys.delete();
       smiles_map.delete();
-      setSmiles(smiles_array as [number, string][]);
+      setSmiles(smiles_array);
     });
     lh.connect("molecule_deleted", function (mol_id: number) {
       console.log("Molecule with id " + mol_id + " has been deleted.");
