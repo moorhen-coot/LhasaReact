@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, createContext, useMemo, useLayoutEffect } from 'react'
+import { useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
 import { HotKeys } from "react-hotkeys"
 import * as d3 from "d3";
 import './index.scss';
@@ -60,7 +60,7 @@ class LhasaComponentProps {
   show_footer?: boolean;
   icons_path_prefix?: string;
   /// Base64-encoded pickles
-  rdkit_molecule_pickle_map?: Map<string, string>;
+  rdkit_molecule_pickle_list?: { pickle: string; id: string }[];
   /// When Lhasa is embedded, what is it embedded in?
   name_of_host_program?: string;
   /// TODO: Consistent IDs
@@ -73,7 +73,7 @@ export function LhasaComponent({
   show_top_panel = false, 
   show_footer = true, 
   icons_path_prefix = '', 
-  rdkit_molecule_pickle_map,
+  rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback
 } : LhasaComponentProps) {
@@ -319,23 +319,21 @@ export function LhasaComponent({
   const text_measurement_worker_div = useId();
   const smiles_input = useId();
   const x_element_symbol_input = useId();
-  const [st, setSt] = useState(() => {
-    return {
-      // Text measurement relies on elements with certain IDs being in the DOM already.
-      // This means that text measurement will be incorrect (zeroed) for the first render
-      // meaning that if 'first_render' is true, we should re-render immediately
-      first_render: true,
-      svg_node: null,
-      smiles: [],
-      scale: 1.0,
-      status_text: '',
-      x_element_input_shown: false,
-      active_tool_name: '',
-      appended_pickles: new Set<string>(),
-      // Assigns internal molecule IDs to external pickle IDs as given by rdkit_molecule_pickle_map
-      canvas_ids_to_prop_ids: new Map<number, string>()
-    };
-  });
+
+  // Text measurement relies on elements with certain IDs being in the DOM already.
+  // This means that text measurement will be incorrect (zeroed) for the first render
+  // meaning that if 'first_render' is true, we should re-render immediately
+  const isFirstRenderRef = useRef<boolean>(false);
+  // Assigns internal molecule IDs to external pickle IDs as given by rdkit_molecule_pickle_map
+  const canvasIdsToPropsIdsRef = useRef<Map<number, string>>(new Map<number, string>());
+
+  const [svgNode, setSvgNode] = useState(null);
+  const [smiles, setSmiles] = useState<[number, string][]>([]);
+  const [scale, setScale] = useState<number>(1.0);
+  const [statusText, setStatusText] = useState<string>('');
+  const [xElementInputShown, setXElementInputShown] = useState<boolean>(false);
+  const [activeToolName, setActiveToolName] = useState<string>('');
+  
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
   const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
   const [qedInfo, setQedInfo] = useState<Map<number, QEDInfo>>(new Map<number, QEDInfo>());
@@ -344,43 +342,28 @@ export function LhasaComponent({
     const lh = new Lhasa.Canvas();
     lh.connect("queue_redraw", () => {
       const node = on_render(lh, tmc, text_measurement_worker_div);
-      setSt(pst =>{
-          return {
-          ...pst,
-          svg_node: node
-        };
-      });
+      setSvgNode(node);
     });
 
     const on_status_updated = function (status_txt: string) {
       // For now
       console.log("Status: " + status_txt);
       // todo: fix
-      setSt(pst =>{
-          return {
-          ...pst,
-          status_text: status_txt
-        };
-      });
+      setStatusText(status_txt);
     };
     lh.connect("status_updated", on_status_updated);
     lh.connect("smiles_changed", function () {
-      const smiles_array = [];
+      const smiles_array: [number, string][] = [];
       const smiles_map = lh.get_smiles();
       const smiles_keys = smiles_map.keys();
       for(let i = 0; i < smiles_keys.size(); i++) {
         const mol_id = smiles_keys.get(i);
-        const smiles_tuple = [mol_id, smiles_map.get(mol_id)];
+        const smiles_tuple = [mol_id, smiles_map.get(mol_id)] as [number, string];
         smiles_array.push(smiles_tuple);
       }
       smiles_keys.delete();
       smiles_map.delete();
-      setSt(pst =>{
-          return {
-          ...pst,
-          smiles: smiles_array
-        };
-      });
+      setSmiles(smiles_array);
     });
     lh.connect("molecule_deleted", function (mol_id: number) {
       console.log("Molecule with id " + mol_id + " has been deleted.");
@@ -390,12 +373,7 @@ export function LhasaComponent({
     });
     lh.connect("scale_changed", function (new_scale: number) {
       console.log('new scale: ', new_scale);
-      setSt(pst =>{
-          return {
-          ...pst,
-          scale: new_scale
-        };
-      });
+      setScale(new_scale);
     });
     lh.connect("qed_info_updated", function (mol_id: number, qed_info_for_mol: QEDInfo) {
       const newQedInfo = qedInfo;
@@ -431,56 +409,30 @@ export function LhasaComponent({
         lh.current?.delete();
       }
       if (tmc.current !== null && !tmc.current?.isDeleted()) {
-        console.warn("Deletnig text measurement cache.");
+        console.warn("Deleting text measurement cache.");
         tmc.current?.delete();
       }
-      setSt(pst =>{
-        return {
-        ...pst,
-        appended_pickles: new Set<string>(),
-        canvas_ids_to_prop_ids: new Map<number, string>()
-      };
-    });
+      canvasIdsToPropsIdsRef.current = new Map<number, string>();
     };
   }, []);
 
   useEffect(() => {
-      if(rdkit_molecule_pickle_map !== undefined) {
-        for(let entry of rdkit_molecule_pickle_map.entries()) {
-          const external_id = entry[0];
-          const pickle = entry[1];
-          if(! st.appended_pickles.has(external_id)) {
-            const internal_id = Lhasa.append_from_pickle_base64(lh.current, pickle);
-
-            const new_appended_pickles = st.appended_pickles;
-            new_appended_pickles.add(external_id);
-
-            const new_canvas_ids_to_prop_ids = st.canvas_ids_to_prop_ids;
-            new_canvas_ids_to_prop_ids.set(internal_id, external_id);
-
-            setSt(pst =>{
-                return {
-                ...pst,
-                appended_pickles: new_appended_pickles,
-                canvas_ids_to_prop_ids: new_canvas_ids_to_prop_ids
-              };
-            });
+      if(rdkit_molecule_pickle_list !== undefined) {
+        rdkit_molecule_pickle_list.forEach(item => {
+          if(! Array.from(canvasIdsToPropsIdsRef.current.values()).some(id => id === item.id) ) {
+            const internalId = Lhasa.append_from_pickle_base64(lh.current, item.pickle);
+            canvasIdsToPropsIdsRef.current.set(internalId, item.id);
           }
-        }
+        })
       }
-  }, [rdkit_molecule_pickle_map]);
+  }, [rdkit_molecule_pickle_list]);
 
   function switch_tool(tool : any) {
     lh.current?.set_active_tool(Lhasa.make_active_tool(tool));
   };
 
   function on_x_element_button() {
-    setSt(pst =>{
-      return {
-        ...pst,
-        x_element_input_shown: !pst.x_element_input_shown
-      }
-    });
+    setXElementInputShown(prev => !prev);
   }
 
   function on_smiles_import_button() {
@@ -499,12 +451,7 @@ export function LhasaComponent({
     try {
       const el_ins = Lhasa.element_insertion_from_symbol(symbol_input.value);
       switch_tool(el_ins);
-      setSt(pst =>{
-        return {
-          ...pst,
-          x_element_input_shown: false
-        }
-      });
+      setXElementInputShown(false);
       setXElementErrorString(null);
     }catch(err) {
       console.warn("Could not set custom element: ", err);
@@ -545,20 +492,16 @@ export function LhasaComponent({
   const svgRef = useRef<HTMLDivElement>(null);
   // defers the callback to run after render, which is crucial for text measurement
   // to work after the first render (we need to render it again after the first render)
-  useLayoutEffect(()=>{
-    if(svgRef.current && st.svg_node) {
-      svgRef.current.replaceChildren(st.svg_node);
-      if(st.first_render === true) {
-        setSt(pst => {
-          return {
-            ...pst,
-            svg_node: on_render(lh.current, tmc.current, text_measurement_worker_div),
-            first_render: false
-          }
-        });
+  useEffect(()=>{
+    if(svgRef.current && svgNode) {
+      svgRef.current.replaceChildren(svgNode);
+      if(isFirstRenderRef.current === true) {
+        isFirstRenderRef.current = false;
+        const newNode = on_render(lh.current, tmc.current, text_measurement_worker_div);
+        setSvgNode(newNode);
       }
     }
-  },[st]);
+  }, [svgNode]);
 
   const tool_button_data = useRef({
     Move: { 
@@ -745,12 +688,7 @@ export function LhasaComponent({
 
   function wrap_handler(action_name: string, raw_handler: () => void) : () => void {
     return () => {
-      setSt(pst => {
-        return {
-          ...pst,
-          active_tool_name: action_name
-        }
-      });
+      setActiveToolName(action_name);
       raw_handler();
     };
   }
@@ -792,12 +730,15 @@ export function LhasaComponent({
     return ret;
   }, [tool_button_data.current]);
 
-  const [editAnchorEl, setEditAnchorEl] = useState<null | HTMLElement>(null);
-  const editOpened = Boolean(editAnchorEl);
-  const [optionAnchorEl, setOptionAnchorEl] = useState<null | HTMLElement>(null);
-  const optionOpened = Boolean(optionAnchorEl);
-  const [displayModeAnchorEl, setDisplayModeAnchorEl] = useState<null | HTMLElement>(null);
-  const displayModeOpened = Boolean(displayModeAnchorEl);
+  const editButtonRef = useRef<HTMLButtonElement | null>(null)
+  const [editOpened, setEditOpen] = useState<boolean>(false);
+
+  const optionButtonRef = useRef<HTMLButtonElement | null>(null)
+  const [optionOpened, setOptionOpen] = useState<boolean>(false);
+
+  const displayModeButtonRef = useRef<HTMLLIElement | null>(null);
+  const [displayModeOpened, setDisplayModeOpen] = useState<boolean>(false);
+  
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
 
   const [showQedChecked, setShowQedChecked] = useState<boolean>(false);
@@ -814,7 +755,7 @@ export function LhasaComponent({
 
   return (
     <>
-      <ActiveToolContext.Provider value={st.active_tool_name}>
+      <ActiveToolContext.Provider value={activeToolName}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
             <div className="lhasa_editor LhasaMuiStyling">
@@ -835,16 +776,16 @@ export function LhasaComponent({
               }
               <div className="horizontal_toolbar">
                 <Button 
-                  // variant="contained"
+                  ref={editButtonRef}
                   disableElevation
-                  onClick={(ev) => setEditAnchorEl(ev.currentTarget)}
+                  onClick={(_evt) => setEditOpen((prev) => !prev)}
                 >
                   Edit
                 </Button>
                 <Menu
                   open={editOpened}
-                  anchorEl={editAnchorEl}
-                  onClose={() => setEditAnchorEl(null)}
+                  anchorEl={editButtonRef.current}
+                  onClose={() => setEditOpen(false)}
                   className="LhasaMuiStyling"
                 >
                   <MenuItem onClick={() => handler_map["Undo"]()} >
@@ -857,17 +798,17 @@ export function LhasaComponent({
                   </MenuItem>
                 </Menu>
                 <Button 
-                  // variant="contained"
+                  ref={optionButtonRef}
                   disableElevation
-                  onClick={(ev) => setOptionAnchorEl(ev.currentTarget)}
+                  onClick={(_evt) => setOptionOpen((prev) => !prev)}
 
                 >
                   Options
                 </Button>
                 <Menu
                   open={optionOpened}
-                  anchorEl={optionAnchorEl}
-                  onClose={() => setOptionAnchorEl(null)}
+                  anchorEl={optionButtonRef.current}
+                  onClose={() => setOptionOpen(false)}
                   className="LhasaMuiStyling"
                 >
                   <MenuItem>
@@ -893,17 +834,16 @@ export function LhasaComponent({
                     </FormGroup>
                   </MenuItem>
                   <MenuItem
-                      // onMouseOver={(ev) => {if(!displayModeOpened) { setDisplayModeAnchorEl(ev.currentTarget)}}}
-                      onClick={(ev) => {if(!displayModeOpened) { setDisplayModeAnchorEl(ev.currentTarget)}}}
+                      ref={displayModeButtonRef}
+                      onClick={(_evt) => setDisplayModeOpen((prev) => !prev)}
                   >
                       Display Mode...
-                      {/* <ArrowRight/> */}
                   </MenuItem>
                   <Popover
                   open={displayModeOpened}
-                  anchorEl={displayModeAnchorEl}
+                  anchorEl={displayModeButtonRef.current}
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                  onClose={() => setDisplayModeAnchorEl(null)}
+                  onClose={() => setDisplayModeOpen(false)}
                   className="LhasaMuiStyling"
                   //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                   >
@@ -961,7 +901,7 @@ export function LhasaComponent({
                   <div className='horizontal_container'>
                     <b>SCALE</b>
                     <div className="scale_display">
-                      {st.scale.toFixed(2)}
+                      {scale.toFixed(2)}
                     </div>
                   </div>
                   <div className="horizontal_panel" style={{border: "0px", padding: "0px"}}>
@@ -971,7 +911,7 @@ export function LhasaComponent({
                       <b>-</b>
                     </IconButton>
                     <Slider 
-                      value={reverse_scale_mapper(lh.current?.get_scale())}
+                      value={reverse_scale_mapper(lh.current?.get_scale() ?? 1.0)}
                       max={1}
                       min={0}
                       step={0.0001}
@@ -989,7 +929,7 @@ export function LhasaComponent({
                   </div>
                 </div>
               </div>
-              {st.x_element_input_shown && 
+              {xElementInputShown && 
                 <>
                   <div className="x_element_panel horizontal_panel" >
                     <TextField
@@ -1064,7 +1004,7 @@ export function LhasaComponent({
               </div>
               <div className="status_display_panel horizontal_panel">
                 <span>▶</span>
-                <span /*id_="status_display"*/>{ st.status_text }</span>
+                <span /*id_="status_display"*/>{ statusText }</span>
               </div>
               <Accordion>
                 <AccordionSummary>
@@ -1072,9 +1012,9 @@ export function LhasaComponent({
                 </AccordionSummary>
                 <AccordionDetails>
                   <div className="smiles_display vertical_panel">
-                    {st.smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
+                    {smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
                       {smiles_callback && <Button variant="contained" onClick={() => {
-                        const lookup_result = st.canvas_ids_to_prop_ids.get(smiles_tuple[0]);
+                        const lookup_result = canvasIdsToPropsIdsRef.current.get(smiles_tuple[0]);
                         let external_id = null;
                         if(lookup_result !== undefined) {
                           external_id = lookup_result;
@@ -1112,6 +1052,7 @@ export function LhasaComponent({
                   {Array.from(qedInfo.keys()).map((mol_id) => {
                     // Counter-intuitively, a "Tab" here is what Gtk considers to be a tab label
                     return <Tab 
+                      key={mol_id}
                       label={mol_id.toString()}
                       value={mol_id}
                     />;
@@ -1119,7 +1060,7 @@ export function LhasaComponent({
                   </Tabs>
                   {Array.from(qedInfo.keys()).map((mol_id) => {
                     // This is the proper tab
-                    return <div hidden={qedTab !== mol_id} role="tabpanel">
+                    return <div hidden={qedTab !== mol_id} role="tabpanel" key={mol_id}>
                       <div className="horizontal_container">
                         <div className="vertical_panel" style={{flexGrow: 1}}>    
                           <span className="qed_property_field">
