@@ -60,7 +60,7 @@ class LhasaComponentProps {
   show_footer?: boolean;
   icons_path_prefix?: string;
   /// Base64-encoded pickles
-  rdkit_molecule_pickle_map?: Map<string, string>;
+  rdkit_molecule_pickle_list?: { pickle: string; id: string }[];
   /// When Lhasa is embedded, what is it embedded in?
   name_of_host_program?: string;
   /// TODO: Consistent IDs
@@ -73,7 +73,7 @@ export function LhasaComponent({
   show_top_panel = false, 
   show_footer = true, 
   icons_path_prefix = '', 
-  rdkit_molecule_pickle_map,
+  rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback
 } : LhasaComponentProps) {
@@ -415,18 +415,16 @@ export function LhasaComponent({
   }, []);
 
   useEffect(() => {
-      if(rdkit_molecule_pickle_map !== undefined) {
-        for(let entry of rdkit_molecule_pickle_map.entries()) {
-          const external_id = entry[0];
-          const pickle = entry[1];
-          if(! appendedPicklesRef.current.has(external_id)) {
-            const internal_id = Lhasa.append_from_pickle_base64(lh.current, pickle);
-            appendedPicklesRef.current.add(external_id);
-            canvasIdsToPropsIdsRef.current.set(internal_id, external_id);
+      if(rdkit_molecule_pickle_list !== undefined) {
+        rdkit_molecule_pickle_list.forEach(item => {
+          if(! appendedPicklesRef.current.has(item.id)) {
+            const internalId = Lhasa.append_from_pickle_base64(lh.current, item.pickle);
+            appendedPicklesRef.current.add(item.id);
+            canvasIdsToPropsIdsRef.current.set(internalId, item.id);
           }
-        }
+        })
       }
-  }, [rdkit_molecule_pickle_map]);
+  }, [rdkit_molecule_pickle_list]);
 
   function switch_tool(tool : any) {
     lh.current?.set_active_tool(Lhasa.make_active_tool(tool));
