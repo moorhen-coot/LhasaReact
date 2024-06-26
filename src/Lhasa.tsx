@@ -990,7 +990,7 @@ export function LhasaComponent({
                     }
                   }}
                   onWheel={(event) => {
-                    lh.current?.on_scroll(event.deltaX, event.deltaY, event.ctrlKey);
+                    lh.current?.on_scroll(event.deltaX, event.deltaY, event.altKey);
                   }}
 
                   ref={svgRef}
