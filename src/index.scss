@@ -40,6 +40,7 @@ $lhasa_font_size: small;
     text-align: left;
 }
 
+// For the menus
 .keybind_hint {
     color: color.adjust($lhasa_text_color, $saturation: -50%, $lightness: +40%);
     background-color: $lhasa_background_color;
@@ -47,6 +48,23 @@ $lhasa_font_size: small;
     border-radius: $lhasa_padding_minor;
     padding: $lhasa_padding_minor;
     // font-family: monospace;
+}
+
+.lhasa_tooltip_keybind_infoblock {
+    padding: $lhasa_base_padding * 2;
+    margin-top: $lhasa_base_padding;
+    border-radius: 4px;
+    border: rgba(255, 255, 255, 0.405) 1px solid;
+}
+
+.lhasa_tooltip_keybind_info {
+    margin: $lhasa_base_padding;
+    // font-size: medium;
+    // margin-top: $lhasa_base_padding * 8;
+    border-radius: 4px;
+    color: lightblue;
+    background-color: color.adjust(lightblue, $alpha: -0.7);
+    padding: $lhasa_base_padding;
 }
 
 .lhasa_tooltip {

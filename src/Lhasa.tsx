@@ -30,6 +30,7 @@ function ToolButton(props:ToolButtonProps) {
       {context => (
         <Tooltip
           title={props.tooltip_body}
+          enterDelay={300}
         >
           <ToggleButton
             selected={context.active_tool_name == props.action_name}
@@ -514,7 +515,7 @@ export function LhasaComponent({
     }
   }, [svgNode]);
 
-  const carbon_ring_tooltip = useRef<JSX.Element>(<div className="lhasa_tooltip">
+  const carbon_ring_tooltip = useRef<JSX.Element>(<div>
     <b>Carbon Ring Tool</b><br/>
     Insert a carbon ring.<br/>
     <br/>
@@ -524,7 +525,7 @@ export function LhasaComponent({
     <b>Left click on empty canvas</b> - Initialize a new molecule with the selected kind of carbon ring.
   </div>);
 
-  const element_tool_tooltip = useRef<JSX.Element>(<div className="lhasa_tooltip">
+  const element_tool_tooltip = useRef<JSX.Element>(<div>
     <b>Element Tool</b><br/>
     Add a new atom or replace an existent atom with the chosen element.<br/>
     <br/>
@@ -541,7 +542,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_move_tool.svg",
       hotkey:"m",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Move Tool</b><br/>
         Move molecules around the screen.<br/>
         <b>Left click</b> on a molecule (and drag) to move it.<br/>
@@ -555,7 +556,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/lhasa_rotate_tool.svg",
       hotkey:"r",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Rotate Tool</b><br/>
         Rotate molecules.<br/>
         <br/>
@@ -571,7 +572,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/lhasa_flip_x_tool.svg",
       hotkey:"alt+f",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Flip Horizontal</b><br/>
         Flip molecule in the X axis.<br/>
         <br/>
@@ -585,7 +586,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/lhasa_flip_y_tool.svg",
       hotkey:"ctrl+alt+f",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Flip Vertical</b><br/>
         Flip molecule in the Y axis.<br/>
         <br/>
@@ -599,7 +600,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_delete_hydrogens_tool.svg",
       hotkey:"alt+delete",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Remove Hydrogens Tool</b><br/>
         Removes explicit non-polar hydrogens from the selected molecule.<br/>
         <br/>
@@ -613,7 +614,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_format_tool.svg",
       hotkey:"f",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Format Tool</b><br/>
         "Formatting" re-computes atom positions of the selected molecule on the screen.<br/>
         <br/>
@@ -627,7 +628,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_single_bond.svg",
       hotkey:"s",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Single Bond Tool</b><br/>
         Add bond (of the selected kind) or replace an existing one.<br/>
         <br/>
@@ -642,7 +643,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_double_bond.svg",
       hotkey:"d",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Double Bond Tool</b><br/>
         Add bond (of the selected kind) or replace an existing one.<br/>
         <br/>
@@ -657,7 +658,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_triple_bond.svg",
       hotkey:"t",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Triple Bond Tool</b><br/>
         Add bond (of the selected kind) or replace an existing one.<br/>
         <br/>
@@ -672,7 +673,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_geometry_tool.svg",
       hotkey:"g",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Bond Geometry Tool</b><br/>
         Alter geometry of a bond.<br/>
         <br/>
@@ -686,7 +687,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_charge_tool.svg",
       hotkey:"v",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Atom Charge Tool</b><br/>
         Alter charge of an atom.<br/>
         <br/>
@@ -700,7 +701,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/lhasa_delete_tool.svg",
       hotkey:"delete",
       caption_optional: true,
-      tooltip_body: <div className="lhasa_tooltip">
+      tooltip_core: <div>
         <b>Delete Tool</b><br/>
         Delete atoms, bonds or molecules.<br/>
         <br/>
@@ -716,7 +717,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_3c.svg",
       hotkey:"3",
       caption_optional: true,
-      tooltip_body: carbon_ring_tooltip.current
+      tooltip_core: carbon_ring_tooltip.current
     },
     C4: { 
       caption:"4-C",
@@ -724,7 +725,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_4c.svg",
       hotkey:"4",
       caption_optional: true,
-      tooltip_body: carbon_ring_tooltip.current
+      tooltip_core: carbon_ring_tooltip.current
     },
     C5: { 
       caption:"5-C",
@@ -732,7 +733,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_5c.svg",
       hotkey:"5",
       caption_optional: true,
-      tooltip_body: carbon_ring_tooltip.current
+      tooltip_core: carbon_ring_tooltip.current
     },
     C6: { 
       caption:"6-C",
@@ -740,7 +741,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_6c.svg",
       hotkey:"6",
       caption_optional: true,
-      tooltip_body: carbon_ring_tooltip.current
+      tooltip_core: carbon_ring_tooltip.current
     },
     Arom6: { 
       caption:"6-Arom",
@@ -748,7 +749,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_6arom.svg",
       hotkey:["b","alt+6"],
       caption_optional: true,
-      tooltip_body: carbon_ring_tooltip.current
+      tooltip_core: carbon_ring_tooltip.current
     },
     C7: { 
       caption:"7-C",
@@ -756,7 +757,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_7c.svg",
       hotkey:"7",
       caption_optional: true,
-      tooltip_body: carbon_ring_tooltip.current
+      tooltip_core: carbon_ring_tooltip.current
     },
     C8: { 
       caption:"8-C",
@@ -764,7 +765,7 @@ export function LhasaComponent({
       icon: icons_path_prefix + "/layla_8c.svg",
       hotkey:"8",
       caption_optional: true,
-      tooltip_body: carbon_ring_tooltip.current
+      tooltip_core: carbon_ring_tooltip.current
     },
     C: { 
       caption:"C",
@@ -772,7 +773,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"c",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     N: { 
       caption:"N",
@@ -780,7 +781,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"n",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     O: { 
       caption:"O",
@@ -788,7 +789,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"o",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     S: { 
       caption:"S",
@@ -796,7 +797,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"alt+s",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     P: { 
       caption:"P",
@@ -804,7 +805,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"p",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     H: { 
       caption:"H",
@@ -812,7 +813,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"h",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     F: { 
       caption:"F",
@@ -820,7 +821,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"alt+i",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     Cl: { 
       caption:"Cl",
@@ -828,7 +829,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"alt+c",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     Br: { 
       caption:"Br",
@@ -836,7 +837,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"alt+b",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     I: { 
       caption:"I",
@@ -844,7 +845,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"i",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     },
     X: { 
       caption:"X",
@@ -852,7 +853,7 @@ export function LhasaComponent({
       icon: null,
       hotkey:"x",
       caption_optional: false,
-      tooltip_body: element_tool_tooltip.current
+      tooltip_core: element_tool_tooltip.current
     }
   }}, [icons_path_prefix]);
 
@@ -877,11 +878,25 @@ export function LhasaComponent({
   let tool_buttons = useMemo(() => {
     let m_tool_buttons = new Map<string,JSX.Element>();
     for(const [k,v] of Object.entries(tool_button_data)) {
+      const hotkey_to_infoblock = (hotkey: string | string[]) => {
+        let hotkey_arr = typeof hotkey === 'string' ? [hotkey] : hotkey;
+        return (<div className='lhasa_tooltip_keybind_infoblock'>
+          <b>Hotkeys:</b><br/><br/>
+          {hotkey_arr.map((hotkey_text) => <span className='lhasa_tooltip_keybind_info'>
+            {hotkey_text}
+          </span>)}
+        </div>);
+      };
       m_tool_buttons.set(k, ToolButton({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
         caption_optional: v.caption_optional,
-        tooltip_body: v.tooltip_body,
+        tooltip_body: <div className='lhasa_tooltip'>
+          {v.tooltip_core}
+          {v.hotkey && 
+            hotkey_to_infoblock(v.hotkey)
+          }
+        </div>,
         icon: v.icon,
         action_name: k
       }));
