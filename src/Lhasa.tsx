@@ -6,6 +6,7 @@ import './customize_mui.scss';
 import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
+import { LhasaTooltip } from './LhasaTooltip.tsx';
 
 class ToolButtonProps {
   onclick?: () => void;
@@ -13,6 +14,7 @@ class ToolButtonProps {
   caption: string | undefined;
   caption_optional?: boolean = false;
   icon: string | undefined | null;
+  tooltip_body?: JSX.Element | null = null;
 }
 
 class ActiveToolContextData {
@@ -27,21 +29,25 @@ function ToolButton(props:ToolButtonProps) {
   return (
     <ActiveToolContext.Consumer>
       {context => (
-        <ToggleButton
-          selected={context.active_tool_name == props.action_name}
-          onChange={props.onclick}
-          value={'dummy'}
-          // Doesn't work: autoCapitalize='false'
-          style={{textTransform: 'none', padding: '0px'}}
+        <LhasaTooltip
+          tooltip_body={props.tooltip_body}
         >
-          <div className='tool_button'>
-          {props.icon &&
-            <>
-              <img src={props.icon} className="lhasa_icon" />
-            </>}
-          {(context.show_optional_captions || !props.caption_optional) && props.caption}
-          </div>
-        </ToggleButton>
+          <ToggleButton
+            selected={context.active_tool_name == props.action_name}
+            onChange={props.onclick}
+            value={'dummy'}
+            // Doesn't work: autoCapitalize='false'
+            style={{textTransform: 'none', padding: '0px'}}
+          >
+            <div className='tool_button'>
+            {props.icon &&
+              <>
+                <img src={props.icon} className="lhasa_icon" />
+              </>}
+            {(context.show_optional_captions || !props.caption_optional) && props.caption}
+            </div>
+          </ToggleButton>
+        </LhasaTooltip>
       )}
     </ActiveToolContext.Consumer>
   )
@@ -515,210 +521,246 @@ export function LhasaComponent({
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
       icon: icons_path_prefix + "/layla_move_tool.svg",
       hotkey:"m",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: <div className="lhasa_tooltip">
+        <b>Move Tool</b><br/><br/>
+        Move molecules around the screen.<br/>
+        <b>Left click</b> on a molecule (and drag) to move it.<br/>
+        <br/>
+        Move mode is also triggered by pressing the <b>Alt</b> key.
+      </div>
     },
     Rotate: { 
       caption:"Rotate",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation)),
       icon: icons_path_prefix + "/lhasa_rotate_tool.svg",
       hotkey:"r",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Flip_around_X: { 
       caption:"Flip around X",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal)),
       icon: icons_path_prefix + "/lhasa_flip_x_tool.svg",
       hotkey:"alt+f",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Flip_around_Y: { 
       caption:"Flip around Y",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical)),
       icon: icons_path_prefix + "/lhasa_flip_y_tool.svg",
       hotkey:"ctrl+alt+f",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Delete_hydrogens: { 
       caption:"Delete hydrogens",
       raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
       icon: icons_path_prefix + "/layla_delete_hydrogens_tool.svg",
       hotkey:"alt+delete",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Format: { 
       caption:"Format",
       raw_handler:() => switch_tool(new Lhasa.FormatTool()),
       icon: icons_path_prefix + "/layla_format_tool.svg",
       hotkey:"f",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Single_Bond: { 
       caption:"Single Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
       icon: icons_path_prefix + "/layla_single_bond.svg",
       hotkey:"s",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Double_Bond: { 
       caption:"Double Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
       icon: icons_path_prefix + "/layla_double_bond.svg",
       hotkey:"d",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Triple_Bond: { 
       caption:"Triple Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
       icon: icons_path_prefix + "/layla_triple_bond.svg",
       hotkey:"t",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Geometry: { 
       caption:"Geometry",
       raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
       icon: icons_path_prefix + "/layla_geometry_tool.svg",
       hotkey:"g",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Charge: { 
       caption:"Charge",
       raw_handler:() => switch_tool(new Lhasa.ChargeModifier()),
       icon: icons_path_prefix + "/layla_charge_tool.svg",
       hotkey:"v",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Delete: { 
       caption:"Delete",
       raw_handler:() => switch_tool(new Lhasa.DeleteTool()),
       icon: icons_path_prefix + "/lhasa_delete_tool.svg",
       hotkey:"delete",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     C3: { 
       caption:"3-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPropaneRing)),
       icon: icons_path_prefix + "/layla_3c.svg",
       hotkey:"3",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     C4: { 
       caption:"4-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloButaneRing)),
       icon: icons_path_prefix + "/layla_4c.svg",
       hotkey:"4",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     C5: { 
       caption:"5-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPentaneRing)),
       icon: icons_path_prefix + "/layla_5c.svg",
       hotkey:"5",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     C6: { 
       caption:"6-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHexaneRing)),
       icon: icons_path_prefix + "/layla_6c.svg",
       hotkey:"6",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     Arom6: { 
       caption:"6-Arom",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.BenzeneRing)),
       icon: icons_path_prefix + "/layla_6arom.svg",
       hotkey:["b","alt+6"],
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     C7: { 
       caption:"7-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHeptaneRing)),
       icon: icons_path_prefix + "/layla_7c.svg",
       hotkey:"7",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     C8: { 
       caption:"8-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloOctaneRing)),
       icon: icons_path_prefix + "/layla_8c.svg",
       hotkey:"8",
-      caption_optional: true
+      caption_optional: true,
+      tooltip_body: null
     },
     C: { 
       caption:"C",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.C)),
       icon: null,
       hotkey:"c",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     N: { 
       caption:"N",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.N)),
       icon: null,
       hotkey:"n",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     O: { 
       caption:"O",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.O)),
       icon: null,
       hotkey:"o",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     S: { 
       caption:"S",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.S)),
       icon: null,
       hotkey:"alt+s",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     P: { 
       caption:"P",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.P)),
       icon: null,
       hotkey:"p",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     H: { 
       caption:"H",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.H)),
       icon: null,
       hotkey:"h",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     F: { 
       caption:"F",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.F)),
       icon: null,
       hotkey:"alt+i",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     Cl: { 
       caption:"Cl",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Cl)),
       icon: null,
       hotkey:"alt+c",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     Br: { 
       caption:"Br",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Br)),
       icon: null,
       hotkey:"alt+b",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     I: { 
       caption:"I",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.I)),
       icon: null,
       hotkey:"i",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     },
     X: { 
       caption:"X",
       raw_handler:() => on_x_element_button(),
       icon: null,
       hotkey:"x",
-      caption_optional: false
+      caption_optional: false,
+      tooltip_body: null
     }
   });
 
@@ -747,6 +789,7 @@ export function LhasaComponent({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
         caption_optional: v.caption_optional,
+        tooltip_body: v.tooltip_body,
         icon: v.icon,
         action_name: k
       }));

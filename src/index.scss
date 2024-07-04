@@ -49,6 +49,13 @@ $lhasa_font_size: small;
     // font-family: monospace;
 }
 
+.lhasa_tooltip {
+    font-size: smaller;
+    font-family: sans-serif;
+    margin: $lhasa_base_padding * 2;
+    // color: red !important;
+}
+
 @mixin toolbar {
     border: $lhasa_toolbar_border_color 1px solid;
     border-radius: 4px;
