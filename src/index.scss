@@ -40,6 +40,15 @@ $lhasa_font_size: small;
     text-align: left;
 }
 
+.keybind_hint {
+    color: color.adjust($lhasa_text_color, $saturation: -50%, $lightness: +40%);
+    background-color: $lhasa_background_color;
+    margin-left: $lhasa_base_padding;
+    border-radius: $lhasa_padding_minor;
+    padding: $lhasa_padding_minor;
+    // font-family: monospace;
+}
+
 @mixin toolbar {
     border: $lhasa_toolbar_border_color 1px solid;
     border-radius: 4px;

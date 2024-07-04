@@ -790,11 +790,11 @@ export function LhasaComponent({
                 >
                   <MenuItem onClick={() => handler_map["Undo"]()} >
                     <Undo />
-                    Undo
+                    Undo <div className="keybind_hint">Ctrl+Z</div>
                   </MenuItem>
                   <MenuItem onClick={() => handler_map["Redo"]()} >
                     <Redo />
-                    Redo
+                    Redo <div className="keybind_hint">Ctrl+Shift+Z</div>
                   </MenuItem>
                 </Menu>
                 <Button 
