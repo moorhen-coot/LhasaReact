@@ -534,7 +534,7 @@ export function LhasaComponent({
     <b><i>X</i></b> allows to manually type in a custom symbol.
   </div>);
 
-  const tool_button_data = useRef({
+  const tool_button_data = useMemo(() => {return {
     Move: { 
       caption:"Move",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
@@ -854,7 +854,7 @@ export function LhasaComponent({
       caption_optional: false,
       tooltip_body: element_tool_tooltip.current
     }
-  });
+  }}, [icons_path_prefix]);
 
   function wrap_handler(action_name: string, raw_handler: () => void) : () => void {
     return () => {
@@ -865,18 +865,18 @@ export function LhasaComponent({
 
   const handler_map = useMemo(() => {
     let ret = Object.fromEntries(
-      Object.entries(tool_button_data.current)
+      Object.entries(tool_button_data)
         .map(([k,v]) => [k, wrap_handler(k,v["raw_handler"])])
     );
     // Those are not tool buttons. We handle them manually.
     ret['Undo'] = () => lh.current?.undo_edition();
     ret['Redo'] = () => lh.current?.redo_edition();
     return ret;
-  }, [tool_button_data.current]);
+  }, [tool_button_data]);
 
   let tool_buttons = useMemo(() => {
     let m_tool_buttons = new Map<string,JSX.Element>();
-    for(const [k,v] of Object.entries(tool_button_data.current)) {
+    for(const [k,v] of Object.entries(tool_button_data)) {
       m_tool_buttons.set(k, ToolButton({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
@@ -887,12 +887,12 @@ export function LhasaComponent({
       }));
     }
     return m_tool_buttons;
-  }, [tool_button_data.current, handler_map]);
+  }, [tool_button_data, handler_map]);
   
 
   let key_map = useMemo(() => {
     let ret = Object.fromEntries(
-      Object.entries(tool_button_data.current)
+      Object.entries(tool_button_data)
         .filter(([k,v]) => 'hotkey' in v)
         .map(([k,v]) => [k, v['hotkey']])
     );
@@ -900,7 +900,7 @@ export function LhasaComponent({
     ret['Undo'] = 'ctrl+z';
     ret['Redo'] = ['ctrl+r','ctrl+shift+z'];
     return ret;
-  }, [tool_button_data.current]);
+  }, [tool_button_data]);
 
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const [editOpened, setEditOpen] = useState<boolean>(false);
