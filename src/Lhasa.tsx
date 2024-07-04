@@ -11,18 +11,24 @@ class ToolButtonProps {
   onclick?: () => void;
   action_name: string | undefined;
   caption: string | undefined;
+  caption_optional?: boolean = false;
   icon: string | undefined | null;
 }
 
-const ActiveToolContext = createContext<string>('');
+class ActiveToolContextData {
+  active_tool_name?: string = '';
+  show_optional_captions?: boolean = true;
+}
+
+const ActiveToolContext = createContext<ActiveToolContextData>(new ActiveToolContextData());
 
 function ToolButton(props:ToolButtonProps) {
   // console.log(props.caption);
   return (
     <ActiveToolContext.Consumer>
-      {active_tool_name => (
+      {context => (
         <ToggleButton
-          selected={active_tool_name == props.action_name}
+          selected={context.active_tool_name == props.action_name}
           onChange={props.onclick}
           value={'dummy'}
           // Doesn't work: autoCapitalize='false'
@@ -33,7 +39,7 @@ function ToolButton(props:ToolButtonProps) {
             <>
               <img src={props.icon} className="lhasa_icon" />
             </>}
-          {props.caption}
+          {(context.show_optional_captions || !props.caption_optional) && props.caption}
           </div>
         </ToggleButton>
       )}
@@ -508,181 +514,211 @@ export function LhasaComponent({
       caption:"Move",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
       icon: icons_path_prefix + "/layla_move_tool.svg",
-      hotkey:"m"
+      hotkey:"m",
+      caption_optional: true
     },
     Rotate: { 
       caption:"Rotate",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation)),
       icon: icons_path_prefix + "/lhasa_rotate_tool.svg",
-      hotkey:"r"
+      hotkey:"r",
+      caption_optional: true
     },
     Flip_around_X: { 
       caption:"Flip around X",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal)),
       icon: icons_path_prefix + "/lhasa_flip_x_tool.svg",
-      hotkey:"alt+f"
+      hotkey:"alt+f",
+      caption_optional: true
     },
     Flip_around_Y: { 
       caption:"Flip around Y",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical)),
       icon: icons_path_prefix + "/lhasa_flip_y_tool.svg",
-      hotkey:"ctrl+alt+f"
+      hotkey:"ctrl+alt+f",
+      caption_optional: true
     },
     Delete_hydrogens: { 
       caption:"Delete hydrogens",
       raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
       icon: icons_path_prefix + "/layla_delete_hydrogens_tool.svg",
-      hotkey:"alt+delete"
+      hotkey:"alt+delete",
+      caption_optional: true
     },
     Format: { 
       caption:"Format",
       raw_handler:() => switch_tool(new Lhasa.FormatTool()),
       icon: icons_path_prefix + "/layla_format_tool.svg",
-      hotkey:"f"
+      hotkey:"f",
+      caption_optional: true
     },
     Single_Bond: { 
       caption:"Single Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
       icon: icons_path_prefix + "/layla_single_bond.svg",
-      hotkey:"s"
+      hotkey:"s",
+      caption_optional: true
     },
     Double_Bond: { 
       caption:"Double Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
       icon: icons_path_prefix + "/layla_double_bond.svg",
-      hotkey:"d"
+      hotkey:"d",
+      caption_optional: true
     },
     Triple_Bond: { 
       caption:"Triple Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
       icon: icons_path_prefix + "/layla_triple_bond.svg",
-      hotkey:"t"
+      hotkey:"t",
+      caption_optional: true
     },
     Geometry: { 
       caption:"Geometry",
       raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
       icon: icons_path_prefix + "/layla_geometry_tool.svg",
-      hotkey:"g"
+      hotkey:"g",
+      caption_optional: true
     },
     Charge: { 
       caption:"Charge",
       raw_handler:() => switch_tool(new Lhasa.ChargeModifier()),
       icon: icons_path_prefix + "/layla_charge_tool.svg",
-      hotkey:"v"
+      hotkey:"v",
+      caption_optional: true
     },
     Delete: { 
       caption:"Delete",
       raw_handler:() => switch_tool(new Lhasa.DeleteTool()),
       icon: icons_path_prefix + "/lhasa_delete_tool.svg",
-      hotkey:"delete"
+      hotkey:"delete",
+      caption_optional: true
     },
     C3: { 
       caption:"3-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPropaneRing)),
       icon: icons_path_prefix + "/layla_3c.svg",
-      hotkey:"3"
+      hotkey:"3",
+      caption_optional: true
     },
     C4: { 
       caption:"4-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloButaneRing)),
       icon: icons_path_prefix + "/layla_4c.svg",
-      hotkey:"4"
+      hotkey:"4",
+      caption_optional: true
     },
     C5: { 
       caption:"5-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPentaneRing)),
       icon: icons_path_prefix + "/layla_5c.svg",
-      hotkey:"5"
+      hotkey:"5",
+      caption_optional: true
     },
     C6: { 
       caption:"6-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHexaneRing)),
       icon: icons_path_prefix + "/layla_6c.svg",
-      hotkey:"6"
+      hotkey:"6",
+      caption_optional: true
     },
     Arom6: { 
       caption:"6-Arom",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.BenzeneRing)),
       icon: icons_path_prefix + "/layla_6arom.svg",
-      hotkey:["b","alt+6"]
+      hotkey:["b","alt+6"],
+      caption_optional: true
     },
     C7: { 
       caption:"7-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHeptaneRing)),
       icon: icons_path_prefix + "/layla_7c.svg",
-      hotkey:"7"
+      hotkey:"7",
+      caption_optional: true
     },
     C8: { 
       caption:"8-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloOctaneRing)),
       icon: icons_path_prefix + "/layla_8c.svg",
-      hotkey:"8"
+      hotkey:"8",
+      caption_optional: true
     },
     C: { 
       caption:"C",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.C)),
       icon: null,
-      hotkey:"c"
+      hotkey:"c",
+      caption_optional: false
     },
     N: { 
       caption:"N",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.N)),
       icon: null,
-      hotkey:"n"
+      hotkey:"n",
+      caption_optional: false
     },
     O: { 
       caption:"O",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.O)),
       icon: null,
-      hotkey:"o"
+      hotkey:"o",
+      caption_optional: false
     },
     S: { 
       caption:"S",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.S)),
       icon: null,
-      hotkey:"alt+s"
+      hotkey:"alt+s",
+      caption_optional: false
     },
     P: { 
       caption:"P",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.P)),
       icon: null,
-      hotkey:"p"
+      hotkey:"p",
+      caption_optional: false
     },
     H: { 
       caption:"H",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.H)),
       icon: null,
-      hotkey:"h"
+      hotkey:"h",
+      caption_optional: false
     },
     F: { 
       caption:"F",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.F)),
       icon: null,
-      hotkey:"alt+i"
+      hotkey:"alt+i",
+      caption_optional: false
     },
     Cl: { 
       caption:"Cl",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Cl)),
       icon: null,
-      hotkey:"alt+c"
+      hotkey:"alt+c",
+      caption_optional: false
     },
     Br: { 
       caption:"Br",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.Br)),
       icon: null,
-      hotkey:"alt+b"
+      hotkey:"alt+b",
+      caption_optional: false
     },
     I: { 
       caption:"I",
       raw_handler:() => switch_tool(new Lhasa.ElementInsertion(Lhasa.LhasaElement.I)),
       icon: null,
-      hotkey:"i"
+      hotkey:"i",
+      caption_optional: false
     },
     X: { 
       caption:"X",
       raw_handler:() => on_x_element_button(),
       icon: null,
-      hotkey:"x"
+      hotkey:"x",
+      caption_optional: false
     }
   });
 
@@ -710,6 +746,7 @@ export function LhasaComponent({
       m_tool_buttons.set(k, ToolButton({
         onclick: () => {handler_map[k]()},
         caption: v.caption,
+        caption_optional: v.caption_optional,
         icon: v.icon,
         action_name: k
       }));
@@ -740,6 +777,8 @@ export function LhasaComponent({
   const [displayModeOpened, setDisplayModeOpen] = useState<boolean>(false);
   
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
+  
+  const [showToolButtonLabels, setShowToolButtonLabels] = useState<boolean>(true);
 
   const [showQedChecked, setShowQedChecked] = useState<boolean>(false);
   const [qedTab, setQedTab] = useState<number>(0);
@@ -755,7 +794,7 @@ export function LhasaComponent({
 
   return (
     <>
-      <ActiveToolContext.Provider value={activeToolName}>
+      <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
             <div className="lhasa_editor LhasaMuiStyling">
@@ -827,8 +866,16 @@ export function LhasaComponent({
                         label="Show QED" 
                         control={<Switch />}
                         checked={showQedChecked}
-                        onChange={(e) => {
+                        onChange={(_e) => {
                           setShowQedChecked(!showQedChecked);
+                        }}
+                      />
+                      <FormControlLabel 
+                        label="Show Tool Button Labels" 
+                        control={<Switch />}
+                        checked={showToolButtonLabels}
+                        onChange={(_e) => {
+                          setShowToolButtonLabels(!showToolButtonLabels);
                         }}
                       />
                     </FormGroup>
