@@ -882,7 +882,7 @@ export function LhasaComponent({
         let hotkey_arr = typeof hotkey === 'string' ? [hotkey] : hotkey;
         return (<div className='lhasa_tooltip_keybind_infoblock'>
           <b>Hotkeys:</b><br/><br/>
-          {hotkey_arr.map((hotkey_text) => <span className='lhasa_tooltip_keybind_info'>
+          {hotkey_arr.map((hotkey_text) => <span key={hotkey_text} className='lhasa_tooltip_keybind_info'>
             {hotkey_text}
           </span>)}
         </div>);
