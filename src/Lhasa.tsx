@@ -30,7 +30,9 @@ function ToolButton(props:ToolButtonProps) {
       {context => (
         <Tooltip
           title={props.tooltip_body}
-          enterDelay={300}
+          enterDelay={1000}
+          enterNextDelay={1000}
+          disableInteractive
         >
           <ToggleButton
             selected={context.active_tool_name == props.action_name}
