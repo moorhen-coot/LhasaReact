@@ -77,7 +77,8 @@ class LhasaComponentProps {
   rdkit_molecule_pickle_list?: { pickle: string; id: string }[];
   /// When Lhasa is embedded, what is it embedded in?
   name_of_host_program?: string;
-  /// TODO: Consistent IDs
+  /// Called when a molecule changes.
+  /// Can be provided to get updates when a molecule changes
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
 }
 
