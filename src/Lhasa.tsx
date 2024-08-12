@@ -281,7 +281,7 @@ export function LhasaComponent({
   
             d_string += describeArc(arc.origin.x, arc.origin.y, arc.radius, arc.angle_one - 0.001, arc.angle_two) + " "; 
         
-          } if(element.is_line()) {
+          } else if(element.is_line()) {
             const line = element.as_line();
   
             function describeLine(x1, y1, x2, y2) {
