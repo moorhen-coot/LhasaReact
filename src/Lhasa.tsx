@@ -936,6 +936,8 @@ export function LhasaComponent({
   const [showQedChecked, setShowQedChecked] = useState<boolean>(false);
   const [qedTab, setQedTab] = useState<number>(0);
 
+  const [editedSmiles, setEditedSmiles] = useState<number | null>(null);
+
 
   const scale_mapper = (x) => {
     return theta_const ** (x + d_const) + c_const;
@@ -1221,7 +1223,13 @@ export function LhasaComponent({
                         }
                         smiles_callback(smiles_tuple[0], external_id, smiles_tuple[1])
                       }}>Send to {name_of_host_program}</Button>}
-                      {smiles_tuple[1]}
+                      <TextField 
+                        variant="standard"
+                        value={editedSmiles !== smiles_tuple[0] ? smiles_tuple[1] : undefined}
+                        onFocus={(_event) => setEditedSmiles(smiles_tuple[0])}
+                        onBlur={(_event) => setEditedSmiles(null)}
+                        onChange={(event) => lh.current.update_molecule_from_smiles(smiles_tuple[0], event.target.value)}
+                      />
                       </div>)}
                   </div>
                   {/* <Divider /> */}
