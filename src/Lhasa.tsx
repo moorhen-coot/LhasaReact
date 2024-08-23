@@ -1171,7 +1171,7 @@ export function LhasaComponent({
                   onContextMenu={(e) => {e.preventDefault();}}
                   onMouseMove={(event) => {
                     // console.log('Mousemove');
-                    lh.current?.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey);
+                    lh.current?.on_hover(event.nativeEvent.offsetX, event.nativeEvent.offsetY, event.altKey, event.ctrlKey);
                   }}
                   onMouseDown={(event) => {
                     if(event.button == 0) {
