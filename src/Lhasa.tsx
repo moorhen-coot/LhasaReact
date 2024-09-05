@@ -708,10 +708,13 @@ export function LhasaComponent({
         <b>Delete Tool</b><br/>
         Delete atoms, bonds or molecules.<br/>
         <br/>
-        <b>Left click on a bond</b> - Removes the bond.<br/>
-        <b>Left click on an atom</b> - Removes the atom.<br/>
+        <b>Left click on a bond</b> - Removes the bond (or the whole R-chain).<br/>
+        <b>Left click on an atom</b> - Removes the atom (or the whole R-chain).<br/>
         <br/>
-        <b>Control + Left click on a molecule</b> - Remove the selected molecule.
+        <b>Control + Alt + Left click on a bond</b> - Removes just the bond (without any R-chains).<br/>
+        <b>Control + Alt + Left click on an atom</b> - Removes just the atom (without any R-chains).<br/>
+        <br/>
+        <b>Control + Left click on a molecule</b> - Remove the selected molecule
       </div>
     },
     C3: { 
