@@ -6,6 +6,7 @@ import './customize_mui.scss';
 import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
+import { BansuButton } from './bansu_integration';
 
 class ToolButtonProps {
   onclick?: () => void;
@@ -503,6 +504,10 @@ export function LhasaComponent({
   
   // From what I understand, this becomes non-null
   // after the first render at which point it
+  // should point to the "lhasa_editor" div.
+  const editorRef = useRef<HTMLDivElement>(null);
+  // From what I understand, this becomes non-null
+  // after the first render at which point it
   // should point to the "editor_canvas_container" div.
   const svgRef = useRef<HTMLDivElement>(null);
   // defers the callback to run after render, which is crucial for text measurement
@@ -955,7 +960,7 @@ export function LhasaComponent({
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
-            <div className="lhasa_editor LhasaMuiStyling">
+            <div className="lhasa_editor LhasaMuiStyling" ref={editorRef}>
               {show_top_panel &&
                 <div className="horizontal_container">
                   <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
@@ -1226,6 +1231,10 @@ export function LhasaComponent({
                         }
                         smiles_callback(smiles_tuple[0], external_id, smiles_tuple[1])
                       }}>Send to {name_of_host_program}</Button>}
+                      <BansuButton 
+                        smiles={smiles_tuple[1]}
+                        anchorEl={editorRef.current}
+                      />
                       <TextField 
                         variant="standard"
                         value={editedSmiles !== smiles_tuple[0] ? smiles_tuple[1] : undefined}
