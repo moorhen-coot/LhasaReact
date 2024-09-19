@@ -177,6 +177,26 @@ $lhasa_font_size: small;
     padding: $lhasa_base_padding;
 }
 
+.vertical_popup {
+    @include vertical_container;
+    @include center_vertical_flex;
+    gap: $lhasa_padding_minor * 4;
+    padding: $lhasa_base_padding * 4;
+}
+
+.vertical_popup_title {
+    @include horizontal_container;
+    font-size: larger;
+    font-weight: bold;
+    border-bottom: color.adjust($lhasa_toolbar_border_color, $saturation: +90%, $lightness: -0%, $alpha: +0.7) 2px solid;
+    margin-bottom: $lhasa_base_padding;
+    // border-radius: 4px;
+    // padding: $lhasa_base_padding;
+    flex-grow: 1;
+    justify-content: center;
+    align-self: normal;
+}
+
 .smiles_display {
     padding: $lhasa_base_padding;
     font-family: monospace;

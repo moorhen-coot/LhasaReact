@@ -81,6 +81,7 @@ class LhasaComponentProps {
   /// Called when a molecule changes.
   /// Can be provided to get updates when a molecule changes
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
+  bansu_endpoint?: { hostname: string, port: number } | undefined;
 }
 
 
@@ -91,7 +92,8 @@ export function LhasaComponent({
   icons_path_prefix = '', 
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
-  smiles_callback
+  smiles_callback,
+  bansu_endpoint
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
@@ -1231,10 +1233,13 @@ export function LhasaComponent({
                         }
                         smiles_callback(smiles_tuple[0], external_id, smiles_tuple[1])
                       }}>Send to {name_of_host_program}</Button>}
-                      <BansuButton 
-                        smiles={smiles_tuple[1]}
-                        anchorEl={editorRef.current}
-                      />
+                      {bansu_endpoint &&
+                        <BansuButton 
+                          smiles={smiles_tuple[1]}
+                          anchorEl={editorRef.current}
+                          bansu_endpoint={bansu_endpoint}
+                        />
+                      }
                       <TextField 
                         variant="standard"
                         value={editedSmiles !== smiles_tuple[0] ? smiles_tuple[1] : undefined}

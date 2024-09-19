@@ -31,6 +31,7 @@ export function App() {
         // show_footer={true}
         icons_path_prefix='/icons'
         smiles_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
+        bansu_endpoint={{ hostname: 'localhost', port:8080}}
       />}
     </>
   )
