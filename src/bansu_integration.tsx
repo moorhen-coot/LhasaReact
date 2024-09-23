@@ -1,4 +1,4 @@
-import { Popover, Button, Tooltip, StyledEngineProvider } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
 // import * as http from 'http';
@@ -10,7 +10,7 @@ import './customize_mui.scss';
 class BansuPopupProps {
     smiles!: string;
     anchorEl?: HTMLElement | null;
-    bansu_endpoint!: { hostname: string, port: number };
+    bansu_endpoint!: string;
     // internal_id: 
 }
 
@@ -29,6 +29,7 @@ export function BansuButton(props: BansuPopupProps) {
     const [popoverOpened, setPopoverOpened] = useState<boolean>(false);
     const [state, setState] = useState<BansuPopupState>(BansuPopupState.SpawningJob);
     const [jobId, setJobId] = useState<string | null>(null);
+    const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
 
     const [workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
@@ -41,46 +42,43 @@ export function BansuButton(props: BansuPopupProps) {
         if(!popoverOpened) {
             return <></>;
         }
-        const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
         switch(state) {
             case BansuPopupState.SpawningJob:
-                let promise1 = new Promise(async () => {
-                    await sleep(1900);
-                    setState(BansuPopupState.ConnectingOnWebsocket);
-                });
                 return <div className="vertical_panel">
                     Spawning Bansu job...
-                    <small>Bansu instance <i>{props.bansu_endpoint.hostname}:{props.bansu_endpoint.port}</i></small>
+                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
                 </div>;
             case BansuPopupState.ConnectingOnWebsocket:
-                let promise2 = new Promise(async () => {
-                    await sleep(1900);
-                    setState(BansuPopupState.Waiting);
-                });
                 return <div className="vertical_panel">
                     Estabilishing event listener connection...
-                    <small>Bansu instance <i>{props.bansu_endpoint.hostname}:{props.bansu_endpoint.port}</i></small>
+                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
                     <small>Job id: {jobId}</small>
                 </div>;
             case BansuPopupState.Waiting:
-                let promise3 = new Promise(async () => {
-                    await sleep(1900);
-                    setState(BansuPopupState.Ready);
-                });
                 return <div className="vertical_panel">
                     Waiting for Bansu job...
-                    <small>Bansu instance <i>{props.bansu_endpoint.hostname}:{props.bansu_endpoint.port}</i></small>
+                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
                     <small>Job id: {jobId}</small>
                 </div>;
             case BansuPopupState.Ready:
-                // let promise4 = new Promise(async () => {
-                //     await sleep(1900);
-                //     setErrorString("pierd");
-                //     setState(BansuPopupState.Error);
-                // });
                 return <div className="vertical_panel">
                     Ready
-                    <Button variant="contained">
+                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
+                    <small>Job id: {jobId}</small>
+                    <Accordion>
+                        <AccordionSummary>
+                            Job output
+                        </AccordionSummary>
+                        <AccordionDetails
+                            style={{maxWidth: '300px', wordBreak: 'break-word'}}
+                        >
+                        {finishedJobOutput}
+                        </AccordionDetails>
+                    </Accordion>
+                    <Button 
+                        variant="contained"
+                        onClick={() => console.log("Todo: CIF")}
+                    >
                         Download CIF
                     </Button>
                     <Button 
@@ -110,10 +108,10 @@ export function BansuButton(props: BansuPopupProps) {
                 </div>
             </div>;
         }
-    }, [state, popoverOpened, jobId]);
+    }, [state, popoverOpened, jobId, errorString, finishedJobOutput]);
 
     useEffect(() => {
-        return;
+        // return;
         if(popoverOpened && state == BansuPopupState.SpawningJob) {
             let promise = new Promise<void>(async () => {
                 setState(BansuPopupState.SpawningJob);
@@ -123,7 +121,7 @@ export function BansuButton(props: BansuPopupProps) {
                 });
     
                 try {
-                    const res = await fetch(`http://${props.bansu_endpoint.hostname}:${props.bansu_endpoint.port}/run_acedrg`, {
+                    const res = await fetch(`http://${props.bansu_endpoint}/run_acedrg`, {
                         method: 'POST',
                         body: postData,
                         headers: {
@@ -132,18 +130,50 @@ export function BansuButton(props: BansuPopupProps) {
                         // mode: 'no-cors'
                     });
                     const jsonData = await res.json();
-                    console.log("Got json: ", jsonData);
+                    console.log("Got json from /run_acedrg: ", jsonData);
                     if(jsonData.job_id === null) {
-                        let emsg = `Server returned null job id. Error message is: ${jsonData.error_message}`;
+                        let emsg = `Server returned null job id / no job id. Error message is: ${jsonData.error_message}`;
                         console.error(emsg);
                         setErrorString(emsg);
                         setState(BansuPopupState.Error);
                     }
+                    setJobId(jsonData.job_id);
                     setState(BansuPopupState.ConnectingOnWebsocket);
                     console.log("Establishing WebSocket connection.");
                     // Create WebSocket connection.
-                    const socket = new WebSocket(`ws://${props.bansu_endpoint.hostname}:${props.bansu_endpoint.port}/ws/${jsonData.job_id}`);
-                    // todo
+                    const socket = new WebSocket(`ws://${props.bansu_endpoint}/ws/${jsonData.job_id}`);
+
+                    // Connection opened
+                    socket.addEventListener("open", (event) => {
+                        console.log("Connection on WebSocket established.");
+                        setState(BansuPopupState.Waiting);
+                    });
+
+                    socket.addEventListener("close", (event) => {
+                        console.log("Connection on WebSocket closed.");
+                        // process.exit(0);
+                    });
+
+                    socket.addEventListener("error", (event) => {
+                        console.error("Connection on WebSocket errored-out: ", event);
+                        setErrorString(`WebSocket error: ${event}`);
+                        setState(BansuPopupState.Error);
+                    });
+
+                    // Listen for messages
+                    socket.addEventListener("message", (event) => {
+                        //console.debug("Websocket message from server ", event.data);
+                        const json = JSON.parse(event.data);
+                        console.debug("Got JSON from WS: ", json);
+                        if(json.status == "Failed") {
+                            setErrorString(`Job failed:\n Failure reason: ${json.failure_reason}\n Output:${JSON.stringify(json.job_output)}`);
+                            setState(BansuPopupState.Error);
+                        } else if(json.status == "Finished") {
+                            setFinishedJobOutput(JSON.stringify(json.job_output));
+                            setState(BansuPopupState.Ready);
+                        }
+                    });
+
                 } catch(exception) {
                     console.error(`Problem with HTTP request: ${exception}`);
                     setErrorString(`${exception}`);
@@ -184,11 +214,11 @@ export function BansuButton(props: BansuPopupProps) {
                 anchorEl={props.anchorEl}
                 anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
             >
-                <div className="vertical_popup lhasa_editor LhasaMuiStyling">
+                <div className="vertical_popup lhasa_editor LhasaMuiStyling" style={{maxWidth:  '400px', maxHeight: '200px'}}>
                     <div className="vertical_popup_title">
                         CIF generation via Bansu
                     </div>
-                    <div style={{alignSelf: "normal"}}>
+                    <div style={{alignSelf: "normal", overflow: 'auto'}}>
                         {popoverContent()}
                     </div>
                 </div>

@@ -31,7 +31,10 @@ export function App() {
         // show_footer={true}
         icons_path_prefix='/icons'
         smiles_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
-        bansu_endpoint={{ hostname: 'localhost', port:8080}}
+        // Works when using `npx vite server --port 5174`
+        // Inside `vite.config.js` there is a proxy setup to redirect this to an actual bansu instance.
+        // CORS stuff is broken for localhost connections, it seems.
+        bansu_endpoint='localhost:5174'
       />}
     </>
   )

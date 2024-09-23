@@ -7,9 +7,24 @@ import topLevelAwait from 'vite-plugin-top-level-await'
 export default defineConfig({
   // preview: {
   //   headers: {
-  //     'Access-Control-Allow-Origin': "*"
+  //     'Access-Control-Allow-Origin': "*",
+  //     'access-control-allow-origin': "*",
+  //     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
+  //     'a': 'b'
   //   }
   // },
+  server: {
+    proxy: {
+      '/run_acedrg': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/ws': {
+        target: 'ws://localhost:8080',
+        changeOrigin: true
+      }
+    }
+  },
   plugins: [
     react(), 
     crossOriginIsolation(),
