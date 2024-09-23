@@ -19,6 +19,10 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true
       },
+      '/get_cif': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
       '/ws': {
         target: 'ws://localhost:8080',
         changeOrigin: true

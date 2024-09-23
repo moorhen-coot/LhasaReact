@@ -76,8 +76,9 @@ export function BansuButton(props: BansuPopupProps) {
                         </AccordionDetails>
                     </Accordion>
                     <Button 
+                        onClick={(e) => window.open(`http://${props.bansu_endpoint}/get_cif/${jobId}`)}
+                        // style={{flex: 'auto'}}
                         variant="contained"
-                        onClick={() => console.log("Todo: CIF")}
                     >
                         Download CIF
                     </Button>
