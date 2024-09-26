@@ -119,7 +119,7 @@ $lhasa_font_size: small;
     letter-spacing: 0em;
 }
 
-@mixin center_vertical_flex {
+@mixin center_flex {
     text-align: center;
     justify-content: center;
     /* CSS is weird */
@@ -133,6 +133,15 @@ $lhasa_font_size: small;
 
 .horizontal_container {
     @include horizontal_container;
+}
+
+.horizontal_container_centered {
+    @include horizontal_container;
+    @include center_flex;
+}
+
+.children_expanded > * {
+    flex-grow: 1;
 }
 
 @mixin vertical_container {
@@ -171,7 +180,7 @@ $lhasa_font_size: small;
 
 .tool_button {
     @include vertical_container;
-    @include center_vertical_flex;
+    @include center_flex;
     @include lhasa_disable_MUI_swelling;
     gap: $lhasa_padding_minor;
     padding: $lhasa_base_padding;
@@ -179,7 +188,7 @@ $lhasa_font_size: small;
 
 .vertical_popup {
     @include vertical_container;
-    @include center_vertical_flex;
+    @include center_flex;
     gap: $lhasa_padding_minor * 4;
     padding: $lhasa_base_padding * 4;
 }

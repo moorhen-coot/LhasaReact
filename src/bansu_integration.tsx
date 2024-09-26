@@ -1,4 +1,5 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input } from "@mui/material";
+// import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
 // import * as http from 'http';
@@ -48,13 +49,24 @@ export function BansuButton(props: BansuPopupProps) {
             case BansuPopupState.UserConfig:
                 return <div className="vertical_panel">
                     Bansu job configuration
-                    <small>Bansu instance <i>{bansuEndpoint}</i></small>
-                    <Button 
-                        onClick={() => setState(BansuPopupState.SpawningJob)}
-                        variant="contained"
-                    >
-                        Spawn Bansu job
-                    </Button>
+                    <div className="horizontal_container_centered">
+                        Bansu instance
+                        <Input defaultValue={props.bansu_endpoint} />
+                    </div>
+                    <div className="horizontal_container_centered children_expanded">
+                        <Button 
+                            onClick={() => setPopoverOpened(false)}
+                            variant="contained"
+                        >
+                            Cancel
+                        </Button>
+                        <Button 
+                            onClick={() => setState(BansuPopupState.SpawningJob)}
+                            variant="contained"
+                        >
+                            Spawn Bansu job
+                        </Button>
+                    </div>
                 </div>;
             case BansuPopupState.SpawningJob:
                 return <div className="vertical_panel">
@@ -88,36 +100,38 @@ export function BansuButton(props: BansuPopupProps) {
                         {finishedJobOutput}
                         </AccordionDetails>
                     </Accordion>
-                    <Button 
-                        onClick={(e) => window.open(`http://${bansuEndpoint}/get_cif/${jobId}`)}
-                        // style={{flex: 'auto'}}
-                        variant="contained"
-                    >
-                        Download CIF
-                    </Button>
-                    <Button 
-                        onClick={() => setPopoverOpened(false)}
-                        variant="contained"
-                    >
-                        Close
-                    </Button>
+                    <div className="horizontal_container_centered children_expanded">
+                        <Button 
+                            onClick={() => setPopoverOpened(false)}
+                            variant="contained"
+                        >
+                            Close
+                        </Button>
+                        <Button 
+                            onClick={(e) => window.open(`http://${bansuEndpoint}/get_cif/${jobId}`)}
+                            // style={{flex: 'auto'}}
+                            variant="contained"
+                        >
+                            Download CIF
+                        </Button>
+                    </div>
                 </div>;
             case BansuPopupState.Error:
                 return <div className="vertical_panel">
                 <span style={{color: 'red'}}>Error</span>
                 <span style={{color: 'darkred'}}>{errorString}</span>
-                <div className="horizontal_container">
-                    <Button 
-                        onClick={() => setPopoverOpened(false)}
-                        variant="contained"
-                    >
-                        Close
-                    </Button>
+                <div className="horizontal_container_centered children_expanded">
                     <Button 
                         onClick={() => resetState()}
                         variant="contained"
                     >
                         Retry
+                    </Button>
+                    <Button 
+                        onClick={() => setPopoverOpened(false)}
+                        variant="contained"
+                    >
+                        Close
                     </Button>
                 </div>
             </div>;
