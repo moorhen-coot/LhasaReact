@@ -17,6 +17,7 @@ class BansuPopupProps {
 // Do I want to use an enum?
 // Or do I way to express the state with variables alone?
 enum BansuPopupState {
+    UserConfig,
     SpawningJob,
     ConnectingOnWebsocket,
     Waiting,
@@ -27,7 +28,8 @@ enum BansuPopupState {
 export function BansuButton(props: BansuPopupProps) {
 
     const [popoverOpened, setPopoverOpened] = useState<boolean>(false);
-    const [state, setState] = useState<BansuPopupState>(BansuPopupState.SpawningJob);
+    const [state, setState] = useState<BansuPopupState>(BansuPopupState.UserConfig);
+    const [bansuEndpoint, setBansuEndpoint] = useState<string>(props.bansu_endpoint);
     const [jobId, setJobId] = useState<string | null>(null);
     const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export function BansuButton(props: BansuPopupProps) {
     const [workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
 
     const resetState = () => {
-        setState(BansuPopupState.SpawningJob);
+        setState(BansuPopupState.UserConfig);
     }
 
     const popoverContent = useCallback(() => {
@@ -43,27 +45,38 @@ export function BansuButton(props: BansuPopupProps) {
             return <></>;
         }
         switch(state) {
+            case BansuPopupState.UserConfig:
+                return <div className="vertical_panel">
+                    Bansu job configuration
+                    <small>Bansu instance <i>{bansuEndpoint}</i></small>
+                    <Button 
+                        onClick={() => setState(BansuPopupState.SpawningJob)}
+                        variant="contained"
+                    >
+                        Spawn Bansu job
+                    </Button>
+                </div>;
             case BansuPopupState.SpawningJob:
                 return <div className="vertical_panel">
                     Spawning Bansu job...
-                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
+                    <small>Bansu instance <i>{bansuEndpoint}</i></small>
                 </div>;
             case BansuPopupState.ConnectingOnWebsocket:
                 return <div className="vertical_panel">
                     Estabilishing event listener connection...
-                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
+                    <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
                 </div>;
             case BansuPopupState.Waiting:
                 return <div className="vertical_panel">
                     Waiting for Bansu job...
-                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
+                    <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
                 </div>;
             case BansuPopupState.Ready:
                 return <div className="vertical_panel">
                     Ready
-                    <small>Bansu instance <i>{props.bansu_endpoint}</i></small>
+                    <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
                     <Accordion>
                         <AccordionSummary>
@@ -76,7 +89,7 @@ export function BansuButton(props: BansuPopupProps) {
                         </AccordionDetails>
                     </Accordion>
                     <Button 
-                        onClick={(e) => window.open(`http://${props.bansu_endpoint}/get_cif/${jobId}`)}
+                        onClick={(e) => window.open(`http://${bansuEndpoint}/get_cif/${jobId}`)}
                         // style={{flex: 'auto'}}
                         variant="contained"
                     >
@@ -122,7 +135,7 @@ export function BansuButton(props: BansuPopupProps) {
                 });
     
                 try {
-                    const res = await fetch(`http://${props.bansu_endpoint}/run_acedrg`, {
+                    const res = await fetch(`http://${bansuEndpoint}/run_acedrg`, {
                         method: 'POST',
                         body: postData,
                         headers: {
@@ -142,7 +155,7 @@ export function BansuButton(props: BansuPopupProps) {
                     setState(BansuPopupState.ConnectingOnWebsocket);
                     console.log("Establishing WebSocket connection.");
                     // Create WebSocket connection.
-                    const socket = new WebSocket(`ws://${props.bansu_endpoint}/ws/${jsonData.job_id}`);
+                    const socket = new WebSocket(`ws://${bansuEndpoint}/ws/${jsonData.job_id}`);
 
                     // Connection opened
                     socket.addEventListener("open", (event) => {
@@ -214,6 +227,7 @@ export function BansuButton(props: BansuPopupProps) {
                 open={popoverOpened}
                 anchorEl={props.anchorEl}
                 anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
+                transformOrigin={{ vertical: 'center', horizontal: 'center'}}
             >
                 <div className="vertical_popup lhasa_editor LhasaMuiStyling" style={{maxWidth:  '400px', maxHeight: '200px'}}>
                     <div className="vertical_popup_title">
