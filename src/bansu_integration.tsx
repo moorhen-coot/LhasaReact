@@ -1,4 +1,4 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Switch } from "@mui/material";
 // import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
@@ -48,10 +48,23 @@ export function BansuButton(props: BansuPopupProps) {
         switch(state) {
             case BansuPopupState.UserConfig:
                 return <div className="vertical_panel">
-                    Bansu job configuration
+                    <b>Bansu job configuration</b>
                     <div className="horizontal_container_centered">
                         Bansu instance
-                        <Input defaultValue={props.bansu_endpoint} />
+                        <Input defaultValue={bansuEndpoint} placeholder={props.bansu_endpoint} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            if(event.target.value !== "") {
+                                setBansuEndpoint(event.target.value);
+                            } else {
+                                setBansuEndpoint(props.bansu_endpoint);
+                            }
+                        }}
+                        />
+                    </div>
+                    Commandline flags
+                    <div className="horizontal_container_centered">
+                        {/* -z
+                        <Switch /> */}
+                        <i>TODO</i>
                     </div>
                     <div className="horizontal_container_centered children_expanded">
                         <Button 
