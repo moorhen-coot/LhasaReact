@@ -283,6 +283,8 @@ export interface Canvas extends ImplWidgetCoreData {
   get_max_molecule_idx(): number;
   set_allow_invalid_molecules(_0: boolean): void;
   get_allow_invalid_molecules(): boolean;
+  set_coordgen_mode_enabled(_0: boolean): void;
+  get_coordgen_mode_enabled(): boolean;
   get_display_mode(): DisplayMode;
   set_display_mode(_0: DisplayMode): void;
   get_smiles(): SmilesMap;
