@@ -6,6 +6,7 @@ import './customize_mui.scss';
 import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
+import { QedPropertyInfobox } from './qed_property_infobox';
 
 class ToolButtonProps {
   onclick?: () => void;
@@ -1273,47 +1274,56 @@ export function LhasaComponent({
                     // This is the proper tab
                     return <div hidden={qedTab !== mol_id} role="tabpanel" key={mol_id}>
                       <div className="horizontal_container">
-                        <div className="vertical_panel" style={{flexGrow: 1}}>    
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">QED score:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.qed_score.toFixed(4)}</span>
-                          </span>
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">MW:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.molecular_weight.toFixed(4)}</span>
-                          </span>
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">PSA:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.molecular_polar_surface_area.toFixed(4)}</span>
-                          </span>
+                        <div className="vertical_panel" style={{flexGrow: 1}}>
+                          <QedPropertyInfobox 
+                            property_name='QED score:'
+                            display_value={qedInfo.get(mol_id)?.qed_score.toFixed(4)}
+                            progressbar_value={qedInfo.get(mol_id)?.qed_score}
+                          />
+                          <QedPropertyInfobox 
+                            property_name='MW'
+                            display_value={qedInfo.get(mol_id)?.molecular_weight.toFixed(4)}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_mw}
+                          />
+                          <QedPropertyInfobox 
+                            property_name='PSA'
+                            display_value={qedInfo.get(mol_id)?.molecular_polar_surface_area.toFixed(4)}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_psa}
+                          />
                         </div>
                         <div className="vertical_panel" style={{flexGrow: 1}}>  
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">cLogP:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.alogp.toFixed(4)}</span>
-                          </span>
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">#ALERTS:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_alerts}</span>
-                          </span>
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">#HBA:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_hydrogen_bond_acceptors}</span>
-                          </span>
+                          <QedPropertyInfobox 
+                            property_name='cLogP'
+                            display_value={qedInfo.get(mol_id)?.alogp.toFixed(4)}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_alogp}
+                          />
+                          <QedPropertyInfobox 
+                            property_name='#ALERTS'
+                            display_value={qedInfo.get(mol_id)?.number_of_alerts}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_alert}
+                          />
+                          <QedPropertyInfobox 
+                            property_name='#HBA'
+                            display_value={qedInfo.get(mol_id)?.number_of_hydrogen_bond_acceptors}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_hba}
+                          />
                         </div>
                         <div className="vertical_panel" style={{flexGrow: 1}}>    
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">#HBD:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_hydrogen_bond_donors}</span>
-                          </span>
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">#AROM:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_aromatic_rings}</span>
-                          </span>
-                          <span className="qed_property_field">
-                            <span className="qed_property_label">#RotBonds:</span>
-                            <span className="qed_property_value">{qedInfo.get(mol_id)?.number_of_rotatable_bonds}</span>
-                          </span>
+                          <QedPropertyInfobox 
+                            property_name='#HBD'
+                            display_value={qedInfo.get(mol_id)?.number_of_hydrogen_bond_donors}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_hbd}
+                          />
+                          <QedPropertyInfobox 
+                            property_name='#AROM'
+                            display_value={qedInfo.get(mol_id)?.number_of_aromatic_rings}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_arom}
+                          />
+                          <QedPropertyInfobox 
+                            property_name='#RotBonds'
+                            display_value={qedInfo.get(mol_id)?.number_of_rotatable_bonds}
+                            progressbar_value={qedInfo.get(mol_id)?.ads_rotb}
+                          />
                         </div>
                       </div>
                     </div>;
