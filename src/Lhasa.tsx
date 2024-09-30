@@ -934,6 +934,7 @@ export function LhasaComponent({
   const [displayModeOpened, setDisplayModeOpen] = useState<boolean>(false);
   
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
+  const [useCoordgen, setUseCoordgen] = useState<boolean>(() => lh.current?.get_coordgen_mode_enabled());
   
   const [showToolButtonLabels, setShowToolButtonLabels] = useState<boolean>(true);
 
@@ -1019,6 +1020,16 @@ export function LhasaComponent({
                           const new_val = !lh.current?.get_allow_invalid_molecules();
                           lh.current?.set_allow_invalid_molecules(new_val);
                           setAimChecked(new_val);
+                        }}
+                      />
+                      <FormControlLabel 
+                        label="Use Coordgen" 
+                        control={<Switch />}
+                        checked={useCoordgen}
+                        onChange={(_e) => {
+                          const new_val = !lh.current?.get_coordgen_mode_enabled();
+                          lh.current?.set_coordgen_mode_enabled(new_val);
+                          setUseCoordgen(new_val);
                         }}
                       />
                       <FormControlLabel 
