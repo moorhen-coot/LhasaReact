@@ -159,7 +159,7 @@ export function BansuButton(props: BansuPopupProps) {
                 </div>
             </div>;
         }
-    }, [state, popoverOpened, jobId, errorString, finishedJobOutput]);
+    }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue]);
 
     useEffect(() => {
         // return;
