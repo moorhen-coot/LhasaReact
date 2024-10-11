@@ -33,7 +33,7 @@ export function BansuButton(props: BansuPopupProps) {
     const [state, setState] = useState<BansuPopupState>(BansuPopupState.UserConfig);
     const [bansuEndpoint, setBansuEndpoint] = useState<string>(props.bansu_endpoint);
     const [jobId, setJobId] = useState<string | null>(null);
-    const [posInQueue, SetPosInQueue] = = useState<number | null>(null);
+    const [posInQueue, setPosInQueue] = = useState<number | null>(null);
     const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
 
@@ -225,7 +225,7 @@ export function BansuButton(props: BansuPopupProps) {
                         } else if(json.status == "Pending") {
                             setState(BansuPopupState.Waiting);
                         } else if(json.status == "Queued") {
-                            SetPosInQueue(json.queue_position)
+                            setPosInQueue(json.queue_position)
                             setState(BansuPopupState.Queued);
                         }
                     });
