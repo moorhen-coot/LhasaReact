@@ -225,7 +225,7 @@ export function BansuButton(props: BansuPopupProps) {
                         } else if(json.status == "Pending") {
                             setState(BansuPopupState.Waiting);
                         } else if(json.status == "Queued") {
-                            setPosInQueue(json.queue_position)
+                            setPosInQueue(json.queue_position);
                             setState(BansuPopupState.Queued);
                         }
                     });
