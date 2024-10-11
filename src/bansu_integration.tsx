@@ -33,7 +33,7 @@ export function BansuButton(props: BansuPopupProps) {
     const [state, setState] = useState<BansuPopupState>(BansuPopupState.UserConfig);
     const [bansuEndpoint, setBansuEndpoint] = useState<string>(props.bansu_endpoint);
     const [jobId, setJobId] = useState<string | null>(null);
-    const [posInQueue, setPosInQueue] = = useState<number | null>(null);
+    const [posInQueue, setPosInQueue] = useState<number | null>(null);
     const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
 
@@ -217,7 +217,7 @@ export function BansuButton(props: BansuPopupProps) {
                         const json = JSON.parse(event.data);
                         console.debug("Got JSON from WS: ", json);
                         if(json.status == "Failed") {
-                            setErrorString(`Job failed:\n Failure reason: ${json.failure_reason}\n Output:${JSON.stringify(json.job_output)}`);
+                            setErrorString(`Job failed:\n Failure reason: ${json.failure_reason}\n ${json.error_message ? "Error message: " + json.error_message + "\n ": ""} Output:${JSON.stringify(json.job_output)}`);
                             setState(BansuPopupState.Error);
                         } else if(json.status == "Finished") {
                             setFinishedJobOutput(JSON.stringify(json.job_output));
