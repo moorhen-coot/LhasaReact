@@ -21,6 +21,7 @@ enum BansuPopupState {
     UserConfig,
     SpawningJob,
     ConnectingOnWebsocket,
+    Queued,
     Waiting,
     Ready,
     Error
@@ -32,6 +33,7 @@ export function BansuButton(props: BansuPopupProps) {
     const [state, setState] = useState<BansuPopupState>(BansuPopupState.UserConfig);
     const [bansuEndpoint, setBansuEndpoint] = useState<string>(props.bansu_endpoint);
     const [jobId, setJobId] = useState<string | null>(null);
+    const [posInQueue, SetPosInQueue] = = useState<number | null>(null);
     const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
 
@@ -92,9 +94,17 @@ export function BansuButton(props: BansuPopupProps) {
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
                 </div>;
+            case BansuPopupState.Queued:
+                return <div className="vertical_panel">
+                    Job has been queued.
+                    Waiting...
+                    <small>Bansu instance <i>{bansuEndpoint}</i></small>
+                    <small>Job id: {jobId}</small>
+                    <small>Position in queue: {posInQueue}</small>
+                </div>;
             case BansuPopupState.Waiting:
                 return <div className="vertical_panel">
-                    Waiting for Bansu job...
+                    Waiting for Bansu job to complete...
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
                 </div>;
@@ -187,7 +197,7 @@ export function BansuButton(props: BansuPopupProps) {
                     // Connection opened
                     socket.addEventListener("open", (event) => {
                         console.log("Connection on WebSocket established.");
-                        setState(BansuPopupState.Waiting);
+                        // setState(BansuPopupState.Waiting);
                     });
 
                     socket.addEventListener("close", (event) => {
@@ -212,6 +222,11 @@ export function BansuButton(props: BansuPopupProps) {
                         } else if(json.status == "Finished") {
                             setFinishedJobOutput(JSON.stringify(json.job_output));
                             setState(BansuPopupState.Ready);
+                        } else if(json.status == "Pending") {
+                            setState(BansuPopupState.Waiting);
+                        } else if(json.status == "Queued") {
+                            SetPosInQueue(json.queue_position)
+                            setState(BansuPopupState.Queued);
                         }
                     });
 
