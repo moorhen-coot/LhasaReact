@@ -31,6 +31,17 @@ export default defineConfig({
           }
         }
   },
+  // https://sass-lang.com/documentation/breaking-changes/legacy-js-api/
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler', // or "modern", "legacy"
+        importers: [
+          // ...
+        ],
+      },
+    }
+  },
   plugins: [
     react(), 
     crossOriginIsolation(),
