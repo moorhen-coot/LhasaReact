@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
 import { HotKeys } from "react-hotkeys"
-import * as d3 from "d3";
+//import * as d3 from "d3";
+import { create as D3Create } from 'd3';
 import './index.scss';
 import './customize_mui.scss';
 import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
@@ -179,7 +180,7 @@ export function LhasaComponent({
           // todo: do something with this.
           return size_info;
         }
-        const msvg = d3.create("svg")
+        const msvg = D3Create("svg")
           .attr("width", 100)
           .attr("height", 100)
           .attr("id", "measurement_temporary");
@@ -218,7 +219,7 @@ export function LhasaComponent({
       }
       return measured;
     };
-    const svg = d3.create("svg")
+    const svg = D3Create("svg")
       .attr("class", "lhasa_drawing")
       .attr("width", get_width())
       .attr("height", get_height());

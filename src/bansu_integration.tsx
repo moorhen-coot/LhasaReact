@@ -192,7 +192,11 @@ export function BansuButton(props: BansuPopupProps) {
                     setState(BansuPopupState.ConnectingOnWebsocket);
                     console.log("Establishing WebSocket connection.");
                     // Create WebSocket connection.
-                    let bansuEndpoint_noprotocol = bansuEndpoint.substring(bansuEndpoint.indexOf("://") + 3);
+                    let colonSlashSlashPos = bansuEndpoint.indexOf("://");
+                    let bansuEndpoint_noprotocol = bansuEndpoint;
+                    if (colonSlashSlashPos != -1) {
+                        bansuEndpoint_noprotocol = bansuEndpoint.substring(colonSlashSlashPos + 3);
+                    }
                     const socket = new WebSocket(`ws://${bansuEndpoint_noprotocol}/ws/${jsonData.job_id}`);
 
                     // Connection opened
