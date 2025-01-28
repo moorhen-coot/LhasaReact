@@ -131,7 +131,7 @@ export function BansuButton(props: BansuPopupProps) {
                             Close
                         </Button>
                         <Button 
-                            onClick={(e) => window.open(`http://${bansuEndpoint}/get_cif/${jobId}`)}
+                            onClick={(e) => window.open(`${bansuEndpoint}/get_cif/${jobId}`)}
                             // style={{flex: 'auto'}}
                             variant="contained"
                         >
@@ -172,7 +172,7 @@ export function BansuButton(props: BansuPopupProps) {
                 });
     
                 try {
-                    const res = await fetch(`http://${bansuEndpoint}/run_acedrg`, {
+                    const res = await fetch(`${bansuEndpoint}/run_acedrg`, {
                         method: 'POST',
                         body: postData,
                         headers: {
@@ -192,7 +192,8 @@ export function BansuButton(props: BansuPopupProps) {
                     setState(BansuPopupState.ConnectingOnWebsocket);
                     console.log("Establishing WebSocket connection.");
                     // Create WebSocket connection.
-                    const socket = new WebSocket(`ws://${bansuEndpoint}/ws/${jsonData.job_id}`);
+                    let bansuEndpoint_noprotocol = bansuEndpoint.substring(bansuEndpoint.indexOf("://") + 3);
+                    const socket = new WebSocket(`ws://${bansuEndpoint_noprotocol}/ws/${jsonData.job_id}`);
 
                     // Connection opened
                     socket.addEventListener("open", (event) => {
