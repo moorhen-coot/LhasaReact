@@ -45,7 +45,8 @@ export function App() {
     // Works when using `npx vite server --port 5174`
     // Inside `vite.config.js` there is a proxy setup to redirect this to an actual bansu instance.
     // CORS stuff is broken for localhost connections, it seems.
-    bansu_endpoint='http://localhost:5174'
+    // bansu_endpoint='http://localhost:5174'
+    bansu_endpoint='https://quicillith.pl'
   /> : <div>
     Lhasa module not loaded yet
   </div>;
