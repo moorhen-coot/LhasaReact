@@ -1,17 +1,17 @@
-@import 'index.scss';
+@use 'index.scss';
 
 @mixin normalize_text {
-    font-size: $lhasa_font_size;
+    font-size: index.$lhasa_font_size;
     line-height: normal;
     text-transform: none;
     letter-spacing: normal;
 }
 
 @mixin normalize_padding {
-    padding-right: $lhasa_base_padding;
-    padding-left: $lhasa_base_padding;
-    padding-top: $lhasa_padding_minor;
-    padding-bottom: $lhasa_padding_minor;
+    padding-right: index.$lhasa_base_padding;
+    padding-left: index.$lhasa_base_padding;
+    padding-top: index.$lhasa_padding_minor;
+    padding-bottom: index.$lhasa_padding_minor;
 }
 
 // This is a dummy
@@ -20,11 +20,11 @@
 }
 
 .LhasaMuiStyling .MuiAccordion-root {
-    background-color: $lhasa_background_color;
+    background-color: index.$lhasa_background_color;
 }
 
 .LhasaMuiStyling .MuiFormGroup-root {
-    margin-left: $lhasa_base_padding;
+    margin-left: index.$lhasa_base_padding;
 }
 
 .LhasaMuiStyling .MuiButtonBase-root {
@@ -37,6 +37,6 @@
 }
 
 .LhasaMuiStyling .MuiSwitch-thumb {
-    margin-left: $lhasa_base_padding;
-    margin-top: $lhasa_base_padding;
+    margin-left: index.$lhasa_base_padding;
+    margin-top: index.$lhasa_base_padding;
 }

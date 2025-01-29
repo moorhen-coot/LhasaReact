@@ -1,12 +1,14 @@
 import { useEffect, useId, useRef, useState, createContext, useMemo } from 'react'
 import { HotKeys } from "react-hotkeys"
-import * as d3 from "d3";
+//import * as d3 from "d3";
+import { create as D3Create } from 'd3';
 import './index.scss';
 import './customize_mui.scss';
 import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
+import { BansuButton } from './bansu_integration';
 
 class ToolButtonProps {
   onclick?: () => void;
@@ -81,6 +83,7 @@ class LhasaComponentProps {
   /// Called when a molecule changes.
   /// Can be provided to get updates when a molecule changes
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
+  bansu_endpoint?: string | undefined;
 }
 
 
@@ -91,7 +94,8 @@ export function LhasaComponent({
   icons_path_prefix = '', 
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
-  smiles_callback
+  smiles_callback,
+  bansu_endpoint = 'https://quicillith.pl'
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
@@ -177,7 +181,7 @@ export function LhasaComponent({
           // todo: do something with this.
           return size_info;
         }
-        const msvg = d3.create("svg")
+        const msvg = D3Create("svg")
           .attr("width", 100)
           .attr("height", 100)
           .attr("id", "measurement_temporary");
@@ -216,7 +220,7 @@ export function LhasaComponent({
       }
       return measured;
     };
-    const svg = d3.create("svg")
+    const svg = D3Create("svg")
       .attr("class", "lhasa_drawing")
       .attr("width", get_width())
       .attr("height", get_height());
@@ -502,6 +506,10 @@ export function LhasaComponent({
     }
   }
   
+  // From what I understand, this becomes non-null
+  // after the first render at which point it
+  // should point to the "lhasa_editor" div.
+  const editorRef = useRef<HTMLDivElement>(null);
   // From what I understand, this becomes non-null
   // after the first render at which point it
   // should point to the "editor_canvas_container" div.
@@ -956,7 +964,7 @@ export function LhasaComponent({
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
-            <div className="lhasa_editor LhasaMuiStyling">
+            <div className="lhasa_editor LhasaMuiStyling" ref={editorRef}>
               {show_top_panel &&
                 <div className="horizontal_container">
                   <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
@@ -1227,6 +1235,13 @@ export function LhasaComponent({
                         }
                         smiles_callback(smiles_tuple[0], external_id, smiles_tuple[1])
                       }}>Send to {name_of_host_program}</Button>}
+                      {bansu_endpoint &&
+                        <BansuButton 
+                          smiles={smiles_tuple[1]}
+                          anchorEl={editorRef.current}
+                          bansu_endpoint={bansu_endpoint}
+                        />
+                      }
                       <TextField 
                         variant="standard"
                         value={editedSmiles !== smiles_tuple[0] ? smiles_tuple[1] : undefined}

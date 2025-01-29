@@ -21,36 +21,39 @@ interface WasmModule {
 }
 
 type EmbindString = ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string;
+export interface ClassHandle {
+  isAliasOf(other: ClassHandle): boolean;
+  delete(): void;
+  deleteLater(): this;
+  isDeleted(): boolean;
+  clone(): this;
+}
 export interface DisplayModeValue<T extends number> {
   value: T;
 }
 export type DisplayMode = DisplayModeValue<0>|DisplayModeValue<1>|DisplayModeValue<2>;
 
-export interface DrawingCommandVector {
+export interface DrawingCommandVector extends ClassHandle {
   size(): number;
   get(_0: number): DrawingCommand | undefined;
   push_back(_0: DrawingCommand): void;
   resize(_0: number, _1: DrawingCommand): void;
   set(_0: number, _1: DrawingCommand): boolean;
-  delete(): void;
 }
 
-export interface PathElementVector {
+export interface PathElementVector extends ClassHandle {
   size(): number;
   get(_0: number): PathElement | undefined;
   push_back(_0: PathElement): void;
   resize(_0: number, _1: PathElement): void;
   set(_0: number, _1: PathElement): boolean;
-  delete(): void;
 }
 
-export interface TextMeasurementCache {
-  delete(): void;
+export interface TextMeasurementCache extends ClassHandle {
 }
 
-export interface Renderer {
+export interface Renderer extends ClassHandle {
   get_commands(): DrawingCommandVector;
-  delete(): void;
 }
 
 export type Color = {
@@ -82,21 +85,19 @@ export type Arc = {
   angle_two: number
 };
 
-export interface PathElement {
+export interface PathElement extends ClassHandle {
   is_arc(): boolean;
   as_arc(): Arc;
   as_line(): Line;
   is_line(): boolean;
-  delete(): void;
 }
 
-export interface Path {
+export interface Path extends ClassHandle {
   fill_color: Color;
   has_fill: boolean;
   stroke_style: BrushStyle;
   has_stroke: boolean;
   get_elements(): PathElementVector;
-  delete(): void;
 }
 
 export interface TextPositioningValue<T extends number> {
@@ -104,31 +105,30 @@ export interface TextPositioningValue<T extends number> {
 }
 export type TextPositioning = TextPositioningValue<0>|TextPositioningValue<1>|TextPositioningValue<2>;
 
-export interface TextStyle {
+export interface TextStyle extends ClassHandle {
   positioning: TextPositioning;
-  weight: EmbindString;
-  size: EmbindString;
+  get weight(): string;
+  set weight(value: EmbindString);
+  get size(): string;
+  set size(value: EmbindString);
   color: Color;
   specifies_color: boolean;
-  delete(): void;
 }
 
-export interface TextSpan {
+export interface TextSpan extends ClassHandle {
   style: TextStyle;
   specifies_style: boolean;
   has_subspans(): boolean;
   as_caption(): string;
   as_subspans(): TextSpanVector;
-  delete(): void;
 }
 
-export interface TextSpanVector {
+export interface TextSpanVector extends ClassHandle {
   push_back(_0: TextSpan): void;
   resize(_0: number, _1: TextSpan): void;
   size(): number;
   get(_0: number): TextSpan | undefined;
   set(_0: number, _1: TextSpan): boolean;
-  delete(): void;
 }
 
 export type TextSize = {
@@ -136,39 +136,32 @@ export type TextSize = {
   height: number
 };
 
-export interface Text {
+export interface Text extends ClassHandle {
   origin: GraphenePoint;
   style: TextStyle;
   spans: TextSpanVector;
-  delete(): void;
 }
 
-export interface DrawingCommand {
+export interface DrawingCommand extends ClassHandle {
   is_path(): boolean;
   as_path(): Path;
   is_text(): boolean;
   as_text(): Text;
-  delete(): void;
 }
 
-export interface DeleteTool {
-  delete(): void;
+export interface DeleteTool extends ClassHandle {
 }
 
-export interface ChargeModifier {
-  delete(): void;
+export interface ChargeModifier extends ClassHandle {
 }
 
-export interface GeometryModifier {
-  delete(): void;
+export interface GeometryModifier extends ClassHandle {
 }
 
-export interface FormatTool {
-  delete(): void;
+export interface FormatTool extends ClassHandle {
 }
 
-export interface RemoveHydrogensTool {
-  delete(): void;
+export interface RemoveHydrogensTool extends ClassHandle {
 }
 
 export interface LhasaElementValue<T extends number> {
@@ -176,8 +169,7 @@ export interface LhasaElementValue<T extends number> {
 }
 export type LhasaElement = LhasaElementValue<0>|LhasaElementValue<1>|LhasaElementValue<2>|LhasaElementValue<3>|LhasaElementValue<4>|LhasaElementValue<5>|LhasaElementValue<6>|LhasaElementValue<7>|LhasaElementValue<8>|LhasaElementValue<9>;
 
-export interface ElementInsertion {
-  delete(): void;
+export interface ElementInsertion extends ClassHandle {
 }
 
 export interface LhasaStructureValue<T extends number> {
@@ -185,8 +177,7 @@ export interface LhasaStructureValue<T extends number> {
 }
 export type LhasaStructure = LhasaStructureValue<0>|LhasaStructureValue<1>|LhasaStructureValue<2>|LhasaStructureValue<3>|LhasaStructureValue<4>|LhasaStructureValue<5>|LhasaStructureValue<6>;
 
-export interface StructureInsertion {
-  delete(): void;
+export interface StructureInsertion extends ClassHandle {
 }
 
 export interface BondModifierModeValue<T extends number> {
@@ -194,8 +185,7 @@ export interface BondModifierModeValue<T extends number> {
 }
 export type BondModifierMode = BondModifierModeValue<0>|BondModifierModeValue<1>|BondModifierModeValue<2>;
 
-export interface BondModifier {
-  delete(): void;
+export interface BondModifier extends ClassHandle {
 }
 
 export interface TransformModeValue<T extends number> {
@@ -203,8 +193,7 @@ export interface TransformModeValue<T extends number> {
 }
 export type TransformMode = TransformModeValue<0>|TransformModeValue<1>;
 
-export interface TransformTool {
-  delete(): void;
+export interface TransformTool extends ClassHandle {
 }
 
 export interface FlipModeValue<T extends number> {
@@ -212,12 +201,10 @@ export interface FlipModeValue<T extends number> {
 }
 export type FlipMode = FlipModeValue<0>|FlipModeValue<1>;
 
-export interface FlipTool {
-  delete(): void;
+export interface FlipTool extends ClassHandle {
 }
 
-export interface ActiveTool {
-  delete(): void;
+export interface ActiveTool extends ClassHandle {
 }
 
 export type SizingInfo = {
@@ -249,26 +236,23 @@ export type QEDInfo = {
   qed_score: number
 };
 
-export interface ImplWidgetCoreData {
+export interface ImplWidgetCoreData extends ClassHandle {
   render(_0: Renderer): void;
-  delete(): void;
 }
 
-export interface SmilesMap {
+export interface SmilesMap extends ClassHandle {
   size(): number;
   get(_0: number): EmbindString | undefined;
   set(_0: number, _1: EmbindString): void;
   keys(): MoleculeIdVector;
-  delete(): void;
 }
 
-export interface MoleculeIdVector {
+export interface MoleculeIdVector extends ClassHandle {
   push_back(_0: number): void;
   resize(_0: number, _1: number): void;
   size(): number;
   get(_0: number): number | undefined;
   set(_0: number, _1: number): boolean;
-  delete(): void;
 }
 
 export interface Canvas extends ImplWidgetCoreData {
@@ -298,46 +282,91 @@ export interface Canvas extends ImplWidgetCoreData {
   on_right_click_released(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
   measure(_0: MeasurementDirection): SizingInfo;
   connect(_0: EmbindString, _1: any): void;
-  delete(): void;
 }
 
 interface EmbindModule {
   DisplayMode: {Standard: DisplayModeValue<0>, AtomIndices: DisplayModeValue<1>, AtomNames: DisplayModeValue<2>};
-  DrawingCommandVector: {new(): DrawingCommandVector};
-  PathElementVector: {new(): PathElementVector};
-  TextMeasurementCache: {new(): TextMeasurementCache};
-  Renderer: {new(_0: any): Renderer; new(_0: any, _1: TextMeasurementCache): Renderer};
+  DrawingCommandVector: {
+    new(): DrawingCommandVector;
+  };
+  PathElementVector: {
+    new(): PathElementVector;
+  };
+  TextMeasurementCache: {
+    new(): TextMeasurementCache;
+  };
+  Renderer: {
+    new(_0: any): Renderer;
+    new(_0: any, _1: TextMeasurementCache): Renderer;
+  };
   PathElement: {};
   Path: {};
   TextPositioning: {Normal: TextPositioningValue<0>, Sub: TextPositioningValue<1>, Super: TextPositioningValue<2>};
-  TextStyle: {new(): TextStyle};
-  TextSpan: {new(): TextSpan; new(_0: TextSpanVector): TextSpan};
-  TextSpanVector: {new(): TextSpanVector};
-  Text: {new(): Text};
+  TextStyle: {
+    new(): TextStyle;
+  };
+  TextSpan: {
+    new(): TextSpan;
+    new(_0: TextSpanVector): TextSpan;
+  };
+  TextSpanVector: {
+    new(): TextSpanVector;
+  };
+  Text: {
+    new(): Text;
+  };
   DrawingCommand: {};
-  DeleteTool: {new(): DeleteTool};
-  ChargeModifier: {new(): ChargeModifier};
-  GeometryModifier: {new(): GeometryModifier};
-  FormatTool: {new(): FormatTool};
-  RemoveHydrogensTool: {new(): RemoveHydrogensTool};
+  DeleteTool: {
+    new(): DeleteTool;
+  };
+  ChargeModifier: {
+    new(): ChargeModifier;
+  };
+  GeometryModifier: {
+    new(): GeometryModifier;
+  };
+  FormatTool: {
+    new(): FormatTool;
+  };
+  RemoveHydrogensTool: {
+    new(): RemoveHydrogensTool;
+  };
   LhasaElement: {C: LhasaElementValue<0>, N: LhasaElementValue<1>, O: LhasaElementValue<2>, S: LhasaElementValue<3>, P: LhasaElementValue<4>, H: LhasaElementValue<5>, F: LhasaElementValue<6>, Cl: LhasaElementValue<7>, Br: LhasaElementValue<8>, I: LhasaElementValue<9>};
-  ElementInsertion: {new(_0: LhasaElement): ElementInsertion};
+  ElementInsertion: {
+    new(_0: LhasaElement): ElementInsertion;
+  };
   element_insertion_from_symbol(_0: EmbindString): ElementInsertion;
   LhasaStructure: {CycloPropaneRing: LhasaStructureValue<0>, CycloButaneRing: LhasaStructureValue<1>, CycloPentaneRing: LhasaStructureValue<2>, CycloHexaneRing: LhasaStructureValue<3>, BenzeneRing: LhasaStructureValue<4>, CycloHeptaneRing: LhasaStructureValue<5>, CycloOctaneRing: LhasaStructureValue<6>};
-  StructureInsertion: {new(_0: LhasaStructure): StructureInsertion};
+  StructureInsertion: {
+    new(_0: LhasaStructure): StructureInsertion;
+  };
   BondModifierMode: {Single: BondModifierModeValue<0>, Double: BondModifierModeValue<1>, Triple: BondModifierModeValue<2>};
-  BondModifier: {new(_0: BondModifierMode): BondModifier};
+  BondModifier: {
+    new(_0: BondModifierMode): BondModifier;
+  };
   TransformMode: {Rotation: TransformModeValue<0>, Translation: TransformModeValue<1>};
-  TransformTool: {new(_0: TransformMode): TransformTool};
+  TransformTool: {
+    new(_0: TransformMode): TransformTool;
+  };
   FlipMode: {Horizontal: FlipModeValue<0>, Vertical: FlipModeValue<1>};
-  FlipTool: {new(_0: FlipMode): FlipTool};
-  ActiveTool: {new(): ActiveTool};
+  FlipTool: {
+    new(_0: FlipMode): FlipTool;
+  };
+  ActiveTool: {
+    new(): ActiveTool;
+  };
   make_active_tool(_0: any): ActiveTool;
   MeasurementDirection: {HORIZONTAL: MeasurementDirectionValue<0>, VERTICAL: MeasurementDirectionValue<1>};
   ImplWidgetCoreData: {};
-  SmilesMap: {new(): SmilesMap};
-  MoleculeIdVector: {new(): MoleculeIdVector};
-  Canvas: {new(): Canvas};
+  SmilesMap: {
+    new(): SmilesMap;
+  };
+  MoleculeIdVector: {
+    new(): MoleculeIdVector;
+  };
+  Canvas: {
+    new(): Canvas;
+  };
   append_from_smiles(_0: Canvas, _1: EmbindString): number;
   append_from_pickle_base64(_0: Canvas, _1: EmbindString): number;
 }

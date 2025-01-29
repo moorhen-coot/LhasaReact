@@ -8,6 +8,42 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      window.onload = () => {
+
+        // Copied from Moorhen
+        const loadScript = (src) => {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script')
+            // ES6 modules appear to use a different mechanism for synchronization
+            // script.setAttribute('type', 'module');
+            script.src = src
+            script.onload = () => resolve(src)
+            script.onerror = () => reject(new Error('Failed to load script: ' + src))
+            document.head.appendChild(script)
+          });
+        }
+
+        // Adapted from Moorhen
+        loadScript('lhasa.js')
+          .then(src => {
+            console.log(src + ' loaded successfully.')
+            Lhasa({
+              // print(t) { console.log(["output", t]) },
+              // printErr(t) { console.error(["output", t]) }
+            })
+            .then((returnedModule) => {
+              window.LhasaModule = returnedModule;
+              const lhasaModuleAttachedEvent = new CustomEvent("lhasaModuleAttached", { });
+              document.dispatchEvent(lhasaModuleAttachedEvent);
+            })
+            .catch((e) => {
+              console.log("There was a problem creating Lhasa module:", e);
+            });
+          })
+
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
