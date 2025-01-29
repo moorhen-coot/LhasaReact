@@ -194,10 +194,15 @@ export function BansuButton(props: BansuPopupProps) {
                     // Create WebSocket connection.
                     let colonSlashSlashPos = bansuEndpoint.indexOf("://");
                     let bansuEndpoint_noprotocol = bansuEndpoint;
+                    let bansuProtocol = bansuEndpoint.substring(0, colonSlashSlashPos);
+                    let websocketMode = "ws";
+                    if(bansuProtocol == "https") {
+                        websocketMode = "wss";
+                    }
                     if (colonSlashSlashPos != -1) {
                         bansuEndpoint_noprotocol = bansuEndpoint.substring(colonSlashSlashPos + 3);
                     }
-                    const socket = new WebSocket(`ws://${bansuEndpoint_noprotocol}/ws/${jsonData.job_id}`);
+                    const socket = new WebSocket(`${websocketMode}://${bansuEndpoint_noprotocol}/ws/${jsonData.job_id}`);
 
                     // Connection opened
                     socket.addEventListener("open", (event) => {

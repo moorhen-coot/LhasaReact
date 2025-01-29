@@ -40,7 +40,7 @@ export function App() {
     Lhasa={window.LhasaModule} 
     show_top_panel={true}
     // show_footer={true}
-    icons_path_prefix='/icons'
+    icons_path_prefix='icons'
     smiles_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
     // Works when using `npx vite server --port 5174`
     // Inside `vite.config.js` there is a proxy setup to redirect this to an actual bansu instance.
