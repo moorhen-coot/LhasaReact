@@ -94,7 +94,7 @@ export function LhasaComponent({
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback,
-  bansu_endpoint
+  bansu_endpoint = 'https://quicillith.pl'
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
