@@ -206,7 +206,7 @@ export function LhasaComponent({
     const commands = ren.get_commands();
     const get_width = () => {
       const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
-      const min_size = 640;
+      const min_size = 480;
       if(measured < min_size) {
         return min_size;
       }
@@ -214,7 +214,7 @@ export function LhasaComponent({
     };
     const get_height = () => {
       const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
-      const min_size = 360;
+      const min_size = 270;
       if(measured < min_size) {
         return min_size;
       }
