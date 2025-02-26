@@ -50,6 +50,13 @@ export function BansuButton(props: BansuPopupProps) {
         switch(state) {
             case BansuPopupState.UserConfig:
                 return <div className="vertical_panel">
+                    <b>Notice</b>
+                    Bansu is a server-side computational API which enables CIF generation via running Acedrg.
+                    <div className="warning_box">
+                        <b>Usage of non-local instances of Bansu implies that your data will travel across the web to a remote webserver.</b><br/>
+                        <b>Make sure that you're using an HTTPS endpoint</b> for transport security.<br/>
+                        While Bansu does not store logs containing chemical data, please note that<br/><b>by using a remote instance of Bansu you're trusting the instance's owner with your data.</b>
+                    </div>
                     <b>Bansu job configuration</b>
                     <div className="horizontal_container_centered">
                         Bansu instance
@@ -281,7 +288,7 @@ export function BansuButton(props: BansuPopupProps) {
                 anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
                 transformOrigin={{ vertical: 'center', horizontal: 'center'}}
             >
-                <div className="vertical_popup lhasa_editor LhasaMuiStyling" style={{maxWidth:  '400px', maxHeight: '200px'}}>
+                <div className="vertical_popup lhasa_editor LhasaMuiStyling" style={{maxWidth:  '400px', maxHeight: '400px'}}>
                     <div className="vertical_popup_title">
                         CIF generation via Bansu
                     </div>

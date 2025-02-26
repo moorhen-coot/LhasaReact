@@ -256,6 +256,14 @@ $lhasa_font_size: 0.65rem;
     background-color: $lhasa_background_color;
 }
 
+.warning_box {
+    color: darkred;
+    background-color: color.adjust(darkorange, $alpha: -0.95);
+    border: red 1px solid;
+    border-radius: 3px;
+    padding: $lhasa_base_padding;
+}
+
 .text_measurement_worker_div {
     /* Cancels out the gap in the owning container 
     so that we get nice alignment */
