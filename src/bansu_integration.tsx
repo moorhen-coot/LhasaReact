@@ -1,4 +1,4 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Switch } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Switch, Checkbox, FormControlLabel } from "@mui/material";
 // import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
@@ -30,6 +30,7 @@ enum BansuPopupState {
 export function BansuButton(props: BansuPopupProps) {
 
     const [popoverOpened, setPopoverOpened] = useState<boolean>(false);
+    const [userConsent, setUserConsent] = useState<boolean>(false);
     const [state, setState] = useState<BansuPopupState>(BansuPopupState.UserConfig);
     const [bansuEndpoint, setBansuEndpoint] = useState<string>(props.bansu_endpoint);
     const [jobId, setJobId] = useState<string | null>(null);
@@ -50,12 +51,21 @@ export function BansuButton(props: BansuPopupProps) {
         switch(state) {
             case BansuPopupState.UserConfig:
                 return <div className="vertical_panel">
-                    <b>Notice</b>
                     Bansu is a server-side computational API which enables CIF generation via running Acedrg.
                     <div className="warning_box">
+                        <h2>WARNING!</h2>
                         <b>Usage of non-local instances of Bansu implies that your data will travel across the web to a remote webserver.</b><br/>
                         <b>Make sure that you're using an HTTPS endpoint</b> for transport security.<br/>
-                        While Bansu does not store logs containing chemical data, please note that<br/><b>by using a remote instance of Bansu you're trusting the instance's owner with your data.</b>
+                        While Bansu does not store logs containing chemical data, please note that<br/><b>by using a remote instance of Bansu you're trusting the instance's owner with your data.</b><br/>
+                        <br/>
+                        <FormControlLabel 
+                            label="I understand and agree to proceed" 
+                            control={
+                            <Checkbox 
+                                checked={userConsent}
+                                onChange={() => setUserConsent(!userConsent)}
+                            />} 
+                        />
                     </div>
                     <b>Bansu job configuration</b>
                     <div className="horizontal_container_centered">
@@ -85,6 +95,7 @@ export function BansuButton(props: BansuPopupProps) {
                         <Button 
                             onClick={() => setState(BansuPopupState.SpawningJob)}
                             variant="contained"
+                            disabled={!userConsent}
                         >
                             Spawn Bansu job
                         </Button>
@@ -166,7 +177,7 @@ export function BansuButton(props: BansuPopupProps) {
                 </div>
             </div>;
         }
-    }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue]);
+    }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue, userConsent]);
 
     useEffect(() => {
         // return;
