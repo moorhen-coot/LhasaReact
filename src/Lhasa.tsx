@@ -16,7 +16,7 @@ class ToolButtonProps {
   caption: string | undefined;
   caption_optional?: boolean = false;
   icon: string | undefined | null;
-  tooltip_body?: JSX.Element | null = null;
+  tooltip_body?: React.JSX.Element | null = null;
 }
 
 class ActiveToolContextData {
@@ -527,7 +527,7 @@ export function LhasaComponent({
     }
   }, [svgNode]);
 
-  const carbon_ring_tooltip = useRef<JSX.Element>(<div>
+  const carbon_ring_tooltip = useRef<React.JSX.Element>(<div>
     <b>Carbon Ring Tool</b><br/>
     Insert a carbon ring.<br/>
     <br/>
@@ -537,7 +537,7 @@ export function LhasaComponent({
     <b>Left click on empty canvas</b> - Initialize a new molecule with the selected kind of carbon ring.
   </div>);
 
-  const element_tool_tooltip = useRef<JSX.Element>(<div>
+  const element_tool_tooltip = useRef<React.JSX.Element>(<div>
     <b>Element Tool</b><br/>
     Add a new atom or replace an existent atom with the chosen element.<br/>
     <br/>
@@ -891,7 +891,7 @@ export function LhasaComponent({
   }, [tool_button_data]);
 
   let tool_buttons = useMemo(() => {
-    let m_tool_buttons = new Map<string,JSX.Element>();
+    let m_tool_buttons = new Map<string,React.JSX.Element>();
     for(const [k,v] of Object.entries(tool_button_data)) {
       const hotkey_to_infoblock = (hotkey: string | string[]) => {
         let hotkey_arr = typeof hotkey === 'string' ? [hotkey] : hotkey;
