@@ -301,7 +301,7 @@ export function BansuButton(props: BansuPopupProps) {
             >
                 <div className="vertical_popup lhasa_editor LhasaMuiStyling" style={{maxWidth:  '400px', maxHeight: '400px'}}>
                     <div className="vertical_popup_title">
-                        CIF generation via Bansu
+                        Restraints generation via Bansu
                     </div>
                     <div style={{alignSelf: "normal", overflow: 'auto'}}>
                         {popoverContent()}
