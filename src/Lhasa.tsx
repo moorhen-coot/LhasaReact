@@ -145,6 +145,9 @@ export function LhasaComponent({
           }
           if(span.has_subspans()) {
             append_spans_to_node(span.as_subspans(), child);
+          } else if(span.is_newline()) {
+            console.info("Newline in text span!");
+            child.attr("dy", "1em");
           } else {
             const caption = span.as_caption();
             child.text(caption);
