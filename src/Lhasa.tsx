@@ -134,7 +134,7 @@ export function LhasaComponent({
         }
         return style_string;
       };
-      const append_spans_to_node = (spans, text_node) => {
+      const append_spans_to_node = (spans, text_node, text_origin) => {
         for(let i = 0; i < spans.size(); i++) {
           const span = spans.get(i);
           let child = text_node
@@ -144,10 +144,12 @@ export function LhasaComponent({
             child.attr("style", style_to_attrstring(span.style));
           }
           if(span.has_subspans()) {
-            append_spans_to_node(span.as_subspans(), child);
+            append_spans_to_node(span.as_subspans(), child, text_origin);
           } else if(span.is_newline()) {
-            console.info("Newline in text span!");
             child.attr("dy", "1em");
+            child.attr("x", text_origin.x);
+            // Invisible U+2063 to force tspan to be rendered
+            child.text("⁣");
           } else {
             const caption = span.as_caption();
             child.text(caption);
@@ -168,7 +170,7 @@ export function LhasaComponent({
       if(text.spans.size() == 0) {
         console.warn("Text contains no spans!");
       }
-      append_spans_to_node(text.spans, ret);
+      append_spans_to_node(text.spans, ret, text.origin);
       return ret;
     };
     const text_measure_function = (text) => {
