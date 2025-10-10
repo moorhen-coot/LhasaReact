@@ -404,8 +404,7 @@ export function LhasaComponent({
         let inchi_lookup_result = null;
         // if (inchiKeyDatabase.current != null) {
         if (inchiKeyDatabase.current?.has(inchi_key)) {
-          inchi_lookup_result == inchiKeyDatabase.current?.get(inchi_key);
-          console.log("inchi_lookup_result", inchi_lookup_result);
+          inchi_lookup_result = inchiKeyDatabase.current?.get(inchi_key);
         }
         // } else {
         //   console.warn(`InchiKeyDatabase not loaded. ${inchiKeyDatabase}`);
