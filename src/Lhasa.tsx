@@ -9,6 +9,7 @@ import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl,
 import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
+import { parseInchikeyDatabase } from './inchikey_database_parse';
 
 class ToolButtonProps {
   onclick?: () => void;
@@ -84,7 +85,7 @@ class LhasaComponentProps {
   /// Can be provided to get updates when a molecule changes
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
   bansu_endpoint?: string | undefined;
-  data_prefix_path?: string;
+  data_path_prefix?: string;
 }
 
 
@@ -96,7 +97,8 @@ export function LhasaComponent({
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback,
-  bansu_endpoint = 'https://quicillith.pl'
+  bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
+  data_path_prefix = '/',
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
@@ -363,6 +365,8 @@ export function LhasaComponent({
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
   const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
   const [qedInfo, setQedInfo] = useState<Map<number, QEDInfo>>(new Map<number, QEDInfo>());
+  /// Database of InChIKey -> [Monomer code, Chemical name], fetched asynchronously
+  const [inchiKeyDatabase, setInchiKeyDatabase] = useState<Map<string, [string, string]> | null>(null);
 
   const setupLhasaCanvas = (tmc: TextMeasurementCache) => {
     const lh = new Lhasa.Canvas();
@@ -429,6 +433,41 @@ export function LhasaComponent({
       console.log("Setting up LhasaCanvas.");
       lh.current = setupLhasaCanvas(tmc.current);
     }
+
+    const InchiKeyDatabaseLoaderTask = async () => {
+      if (inchiKeyDatabase !== null) {
+        return;
+      }
+      let retries_remaining = 15;
+      while (retries_remaining > 0) {
+        try {
+          let begin_time = performance.now();
+          console.log("Fetching InchiKeyDatabase...");
+          const response: Response = await fetch(data_path_prefix + "Components-inchikey.ich");
+          if (!response.ok) {
+            throw new Error(`InchiKeyDatabase fetch status: ${response.status}`);
+          }
+          const raw_data = await response.text();
+          let end_time = performance.now();
+          console.log(`InchiKeyDatabase fetched successfully in ${(end_time - begin_time).toFixed(2)} ms. Size = ${raw_data.length} bytes. Parsing...`);
+          begin_time = performance.now();
+          const db = parseInchikeyDatabase(raw_data);
+          end_time = performance.now();
+          console.log(`InchiKeyDatabase parsed successfully in ${(end_time - begin_time).toFixed(2)} ms. Entries = ${db.size}.`);
+          setInchiKeyDatabase(db);
+          break;
+        } catch (err) {
+          console.error("Could not fetch InchiKeyDatabase: ", err, retries_remaining > 0 ? ", retrying again in two seconds..." : ", giving up.");
+          retries_remaining -= 1;
+          // Sleep for 2 seconds before retrying
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
+        }
+      }
+    };
+
+    InchiKeyDatabaseLoaderTask();
+
     return () => {
       if (lh.current !== null && !lh.current?.isDeleted()) {
         console.warn("Cleaning up component upon unmounting.");
@@ -440,7 +479,7 @@ export function LhasaComponent({
       }
       canvasIdsToPropsIdsRef.current = new Map<number, string>();
     };
-  }, []);
+  }, []); // Empty dependency array: run only once on mount and cleanup on unmount
 
   useEffect(() => {
       if(rdkit_molecule_pickle_list !== undefined) {

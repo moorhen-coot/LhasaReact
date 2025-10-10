@@ -48,7 +48,7 @@ export function App() {
     // bansu_endpoint='http://localhost:5174'
 
     bansu_endpoint='https://www.ccp4.ac.uk/bansu'
-    data_prefix_path='/'
+    data_path_prefix='/'
   /> : <div>
     Lhasa module not loaded yet
   </div>;
