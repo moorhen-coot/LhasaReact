@@ -399,16 +399,18 @@ export function LhasaComponent({
       const inchikey_map_keys = inchikey_map.keys();
       for(let i = 0; i < inchikey_map_keys.size(); i++) {
         const mol_id = inchikey_map_keys.get(i);
-        const inchi_tuple = [mol_id, inchikey_map.get(mol_id)] as [number, string];
+        const inchi_key = inchikey_map.get(mol_id) as string;
+
         let inchi_lookup_result = null;
-        if (inchiKeyDatabase.current != null) {
-          if (inchiKeyDatabase.current.has(inchi_tuple[1])) {
-            inchi_lookup_result == inchiKeyDatabase.current.get(inchi_tuple[1]);
-          }
-        } else {
-          console.warn(`InchiKeyDatabase not loaded. ${inchiKeyDatabase}`);
+        // if (inchiKeyDatabase.current != null) {
+        if (inchiKeyDatabase.current?.has(inchi_key)) {
+          inchi_lookup_result == inchiKeyDatabase.current?.get(inchi_key);
+          console.log("inchi_lookup_result", inchi_lookup_result);
         }
-        console.log(`Inchi lookup: mol_id=${inchi_tuple[0]} key=${inchi_tuple[1]} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[0]}` : "not found in database (or database not loaded)"}`);
+        // } else {
+        //   console.warn(`InchiKeyDatabase not loaded. ${inchiKeyDatabase}`);
+        // }
+        console.log(`Inchi lookup: mol_id=${mol_id} key=${inchi_key} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[0]}` : inchiKeyDatabase.current != null ? ` not found in database` : ` (database not loaded)`}`);
       }
       inchikey_map_keys.delete();
       inchikey_map.delete();

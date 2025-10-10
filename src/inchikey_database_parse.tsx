@@ -8,10 +8,13 @@ export function parseInchikeyDatabase(rawData: string): Map<string, [string, str
         if (segments.length != 3) {
             throw new Error("Unexpected number of segments in InchiKey database line: " + line);
         }
+        // console.log(segments);
         const inchiKey = segments[0];
         const monomer_id = segments[1];
         const chem_name = segments[2];
+        // console.log(inchiKey);
         inchiMap.set(inchiKey, [monomer_id, chem_name]);
     }
+    // console.log(inchiMap);
     return inchiMap;
 }
