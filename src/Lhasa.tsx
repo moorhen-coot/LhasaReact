@@ -453,7 +453,7 @@ export function LhasaComponent({
     }
 
     const InchiKeyDatabaseLoaderTask = async () => {
-      if (inchiKeyDatabase !== null) {
+      if (inchiKeyDatabase.current !== null) {
         return;
       }
       let retries_remaining = 15;
