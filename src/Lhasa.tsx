@@ -977,10 +977,6 @@ export function LhasaComponent({
                     <h3>Welcome to Lhasa!</h3>
                     <p>
                       Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
-                      Lhasa is experimental software.
-                    </p>
-                    <p>
-                      This is a demo UI for development purposes.
                     </p>
                   </div>
                 </div>
