@@ -84,6 +84,7 @@ class LhasaComponentProps {
   /// Can be provided to get updates when a molecule changes
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
   bansu_endpoint?: string | undefined;
+  data_prefix_path?: string;
 }
 
 
