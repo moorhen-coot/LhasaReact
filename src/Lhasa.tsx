@@ -354,6 +354,8 @@ export function LhasaComponent({
   const isFirstRenderRef = useRef<boolean>(false);
   // Assigns internal molecule IDs to external pickle IDs as given by rdkit_molecule_pickle_map
   const canvasIdsToPropsIdsRef = useRef<Map<number, string>>(new Map<number, string>());
+  /// Database of InChIKey -> [Monomer code, Chemical name], fetched asynchronously
+  const inchiKeyDatabase = useRef<Map<string, [string, string]> | null>(null);
 
   const [svgNode, setSvgNode] = useState(null);
   const [smiles, setSmiles] = useState<[number, string][]>([]);
@@ -365,8 +367,6 @@ export function LhasaComponent({
   const [smiles_error_string, setSmilesErrorString] = useState<null | string>(null);
   const [x_element_error_string, setXElementErrorString] = useState<null | string>(null);
   const [qedInfo, setQedInfo] = useState<Map<number, QEDInfo>>(new Map<number, QEDInfo>());
-  /// Database of InChIKey -> [Monomer code, Chemical name], fetched asynchronously
-  const [inchiKeyDatabase, setInchiKeyDatabase] = useState<Map<string, [string, string]> | null>(null);
 
   const setupLhasaCanvas = (tmc: TextMeasurementCache) => {
     const lh = new Lhasa.Canvas();
@@ -394,6 +394,24 @@ export function LhasaComponent({
       smiles_keys.delete();
       smiles_map.delete();
       setSmiles(smiles_array);
+
+      const inchikey_map = lh.get_inchi_keys();
+      const inchikey_map_keys = inchikey_map.keys();
+      for(let i = 0; i < inchikey_map_keys.size(); i++) {
+        const mol_id = inchikey_map_keys.get(i);
+        const inchi_tuple = [mol_id, inchikey_map.get(mol_id)] as [number, string];
+        let inchi_lookup_result = null;
+        if (inchiKeyDatabase.current != null) {
+          if (inchiKeyDatabase.current.has(inchi_tuple[1])) {
+            inchi_lookup_result == inchiKeyDatabase.current.get(inchi_tuple[1]);
+          }
+        } else {
+          console.warn(`InchiKeyDatabase not loaded. ${inchiKeyDatabase}`);
+        }
+        console.log(`Inchi lookup: mol_id=${inchi_tuple[0]} key=${inchi_tuple[1]} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[0]}` : "not found in database (or database not loaded)"}`);
+      }
+      inchikey_map_keys.delete();
+      inchikey_map.delete();
     });
     lh.connect("molecule_deleted", function (mol_id: number) {
       console.log("Molecule with id " + mol_id + " has been deleted.");
@@ -453,8 +471,8 @@ export function LhasaComponent({
           begin_time = performance.now();
           const db = parseInchikeyDatabase(raw_data);
           end_time = performance.now();
+          inchiKeyDatabase.current = db;
           console.log(`InchiKeyDatabase parsed successfully in ${(end_time - begin_time).toFixed(2)} ms. Entries = ${db.size}.`);
-          setInchiKeyDatabase(db);
           break;
         } catch (err) {
           console.error(`Could not fetch InchiKeyDatabase: ${err}\n ${retries_remaining > 0 ? `\nRetrying again in two seconds (retries remaining: ${retries_remaining})...` : "\nGiving up."}`);
