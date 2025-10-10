@@ -457,7 +457,7 @@ export function LhasaComponent({
           setInchiKeyDatabase(db);
           break;
         } catch (err) {
-          console.error("Could not fetch InchiKeyDatabase: ", err, retries_remaining > 0 ? ", retrying again in two seconds..." : ", giving up.");
+          console.error(`Could not fetch InchiKeyDatabase: ${err}\n ${retries_remaining > 0 ? `\nRetrying again in two seconds (retries remaining: ${retries_remaining})...` : "\nGiving up."}`);
           retries_remaining -= 1;
           // Sleep for 2 seconds before retrying
           await new Promise(r => setTimeout(r, 2000));
