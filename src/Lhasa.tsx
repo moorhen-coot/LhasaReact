@@ -358,7 +358,8 @@ export function LhasaComponent({
   const inchiKeyDatabase = useRef<Map<string, [string, string]> | null>(null);
 
   const [svgNode, setSvgNode] = useState(null);
-  const [smiles, setSmiles] = useState<[number, string][]>([]);
+  /// [molecule_id, smiles, [monomer_id, chem_name]?]]
+  const [smiles, setSmiles] = useState<[number, string, [string, string]?][]>([]);
   const [scale, setScale] = useState<number>(1.0);
   const [statusText, setStatusText] = useState<string>('');
   const [xElementInputShown, setXElementInputShown] = useState<boolean>(false);
@@ -380,36 +381,29 @@ export function LhasaComponent({
     };
     lh.connect("status_updated", on_status_updated);
     lh.connect("smiles_changed", function () {
-      const smiles_array: [number, string][] = [];
+      const smiles_array: [number, string, [string, string]?][] = [];
       const smiles_map = lh.get_smiles();
       const smiles_keys = smiles_map.keys();
+
+      const inchikey_map = lh.get_inchi_keys();
+
       for(let i = 0; i < smiles_keys.size(); i++) {
         const mol_id = smiles_keys.get(i);
-        const smiles_tuple = [mol_id, smiles_map.get(mol_id)] as [number, string];
+        const inchi_key = inchikey_map.get(mol_id) as string;
+        let inchi_lookup_result : [string, string] | null = null;
+        if (inchiKeyDatabase.current?.has(inchi_key)) {
+          inchi_lookup_result = inchiKeyDatabase.current?.get(inchi_key) as [string, string];
+        }
+        const smiles_tuple = [mol_id, smiles_map.get(mol_id), inchi_lookup_result] as [number, string, [string, string]?];
+        console.log(`Inchi lookup: mol_id=${mol_id} key=${inchi_key} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[1]}` : inchiKeyDatabase.current != null ? ` not found in database` : ` (database not loaded)`}`);
         smiles_array.push(smiles_tuple);
       }
       smiles_keys.delete();
       smiles_map.delete();
       setSmiles(smiles_array);
-
-      const inchikey_map = lh.get_inchi_keys();
-      const inchikey_map_keys = inchikey_map.keys();
-      for(let i = 0; i < inchikey_map_keys.size(); i++) {
-        const mol_id = inchikey_map_keys.get(i);
-        const inchi_key = inchikey_map.get(mol_id) as string;
-
-        let inchi_lookup_result = null;
-        // if (inchiKeyDatabase.current != null) {
-        if (inchiKeyDatabase.current?.has(inchi_key)) {
-          inchi_lookup_result = inchiKeyDatabase.current?.get(inchi_key);
-        }
-        // } else {
-        //   console.warn(`InchiKeyDatabase not loaded. ${inchiKeyDatabase}`);
-        // }
-        console.log(`Inchi lookup: mol_id=${mol_id} key=${inchi_key} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[1]}` : inchiKeyDatabase.current != null ? ` not found in database` : ` (database not loaded)`}`);
-      }
-      inchikey_map_keys.delete();
-      inchikey_map.delete();
+      // const inchikey_map_keys = inchikey_map.keys();
+      // inchikey_map.delete();
+      // inchikey_map_keys.delete();
     });
     lh.connect("molecule_deleted", function (mol_id: number) {
       console.log("Molecule with id " + mol_id + " has been deleted.");
@@ -1342,6 +1336,11 @@ export function LhasaComponent({
                         onBlur={(_event) => setEditedSmiles(null)}
                         onChange={(event) => lh.current.update_molecule_from_smiles(smiles_tuple[0], event.target.value)}
                       />
+                      {smiles_tuple[2] && 
+                        <div style={{alignSelf: "center"}}>
+                          {smiles_tuple[2][0]} {smiles_tuple[2][1]}
+                        </div>
+                      }
                       </div>)}
                   </div>
                   {/* <Divider /> */}
