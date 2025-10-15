@@ -1020,6 +1020,14 @@ export function LhasaComponent({
     return Math.log(f - c_const) / Math.log(theta_const) - d_const;
   };
 
+  const getTargetOffset = (touch: React.Touch, event: React.TouchEvent<HTMLDivElement>) => {
+    const boundingRect = (event.target as Element).getBoundingClientRect();
+    return {
+      x: touch.clientX - boundingRect.left,
+      y: touch.clientY - boundingRect.top
+    };
+  }
+
   return (
     <>
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
@@ -1266,6 +1274,30 @@ export function LhasaComponent({
                   }}
                   onWheel={(event) => {
                     lh.current?.on_scroll(event.deltaX, event.deltaY, event.altKey);
+                  }}
+                  onTouchStart={(event) => {
+                    // console.log('touchstart');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_left_click(offset.x, offset.y, event.altKey, event.ctrlKey, event.shiftKey);
+                    }
+                  }}
+                  onTouchEnd={(event) => {
+                    // console.log('touchend');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_left_click_released(offset.x, offset.y, event.altKey, event.ctrlKey, event.shiftKey);
+                    }
+                  }}
+                  onTouchMove={(event) => {
+                    // console.log('touchmove');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_hover(offset.x, offset.y, event.altKey, event.ctrlKey);
+                    }
                   }}
 
                   ref={svgRef}

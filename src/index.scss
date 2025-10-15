@@ -28,6 +28,8 @@ $lhasa_font_size: 0.65rem;
     background-color: white;
     /* Removes weird, empty margin-like area */
     margin-bottom: -$lhasa_base_padding;
+    // Disable default scroll on touch behaviour
+    touch-action: none;
 }
 
 .lhasa_editor {
