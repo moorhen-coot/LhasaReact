@@ -46,7 +46,9 @@ export function App() {
     // Inside `vite.config.js` there is a proxy setup to redirect this to an actual bansu instance.
     // CORS stuff is broken for localhost connections, it seems.
     // bansu_endpoint='http://localhost:5174'
-    bansu_endpoint='https://quicillith.pl'
+
+    bansu_endpoint='https://www.ccp4.ac.uk/bansu'
+    data_path_prefix=''
   /> : <div>
     Lhasa module not loaded yet
   </div>;

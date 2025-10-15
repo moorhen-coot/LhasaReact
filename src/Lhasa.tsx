@@ -9,6 +9,7 @@ import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl,
 import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
+import { parseInchikeyDatabase } from './inchikey_database_parse';
 
 class ToolButtonProps {
   onclick?: () => void;
@@ -84,6 +85,7 @@ class LhasaComponentProps {
   /// Can be provided to get updates when a molecule changes
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
   bansu_endpoint?: string | undefined;
+  data_path_prefix?: string;
 }
 
 
@@ -95,7 +97,8 @@ export function LhasaComponent({
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback,
-  bansu_endpoint = 'https://quicillith.pl'
+  bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
+  data_path_prefix = '',
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
@@ -351,9 +354,12 @@ export function LhasaComponent({
   const isFirstRenderRef = useRef<boolean>(false);
   // Assigns internal molecule IDs to external pickle IDs as given by rdkit_molecule_pickle_map
   const canvasIdsToPropsIdsRef = useRef<Map<number, string>>(new Map<number, string>());
+  /// Database of InChIKey -> [Monomer code, Chemical name], fetched asynchronously
+  const inchiKeyDatabase = useRef<Map<string, [string, string]> | null>(null);
 
   const [svgNode, setSvgNode] = useState(null);
-  const [smiles, setSmiles] = useState<[number, string][]>([]);
+  /// [molecule_id, smiles, [monomer_id, chem_name]?]]
+  const [smiles, setSmiles] = useState<[number, string, [string, string]?][]>([]);
   const [scale, setScale] = useState<number>(1.0);
   const [statusText, setStatusText] = useState<string>('');
   const [xElementInputShown, setXElementInputShown] = useState<boolean>(false);
@@ -371,24 +377,33 @@ export function LhasaComponent({
     });
 
     const on_status_updated = function (status_txt: string) {
-      // For now
-      console.log("Status: " + status_txt);
-      // todo: fix
       setStatusText(status_txt);
     };
     lh.connect("status_updated", on_status_updated);
     lh.connect("smiles_changed", function () {
-      const smiles_array: [number, string][] = [];
+      const smiles_array: [number, string, [string, string]?][] = [];
       const smiles_map = lh.get_smiles();
       const smiles_keys = smiles_map.keys();
+
+      const inchikey_map = lh.get_inchi_keys();
+
       for(let i = 0; i < smiles_keys.size(); i++) {
         const mol_id = smiles_keys.get(i);
-        const smiles_tuple = [mol_id, smiles_map.get(mol_id)] as [number, string];
+        const inchi_key = inchikey_map.get(mol_id) as string;
+        let inchi_lookup_result : [string, string] | null = null;
+        if (inchiKeyDatabase.current?.has(inchi_key)) {
+          inchi_lookup_result = inchiKeyDatabase.current?.get(inchi_key) as [string, string];
+        }
+        const smiles_tuple = [mol_id, smiles_map.get(mol_id), inchi_lookup_result] as [number, string, [string, string]?];
+        console.log(`Inchi lookup: mol_id=${mol_id} key=${inchi_key} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[1]}` : inchiKeyDatabase.current != null ? ` not found in database` : ` (database not loaded)`}`);
         smiles_array.push(smiles_tuple);
       }
       smiles_keys.delete();
       smiles_map.delete();
       setSmiles(smiles_array);
+      // const inchikey_map_keys = inchikey_map.keys();
+      // inchikey_map.delete();
+      // inchikey_map_keys.delete();
     });
     lh.connect("molecule_deleted", function (mol_id: number) {
       console.log("Molecule with id " + mol_id + " has been deleted.");
@@ -428,6 +443,41 @@ export function LhasaComponent({
       console.log("Setting up LhasaCanvas.");
       lh.current = setupLhasaCanvas(tmc.current);
     }
+
+    const InchiKeyDatabaseLoaderTask = async () => {
+      if (inchiKeyDatabase.current !== null) {
+        return;
+      }
+      let retries_remaining = 15;
+      while (retries_remaining > 0) {
+        try {
+          let begin_time = performance.now();
+          console.log("Fetching InchiKeyDatabase...");
+          const response: Response = await fetch(data_path_prefix + "Components-inchikey.ich");
+          if (!response.ok) {
+            throw new Error(`InchiKeyDatabase fetch status: ${response.status}`);
+          }
+          const raw_data = await response.text();
+          let end_time = performance.now();
+          console.log(`InchiKeyDatabase fetched successfully in ${(end_time - begin_time).toFixed(2)} ms. Size = ${raw_data.length} bytes. Parsing...`);
+          begin_time = performance.now();
+          const db = parseInchikeyDatabase(raw_data);
+          end_time = performance.now();
+          inchiKeyDatabase.current = db;
+          console.log(`InchiKeyDatabase parsed successfully in ${(end_time - begin_time).toFixed(2)} ms. Entries = ${db.size}.`);
+          break;
+        } catch (err) {
+          console.error(`Could not fetch InchiKeyDatabase: ${err}\n ${retries_remaining > 0 ? `\nRetrying again in two seconds (retries remaining: ${retries_remaining})...` : "\nGiving up."}`);
+          retries_remaining -= 1;
+          // Sleep for 2 seconds before retrying
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
+        }
+      }
+    };
+
+    InchiKeyDatabaseLoaderTask();
+
     return () => {
       if (lh.current !== null && !lh.current?.isDeleted()) {
         console.warn("Cleaning up component upon unmounting.");
@@ -439,7 +489,7 @@ export function LhasaComponent({
       }
       canvasIdsToPropsIdsRef.current = new Map<number, string>();
     };
-  }, []);
+  }, []); // Empty dependency array: run only once on mount and cleanup on unmount
 
   useEffect(() => {
       if(rdkit_molecule_pickle_list !== undefined) {
@@ -964,6 +1014,14 @@ export function LhasaComponent({
     return Math.log(f - c_const) / Math.log(theta_const) - d_const;
   };
 
+  const getTargetOffset = (touch: React.Touch, event: React.TouchEvent<HTMLDivElement>) => {
+    const boundingRect = (event.target as Element).getBoundingClientRect();
+    return {
+      x: touch.clientX - boundingRect.left,
+      y: touch.clientY - boundingRect.top
+    };
+  }
+
   return (
     <>
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
@@ -1207,6 +1265,30 @@ export function LhasaComponent({
                   onWheel={(event) => {
                     lh.current?.on_scroll(event.deltaX, event.deltaY, event.altKey);
                   }}
+                  onTouchStart={(event) => {
+                    // console.log('touchstart');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_left_click(offset.x, offset.y, event.altKey, event.ctrlKey, event.shiftKey);
+                    }
+                  }}
+                  onTouchEnd={(event) => {
+                    // console.log('touchend');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_left_click_released(offset.x, offset.y, event.altKey, event.ctrlKey, event.shiftKey);
+                    }
+                  }}
+                  onTouchMove={(event) => {
+                    // console.log('touchmove');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_hover(offset.x, offset.y, event.altKey, event.ctrlKey);
+                    }
+                  }}
 
                   ref={svgRef}
 
@@ -1250,6 +1332,11 @@ export function LhasaComponent({
                         onBlur={(_event) => setEditedSmiles(null)}
                         onChange={(event) => lh.current.update_molecule_from_smiles(smiles_tuple[0], event.target.value)}
                       />
+                      {smiles_tuple[2] && 
+                        <div style={{alignSelf: "center"}}>
+                          {smiles_tuple[2][0]} {smiles_tuple[2][1]}
+                        </div>
+                      }
                       </div>)}
                   </div>
                   {/* <Divider /> */}
