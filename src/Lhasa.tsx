@@ -376,9 +376,6 @@ export function LhasaComponent({
     });
 
     const on_status_updated = function (status_txt: string) {
-      // For now
-      console.log("Status: " + status_txt);
-      // todo: fix
       setStatusText(status_txt);
     };
     lh.connect("status_updated", on_status_updated);
@@ -409,7 +406,7 @@ export function LhasaComponent({
         // } else {
         //   console.warn(`InchiKeyDatabase not loaded. ${inchiKeyDatabase}`);
         // }
-        console.log(`Inchi lookup: mol_id=${mol_id} key=${inchi_key} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[0]}` : inchiKeyDatabase.current != null ? ` not found in database` : ` (database not loaded)`}`);
+        console.log(`Inchi lookup: mol_id=${mol_id} key=${inchi_key} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[1]}` : inchiKeyDatabase.current != null ? ` not found in database` : ` (database not loaded)`}`);
       }
       inchikey_map_keys.delete();
       inchikey_map.delete();
