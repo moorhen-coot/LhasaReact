@@ -98,7 +98,7 @@ export function LhasaComponent({
   name_of_host_program = 'Moorhen',
   smiles_callback,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
-  data_path_prefix = '/',
+  data_path_prefix = '',
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
