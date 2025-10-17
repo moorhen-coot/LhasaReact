@@ -86,6 +86,7 @@ class LhasaComponentProps {
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
+  dark_mode?: boolean;
 }
 
 
@@ -99,6 +100,7 @@ export function LhasaComponent({
   smiles_callback,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
   data_path_prefix = '',
+  dark_mode = false,
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");

@@ -17,7 +17,8 @@ import { FormControl, FormControlLabel, Switch } from '@mui/material'
 
 export function App() {
   const [showLhasa, setShowLhasa] = useState(true);
-  const [isLhasaAttached, setLhasaAttached] = useState(window.LhasaModule !== undefined)
+  const [darkMode, setDarkMode] = useState(false);
+  const [isLhasaAttached, setLhasaAttached] = useState(window.LhasaModule !== undefined);
 
   const handleLhasaAttached = useCallback(() => {
       if (window.LhasaModule !== undefined) {
@@ -49,6 +50,7 @@ export function App() {
 
     bansu_endpoint='https://www.ccp4.ac.uk/bansu'
     data_path_prefix=''
+    dark_mode={darkMode}
   /> : <div>
     Lhasa module not loaded yet
   </div>;
@@ -59,6 +61,10 @@ export function App() {
       <FormControlLabel
         control={<Switch checked={showLhasa} onChange={(event) => setShowLhasa(event.target.checked)} />}
         label={"Show Lhasa"} 
+      />
+      <FormControlLabel
+        control={<Switch checked={darkMode} onChange={(event) => setDarkMode(event.target.checked)} />}
+        label={"Dark Mode"} 
       />
     </FormControl>
      {showLhasa ? MaybeLhasaComponent : null}
