@@ -39,7 +39,29 @@
 
 .LhasaMuiStyling.lhasa_dark_mode .MuiButtonBase-root {
     color: index.$lhasa_text_color_dark;
+    border-color: index.$lhasa_border_color_dark;
+    // background-color: index.$lhasa_background_color_dark;
 }
+
+.LhasaMuiStyling.lhasa_dark_mode .MuiPaper-root {
+    color: index.$lhasa_text_color_dark;
+    background-color: index.$lhasa_background_color_dark;
+}
+
+// .LhasaMuiStyling.lhasa_dark_mode .MuiPopover-root {
+//     color: index.$lhasa_text_color_dark;
+//     background-color: index.$lhasa_background_color_dark;
+// }
+
+// .LhasaMuiStyling.lhasa_dark_mode .MuiPopover-paper {
+//     color: index.$lhasa_text_color_dark;
+//     background-color: index.$lhasa_background_color_dark;
+// }
+
+// .LhasaMuiStyling.lhasa_dark_mode .MuiMenu-paper {
+//     color: index.$lhasa_text_color_dark;
+//     background-color: index.$lhasa_background_color_dark;
+// }
 
 .LhasaMuiStyling .MuiTypography-root {
     @include normalize_text;

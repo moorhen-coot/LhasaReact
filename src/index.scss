@@ -1,15 +1,15 @@
 @use 'sass:color';
 
 $lhasa_background_color: rgba(119, 119, 119, 0.076);
-$lhasa_background_color_dark: rgba(24, 23, 23, 0.727);
+$lhasa_background_color_dark: rgb(53, 53, 53);
 $lhasa_text_color: black;
 $lhasa_text_color_dark: white;
 $lhasa_qed_value_color: color.adjust($lhasa_text_color, $saturation: +50%, $lightness: +50%, $hue: 196);
-$lhasa_qed_value_color_dark: color.adjust($lhasa_text_color, $saturation: +50%, $lightness: -50%, $hue: 196);
+$lhasa_qed_value_color_dark: color.adjust($lhasa_text_color, $saturation: +75%, $lightness: +65%, $hue: 310);
 $lhasa_border_color: rgba(0, 0, 0, 0.24);
-$lhasa_border_color_dark: rgba(255, 255, 255, 0.24);
+$lhasa_border_color_dark: rgba(255, 255, 255, 0.89);
 $lhasa_toolbar_border_color: rgba(184, 0, 0, 0.181);
-$lhasa_toolbar_border_color_dark: rgba(51, 0, 0, 0.481);
+$lhasa_toolbar_border_color_dark: rgba(250, 85, 85, 0.981);
 $lhasa_base_padding: 3px;
 $lhasa_padding_minor: 2px;
 $lhasa_font_size: 0.65rem;
@@ -66,7 +66,7 @@ $lhasa_font_size: 0.65rem;
     // font-family: monospace;
 }
 
-.keybind_hint.lhasa_dark_mode {
+.lhasa_dark_mode .keybind_hint {
     background-color: $lhasa_background_color_dark;
 }
 
@@ -74,6 +74,7 @@ $lhasa_font_size: 0.65rem;
     padding: $lhasa_base_padding * 2;
     margin-top: $lhasa_base_padding;
     border-radius: 3px;
+    // This border color works well in both modes
     border: rgba(255, 255, 255, 0.405) 1px solid;
 }
 
@@ -101,10 +102,18 @@ $lhasa_font_size: 0.65rem;
     /* align-items: center; */
 }
 
+@mixin toolbar_dark {
+    border-color: $lhasa_toolbar_border_color_dark;
+}
+
 @mixin panel {
     border: $lhasa_border_color 1px solid;
     border-radius: 3px;
     padding: $lhasa_base_padding;
+}
+
+@mixin panel_dark {
+    border-color: $lhasa_border_color_dark;
 }
 
 .scale_panel {
@@ -176,6 +185,10 @@ $lhasa_font_size: 0.65rem;
     margin-top: $lhasa_padding_minor;
 }
 
+.lhasa_dark_mode .horizontal_toolbar {
+    @include toolbar_dark;
+}
+
 .vertical_toolbar {
     @include toolbar;
     @include vertical_container;
@@ -184,14 +197,26 @@ $lhasa_font_size: 0.65rem;
     align-items: normal;
 }
 
+.lhasa_dark_mode .vertical_toolbar {
+    @include toolbar_dark;
+}
+
 .vertical_panel {
     @include vertical_container;
     @include panel;
 }
 
+.lhasa_dark_mode .vertical_panel {
+    @include panel_dark;
+}
+
 .horizontal_panel {
     @include horizontal_container;
     @include panel;
+}
+
+.lhasa_dark_mode .horizontal_panel {
+    @include panel_dark;
 }
 
 .lhasa_icon {
@@ -226,6 +251,10 @@ $lhasa_font_size: 0.65rem;
     align-self: normal;
 }
 
+.lhasa_dark_mode .vertical_popup_title {
+    border-color: color.adjust($lhasa_toolbar_border_color_dark, $saturation: +90%, $lightness: -0%, $alpha: +0.7);
+}
+
 .smiles_display {
     padding: $lhasa_base_padding;
     font-family: monospace;
@@ -247,6 +276,10 @@ $lhasa_font_size: 0.65rem;
     color: $lhasa_qed_value_color;
     margin-left: $lhasa_padding_minor;
     font-weight: bold;
+}
+
+.lhasa_dark_mode .qed_property_value {
+    color: $lhasa_qed_value_color_dark;
 }
 
 .qed_property_label {
@@ -281,19 +314,19 @@ $lhasa_font_size: 0.65rem;
     background-color: $lhasa_background_color;
 }
 
-.pre_render_message.lhasa_dark_mode {
+.lhasa_dark_mode .pre_render_message{
     color: $lhasa_text_color_dark;
 }
 
 .warning_box {
     color: darkred;
-    background-color: color.adjust(darkorange, $alpha: -0.95);
+    background-color: color.adjust(darkorange, $alpha: -0.90);
     border: red 1px solid;
     border-radius: 3px;
     padding: $lhasa_base_padding;
 }
 
-.warning_box.lhasa_dark_mode {
+.lhasa_dark_mode .warning_box {
     color: red;
     // background-color: ;
 }

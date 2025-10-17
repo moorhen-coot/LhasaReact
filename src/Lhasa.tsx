@@ -1055,15 +1055,15 @@ export function LhasaComponent({
                   open={editOpened}
                   anchorEl={editButtonRef.current}
                   onClose={() => setEditOpen(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? "lhasa_dark_mode" : "")}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                 >
                   <MenuItem onClick={() => handler_map["Undo"]()} >
                     <Undo />
-                    Undo <div className={"keybind_hint" + (dark_mode ? "lhasa_dark_mode" : "")}>Ctrl+Z</div>
+                    Undo <div className="keybind_hint">Ctrl+Z</div>
                   </MenuItem>
                   <MenuItem onClick={() => handler_map["Redo"]()} >
                     <Redo />
-                    Redo <div className={"keybind_hint" + (dark_mode ? "lhasa_dark_mode" : "")}>Ctrl+Shift+Z</div>
+                    Redo <div className="keybind_hint">Ctrl+Shift+Z</div>
                   </MenuItem>
                 </Menu>
                 <Button 
@@ -1078,7 +1078,7 @@ export function LhasaComponent({
                   open={optionOpened}
                   anchorEl={optionButtonRef.current}
                   onClose={() => setOptionOpen(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? "lhasa_dark_mode" : "")}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                 >
                   <MenuItem>
                     <FormGroup>
@@ -1121,7 +1121,7 @@ export function LhasaComponent({
                   anchorEl={displayModeButtonRef.current}
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                   onClose={() => setDisplayModeOpen(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? "lhasa_dark_mode" : "")}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                   //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                   >
                     <FormControl>
@@ -1297,7 +1297,7 @@ export function LhasaComponent({
                   ref={svgRef}
 
                 >
-                  <div className={"pre_render_message" + (dark_mode ? "lhasa_dark_mode" : "")}>Lhasa not rendered.</div>
+                  <div className="pre_render_message">Lhasa not rendered.</div>
                 </div>
                 <div id={text_measurement_worker_div} className="text_measurement_worker_div">
                   {/* Ugly, I know */}
