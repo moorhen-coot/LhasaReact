@@ -60,9 +60,10 @@ export function BansuButton(props: BansuPopupProps) {
                         While Bansu does not store logs containing chemical data, please note that<br/><b>by using a remote instance of Bansu you're trusting the instance's owner with your data.</b><br/>
                         <br/>
                         <FormControlLabel 
-                            label="I understand and agree to proceed" 
+                            label="I understand and agree to proceed"
                             control={
                             <Checkbox 
+                                style={{marginLeft: '5px'}}
                                 checked={userConsent}
                                 onChange={() => setUserConsent(!userConsent)}
                             />} 
