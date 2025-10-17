@@ -68,6 +68,8 @@ $lhasa_font_size: 0.65rem;
 
 .lhasa_dark_mode .keybind_hint {
     background-color: $lhasa_background_color_dark;
+    color: color.adjust($lhasa_text_color_dark, $saturation: -20%, $lightness: -40%);
+    // color: pink;
 }
 
 .lhasa_tooltip_keybind_infoblock {
@@ -84,7 +86,7 @@ $lhasa_font_size: 0.65rem;
     // margin-top: $lhasa_base_padding * 8;
     border-radius: 3px;
     color: lightblue;
-    background-color: color.adjust(lightblue, $alpha: -0.7);
+    background-color: color.adjust(lightblue, $alpha: -0.8);
     padding: $lhasa_base_padding;
 }
 
@@ -242,6 +244,7 @@ $lhasa_font_size: 0.65rem;
     @include horizontal_container;
     font-size: larger;
     font-weight: bold;
+    // todo: dark_theme
     border-bottom: color.adjust($lhasa_toolbar_border_color, $saturation: +90%, $lightness: -0%, $alpha: +0.7) 2px solid;
     margin-bottom: $lhasa_base_padding;
     // border-radius: 4px;
