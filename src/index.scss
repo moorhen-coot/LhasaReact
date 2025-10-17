@@ -1,10 +1,15 @@
 @use 'sass:color';
 
 $lhasa_background_color: rgba(119, 119, 119, 0.076);
+$lhasa_background_color_dark: rgba(24, 23, 23, 0.727);
 $lhasa_text_color: black;
+$lhasa_text_color_dark: white;
 $lhasa_qed_value_color: color.adjust($lhasa_text_color, $saturation: +50%, $lightness: +50%, $hue: 196);
+$lhasa_qed_value_color_dark: color.adjust($lhasa_text_color, $saturation: +50%, $lightness: -50%, $hue: 196);
 $lhasa_border_color: rgba(0, 0, 0, 0.24);
+$lhasa_border_color_dark: rgba(255, 255, 255, 0.24);
 $lhasa_toolbar_border_color: rgba(184, 0, 0, 0.181);
+$lhasa_toolbar_border_color_dark: rgba(51, 0, 0, 0.481);
 $lhasa_base_padding: 3px;
 $lhasa_padding_minor: 2px;
 $lhasa_font_size: 0.65rem;
@@ -22,6 +27,10 @@ $lhasa_font_size: 0.65rem;
     // min-width: 300px;
     // max-height: 500px;
     // min-height: 320px;
+}
+
+.editor_canvas_container.lhasa_dark_mode {
+    border-color: $lhasa_border_color_dark;
 }
 
 .lhasa_drawing {
@@ -42,6 +51,11 @@ $lhasa_font_size: 0.65rem;
     text-align: left;
 }
 
+.lhasa_editor.lhasa_dark_mode {
+    background-color: $lhasa_background_color_dark;
+    color: $lhasa_text_color_dark;
+}
+
 // For the menus
 .keybind_hint {
     color: color.adjust($lhasa_text_color, $saturation: -50%, $lightness: +40%);
@@ -50,6 +64,10 @@ $lhasa_font_size: 0.65rem;
     border-radius: $lhasa_padding_minor;
     padding: $lhasa_padding_minor;
     // font-family: monospace;
+}
+
+.keybind_hint.lhasa_dark_mode {
+    background-color: $lhasa_background_color_dark;
 }
 
 .lhasa_tooltip_keybind_infoblock {
@@ -243,6 +261,11 @@ $lhasa_font_size: 0.65rem;
     border-style: ridge;
 }
 
+.lhasa_editor.lhasa_dark_mode input {
+    background-color: $lhasa_background_color_dark;
+    color: $lhasa_text_color_dark;
+}
+
 .smiles_input {
     flex-grow: 1;
 }
@@ -258,12 +281,21 @@ $lhasa_font_size: 0.65rem;
     background-color: $lhasa_background_color;
 }
 
+.pre_render_message.lhasa_dark_mode {
+    color: $lhasa_text_color_dark;
+}
+
 .warning_box {
     color: darkred;
     background-color: color.adjust(darkorange, $alpha: -0.95);
     border: red 1px solid;
     border-radius: 3px;
     padding: $lhasa_base_padding;
+}
+
+.warning_box.lhasa_dark_mode {
+    color: red;
+    // background-color: ;
 }
 
 .text_measurement_worker_div {

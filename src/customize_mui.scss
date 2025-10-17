@@ -23,6 +23,11 @@
     background-color: index.$lhasa_background_color;
 }
 
+.LhasaMuiStyling.lhasa_dark_mode .MuiAccordion-root {
+    background-color: index.$lhasa_background_color_dark;
+    color: index.$lhasa_text_color_dark;
+}
+
 .LhasaMuiStyling .MuiFormGroup-root {
     margin-left: index.$lhasa_base_padding;
 }
@@ -32,8 +37,17 @@
     @include normalize_padding;
 }
 
+.LhasaMuiStyling.lhasa_dark_mode .MuiButtonBase-root {
+    color: index.$lhasa_text_color_dark;
+}
+
 .LhasaMuiStyling .MuiTypography-root {
     @include normalize_text;
+}
+
+
+.LhasaMuiStyling.lhasa_dark_mode .MuiTypography-root {
+    color: index.$lhasa_text_color_dark;
 }
 
 .LhasaMuiStyling .MuiSwitch-thumb {

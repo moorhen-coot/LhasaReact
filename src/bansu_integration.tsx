@@ -12,6 +12,7 @@ class BansuPopupProps {
     smiles!: string;
     anchorEl?: HTMLElement | null;
     bansu_endpoint!: string;
+    dark_mode!: boolean;
     // internal_id: 
 }
 
@@ -52,7 +53,7 @@ export function BansuButton(props: BansuPopupProps) {
             case BansuPopupState.UserConfig:
                 return <div className="vertical_panel">
                     Bansu is a server-side computational API which enables CIF generation via running Acedrg.
-                    <div className="warning_box">
+                    <div className={"warning_box" + (props.dark_mode ? "lhasa_dark_mode" : "")}>
                         <h2>WARNING!</h2>
                         <b>Usage of non-local instances of Bansu implies that your data will travel across the web to a remote webserver.</b><br/>
                         <b>Make sure that you're using an HTTPS endpoint</b> for transport security.<br/>
