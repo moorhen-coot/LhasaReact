@@ -1,10 +1,15 @@
 @use 'sass:color';
 
 $lhasa_background_color: rgba(119, 119, 119, 0.076);
+$lhasa_background_color_dark: rgb(53, 53, 53);
 $lhasa_text_color: black;
+$lhasa_text_color_dark: white;
 $lhasa_qed_value_color: color.adjust($lhasa_text_color, $saturation: +50%, $lightness: +50%, $hue: 196);
+$lhasa_qed_value_color_dark: color.adjust($lhasa_text_color, $saturation: +75%, $lightness: +65%, $hue: 310);
 $lhasa_border_color: rgba(0, 0, 0, 0.24);
+$lhasa_border_color_dark: rgba(255, 255, 255, 0.24);
 $lhasa_toolbar_border_color: rgba(184, 0, 0, 0.181);
+$lhasa_toolbar_border_color_dark: rgba(250, 85, 85, 0.281);
 $lhasa_base_padding: 3px;
 $lhasa_padding_minor: 2px;
 $lhasa_font_size: 0.65rem;
@@ -22,6 +27,10 @@ $lhasa_font_size: 0.65rem;
     // min-width: 300px;
     // max-height: 500px;
     // min-height: 320px;
+}
+
+.editor_canvas_container.lhasa_dark_mode {
+    border-color: $lhasa_border_color_dark;
 }
 
 .lhasa_drawing {
@@ -42,6 +51,11 @@ $lhasa_font_size: 0.65rem;
     text-align: left;
 }
 
+.lhasa_editor.lhasa_dark_mode {
+    background-color: $lhasa_background_color_dark;
+    color: $lhasa_text_color_dark;
+}
+
 // For the menus
 .keybind_hint {
     color: color.adjust($lhasa_text_color, $saturation: -50%, $lightness: +40%);
@@ -52,10 +66,17 @@ $lhasa_font_size: 0.65rem;
     // font-family: monospace;
 }
 
+.lhasa_dark_mode .keybind_hint {
+    background-color: $lhasa_background_color_dark;
+    color: color.adjust($lhasa_text_color_dark, $saturation: -20%, $lightness: -40%);
+    // color: pink;
+}
+
 .lhasa_tooltip_keybind_infoblock {
     padding: $lhasa_base_padding * 2;
     margin-top: $lhasa_base_padding;
     border-radius: 3px;
+    // This border color works well in both modes
     border: rgba(255, 255, 255, 0.405) 1px solid;
 }
 
@@ -65,7 +86,7 @@ $lhasa_font_size: 0.65rem;
     // margin-top: $lhasa_base_padding * 8;
     border-radius: 3px;
     color: lightblue;
-    background-color: color.adjust(lightblue, $alpha: -0.7);
+    background-color: color.adjust(lightblue, $alpha: -0.8);
     padding: $lhasa_base_padding;
 }
 
@@ -83,10 +104,18 @@ $lhasa_font_size: 0.65rem;
     /* align-items: center; */
 }
 
+@mixin toolbar_dark {
+    border-color: $lhasa_toolbar_border_color_dark;
+}
+
 @mixin panel {
     border: $lhasa_border_color 1px solid;
     border-radius: 3px;
     padding: $lhasa_base_padding;
+}
+
+@mixin panel_dark {
+    border-color: $lhasa_border_color_dark;
 }
 
 .scale_panel {
@@ -158,6 +187,10 @@ $lhasa_font_size: 0.65rem;
     margin-top: $lhasa_padding_minor;
 }
 
+.lhasa_dark_mode .horizontal_toolbar {
+    @include toolbar_dark;
+}
+
 .vertical_toolbar {
     @include toolbar;
     @include vertical_container;
@@ -166,14 +199,26 @@ $lhasa_font_size: 0.65rem;
     align-items: normal;
 }
 
+.lhasa_dark_mode .vertical_toolbar {
+    @include toolbar_dark;
+}
+
 .vertical_panel {
     @include vertical_container;
     @include panel;
 }
 
+.lhasa_dark_mode .vertical_panel {
+    @include panel_dark;
+}
+
 .horizontal_panel {
     @include horizontal_container;
     @include panel;
+}
+
+.lhasa_dark_mode .horizontal_panel {
+    @include panel_dark;
 }
 
 .lhasa_icon {
@@ -199,6 +244,7 @@ $lhasa_font_size: 0.65rem;
     @include horizontal_container;
     font-size: larger;
     font-weight: bold;
+    // todo: dark_theme
     border-bottom: color.adjust($lhasa_toolbar_border_color, $saturation: +90%, $lightness: -0%, $alpha: +0.7) 2px solid;
     margin-bottom: $lhasa_base_padding;
     // border-radius: 4px;
@@ -206,6 +252,10 @@ $lhasa_font_size: 0.65rem;
     flex-grow: 1;
     justify-content: center;
     align-self: normal;
+}
+
+.lhasa_dark_mode .vertical_popup_title {
+    border-color: color.adjust($lhasa_toolbar_border_color_dark, $saturation: +90%, $lightness: -0%, $alpha: +0.7);
 }
 
 .smiles_display {
@@ -231,6 +281,10 @@ $lhasa_font_size: 0.65rem;
     font-weight: bold;
 }
 
+.lhasa_dark_mode .qed_property_value {
+    color: $lhasa_qed_value_color_dark;
+}
+
 .qed_property_label {
     font-weight: bolder;
 }
@@ -241,6 +295,22 @@ $lhasa_font_size: 0.65rem;
     color: $lhasa_text_color;
     font-size: $lhasa_font_size;
     border-style: ridge;
+}
+
+.lhasa_editor.lhasa_dark_mode input {
+    background-color: $lhasa_background_color_dark;
+    // border-color: $lhasa_toolbar_border_color_dark;
+    color: $lhasa_text_color_dark;
+    // this is broken
+    // /* Apply infinite transition to block autofill styles */
+    // // transition: background-color 9999s, color 9999s;
+}
+
+//Fix 'internal-autofill-selected' whitish background in Chrome
+.lhasa_editor input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px $lhasa_background_color inset !important;
+    box-shadow: 0 0 0px 1000px $lhasa_background_color_dark inset !important;
+    -webkit-text-fill-color: $lhasa_text_color_dark !important;
 }
 
 .smiles_input {
@@ -258,12 +328,21 @@ $lhasa_font_size: 0.65rem;
     background-color: $lhasa_background_color;
 }
 
+.lhasa_dark_mode .pre_render_message{
+    color: $lhasa_text_color_dark;
+}
+
 .warning_box {
     color: darkred;
-    background-color: color.adjust(darkorange, $alpha: -0.95);
+    background-color: color.adjust(darkorange, $alpha: -0.90);
     border: red 1px solid;
     border-radius: 3px;
     padding: $lhasa_base_padding;
+}
+
+.lhasa_dark_mode .warning_box {
+    color: red;
+    // background-color: ;
 }
 
 .text_measurement_worker_div {

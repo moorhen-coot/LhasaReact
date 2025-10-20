@@ -86,6 +86,7 @@ class LhasaComponentProps {
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
+  dark_mode?: boolean;
 }
 
 
@@ -99,6 +100,7 @@ export function LhasaComponent({
   smiles_callback,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
   data_path_prefix = '',
+  dark_mode = false,
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
     console.debug("on_render() called.");
@@ -582,6 +584,8 @@ export function LhasaComponent({
     }
   }, [svgNode]);
 
+  const icons_path_final = dark_mode ? icons_path_prefix + "/dark" : icons_path_prefix;
+
   const carbon_ring_tooltip = useRef<React.JSX.Element>(<div>
     <b>Carbon Ring Tool</b><br/>
     Insert a carbon ring.<br/>
@@ -606,7 +610,7 @@ export function LhasaComponent({
     Move: { 
       caption:"Move",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
-      icon: icons_path_prefix + "/layla_move_tool.svg",
+      icon: icons_path_final + "/layla_move_tool.svg",
       hotkey:"m",
       caption_optional: true,
       tooltip_core: <div>
@@ -620,7 +624,7 @@ export function LhasaComponent({
     Rotate: { 
       caption:"Rotate",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation)),
-      icon: icons_path_prefix + "/lhasa_rotate_tool.svg",
+      icon: icons_path_final + "/lhasa_rotate_tool.svg",
       hotkey:"r",
       caption_optional: true,
       tooltip_core: <div>
@@ -636,7 +640,7 @@ export function LhasaComponent({
     Flip_around_X: { 
       caption:"Flip around X",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal)),
-      icon: icons_path_prefix + "/lhasa_flip_x_tool.svg",
+      icon: icons_path_final + "/lhasa_flip_x_tool.svg",
       hotkey:"alt+f",
       caption_optional: true,
       tooltip_core: <div>
@@ -650,7 +654,7 @@ export function LhasaComponent({
     Flip_around_Y: { 
       caption:"Flip around Y",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical)),
-      icon: icons_path_prefix + "/lhasa_flip_y_tool.svg",
+      icon: icons_path_final + "/lhasa_flip_y_tool.svg",
       hotkey:"ctrl+alt+f",
       caption_optional: true,
       tooltip_core: <div>
@@ -664,7 +668,7 @@ export function LhasaComponent({
     Delete_hydrogens: { 
       caption:"Delete hydrogens",
       raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
-      icon: icons_path_prefix + "/layla_delete_hydrogens_tool.svg",
+      icon: icons_path_final + "/layla_delete_hydrogens_tool.svg",
       hotkey:"alt+delete",
       caption_optional: true,
       tooltip_core: <div>
@@ -678,7 +682,7 @@ export function LhasaComponent({
     Format: { 
       caption:"Format",
       raw_handler:() => switch_tool(new Lhasa.FormatTool()),
-      icon: icons_path_prefix + "/layla_format_tool.svg",
+      icon: icons_path_final + "/layla_format_tool.svg",
       hotkey:"f",
       caption_optional: true,
       tooltip_core: <div>
@@ -692,7 +696,7 @@ export function LhasaComponent({
     Single_Bond: { 
       caption:"Single Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
-      icon: icons_path_prefix + "/layla_single_bond.svg",
+      icon: icons_path_final + "/layla_single_bond.svg",
       hotkey:"s",
       caption_optional: true,
       tooltip_core: <div>
@@ -707,7 +711,7 @@ export function LhasaComponent({
     Double_Bond: { 
       caption:"Double Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
-      icon: icons_path_prefix + "/layla_double_bond.svg",
+      icon: icons_path_final + "/layla_double_bond.svg",
       hotkey:"d",
       caption_optional: true,
       tooltip_core: <div>
@@ -722,7 +726,7 @@ export function LhasaComponent({
     Triple_Bond: { 
       caption:"Triple Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
-      icon: icons_path_prefix + "/layla_triple_bond.svg",
+      icon: icons_path_final + "/layla_triple_bond.svg",
       hotkey:"t",
       caption_optional: true,
       tooltip_core: <div>
@@ -737,7 +741,7 @@ export function LhasaComponent({
     Geometry: { 
       caption:"Geometry",
       raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
-      icon: icons_path_prefix + "/layla_geometry_tool.svg",
+      icon: icons_path_final + "/layla_geometry_tool.svg",
       hotkey:"g",
       caption_optional: true,
       tooltip_core: <div>
@@ -751,7 +755,7 @@ export function LhasaComponent({
     Charge: { 
       caption:"Charge",
       raw_handler:() => switch_tool(new Lhasa.ChargeModifier()),
-      icon: icons_path_prefix + "/layla_charge_tool.svg",
+      icon: icons_path_final + "/layla_charge_tool.svg",
       hotkey:"v",
       caption_optional: true,
       tooltip_core: <div>
@@ -765,7 +769,7 @@ export function LhasaComponent({
     Delete: { 
       caption:"Delete",
       raw_handler:() => switch_tool(new Lhasa.DeleteTool()),
-      icon: icons_path_prefix + "/lhasa_delete_tool.svg",
+      icon: icons_path_final + "/lhasa_delete_tool.svg",
       hotkey:"delete",
       caption_optional: true,
       tooltip_core: <div>
@@ -784,7 +788,7 @@ export function LhasaComponent({
     C3: { 
       caption:"3-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPropaneRing)),
-      icon: icons_path_prefix + "/layla_3c.svg",
+      icon: icons_path_final + "/layla_3c.svg",
       hotkey:"3",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -792,7 +796,7 @@ export function LhasaComponent({
     C4: { 
       caption:"4-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloButaneRing)),
-      icon: icons_path_prefix + "/layla_4c.svg",
+      icon: icons_path_final + "/layla_4c.svg",
       hotkey:"4",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -800,7 +804,7 @@ export function LhasaComponent({
     C5: { 
       caption:"5-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPentaneRing)),
-      icon: icons_path_prefix + "/layla_5c.svg",
+      icon: icons_path_final + "/layla_5c.svg",
       hotkey:"5",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -808,7 +812,7 @@ export function LhasaComponent({
     C6: { 
       caption:"6-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHexaneRing)),
-      icon: icons_path_prefix + "/layla_6c.svg",
+      icon: icons_path_final + "/layla_6c.svg",
       hotkey:"6",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -816,7 +820,7 @@ export function LhasaComponent({
     Arom6: { 
       caption:"6-Arom",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.BenzeneRing)),
-      icon: icons_path_prefix + "/layla_6arom.svg",
+      icon: icons_path_final + "/layla_6arom.svg",
       hotkey:["b","alt+6"],
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -824,7 +828,7 @@ export function LhasaComponent({
     C7: { 
       caption:"7-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHeptaneRing)),
-      icon: icons_path_prefix + "/layla_7c.svg",
+      icon: icons_path_final + "/layla_7c.svg",
       hotkey:"7",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -832,7 +836,7 @@ export function LhasaComponent({
     C8: { 
       caption:"8-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloOctaneRing)),
-      icon: icons_path_prefix + "/layla_8c.svg",
+      icon: icons_path_final + "/layla_8c.svg",
       hotkey:"8",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -925,7 +929,7 @@ export function LhasaComponent({
       caption_optional: false,
       tooltip_core: element_tool_tooltip.current
     }
-  }}, [icons_path_prefix]);
+  }}, [icons_path_final]);
 
   function wrap_handler(action_name: string, raw_handler: () => void) : () => void {
     return () => {
@@ -1027,7 +1031,7 @@ export function LhasaComponent({
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
-            <div className="lhasa_editor LhasaMuiStyling" ref={editorRef}>
+            <div className={"lhasa_editor LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")} ref={editorRef}>
               {show_top_panel &&
                 <div className="horizontal_container">
                   <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
@@ -1051,7 +1055,7 @@ export function LhasaComponent({
                   open={editOpened}
                   anchorEl={editButtonRef.current}
                   onClose={() => setEditOpen(false)}
-                  className="LhasaMuiStyling"
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                 >
                   <MenuItem onClick={() => handler_map["Undo"]()} >
                     <Undo />
@@ -1074,7 +1078,7 @@ export function LhasaComponent({
                   open={optionOpened}
                   anchorEl={optionButtonRef.current}
                   onClose={() => setOptionOpen(false)}
-                  className="LhasaMuiStyling"
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                 >
                   <MenuItem>
                     <FormGroup>
@@ -1117,7 +1121,7 @@ export function LhasaComponent({
                   anchorEl={displayModeButtonRef.current}
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                   onClose={() => setDisplayModeOpen(false)}
-                  className="LhasaMuiStyling"
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                   //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                   >
                     <FormControl>
@@ -1238,7 +1242,7 @@ export function LhasaComponent({
                 { tool_buttons.get("X") }
                 </div>
                 <div 
-                  className="editor_canvas_container"
+                  className={"editor_canvas_container" + (dark_mode ? " lhasa_dark_mode" : "")}
                   onContextMenu={(e) => {e.preventDefault();}}
                   onMouseMove={(event) => {
                     // console.log('Mousemove');
@@ -1323,6 +1327,7 @@ export function LhasaComponent({
                           smiles={smiles_tuple[1]}
                           anchorEl={editorRef.current}
                           bansu_endpoint={bansu_endpoint}
+                          dark_mode={dark_mode}
                         />
                       }
                       <TextField 
