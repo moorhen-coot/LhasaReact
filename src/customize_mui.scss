@@ -48,15 +48,20 @@
     background-color: index.$lhasa_background_color_dark;
 }
 
-// .LhasaMuiStyling.lhasa_dark_mode .MuiInputBase-root {
+.LhasaMuiStyling.lhasa_dark_mode .MuiInputLabel-root {
+    // background-color: index.$lhasa_background_color_dark;
+    color: index.$lhasa_text_color_dark;
+}
+
+// .LhasaMuiStyling.lhasa_dark_mode .MuiNotchedOutlined-root {
 //     // background-color: index.$lhasa_background_color_dark;
-//     color: index.$lhasa_text_color_dark;
+//     border-color: index.$lhasa_border_color_dark
 // }
 
-// .LhasaMuiStyling.lhasa_dark_mode .MuiNotchedOutline-root {
-//     // background-color: index.$lhasa_background_color_dark;
-//     color: index.$lhasa_text_color_dark;
-// }
+.LhasaMuiStyling.lhasa_dark_mode .MuiOutlinedInput-notchedOutline {
+    // background-color: index.$lhasa_background_color_dark;
+    border-color: index.$lhasa_border_color_dark
+}
 
 // .LhasaMuiStyling.lhasa_dark_mode .MuiPopover-root {
 //     color: index.$lhasa_text_color_dark;

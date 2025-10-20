@@ -299,7 +299,11 @@ $lhasa_font_size: 0.65rem;
 
 .lhasa_editor.lhasa_dark_mode input {
     background-color: $lhasa_background_color_dark;
+    // border-color: $lhasa_toolbar_border_color_dark;
     color: $lhasa_text_color_dark;
+    // this is broken
+    // /* Apply infinite transition to block autofill styles */
+    // // transition: background-color 9999s, color 9999s;
 }
 
 .smiles_input {
