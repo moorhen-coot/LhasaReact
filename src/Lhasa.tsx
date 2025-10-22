@@ -218,6 +218,7 @@ export function LhasaComponent({
       const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
       const min_size = 480;
       if(measured < min_size) {
+        console.warn(`Horizontal canvas size measurement below minimum: ${measured}`);
         return min_size;
       }
       return measured;
@@ -226,6 +227,7 @@ export function LhasaComponent({
       const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
       const min_size = 270;
       if(measured < min_size) {
+        console.warn(`Vertical canvas size measurement below minimum: ${measured}`);
         return min_size;
       }
       return measured;
