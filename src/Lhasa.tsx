@@ -103,7 +103,7 @@ export function LhasaComponent({
   dark_mode = false,
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
-    console.debug("on_render() called.");
+    // console.debug("on_render() called.");
   
     const css_color_from_lhasa_color = (lhasa_color: Color) => {
       return 'rgba(' + lhasa_color.r * 255 + ','+ lhasa_color.g * 255 + ',' + lhasa_color.b * 255 + ',' + lhasa_color.a + ')';
