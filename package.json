@@ -1,7 +1,8 @@
 {
   "name": "lhasa",
-  "private": true,
-  "version": "0.0.0",
+  "private": "false",
+  "description": "Mooren's ligand builder: React + WebAssembly version of Layla - Coot's ligand builder",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
