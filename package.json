@@ -1,5 +1,5 @@
 {
-  "name": "lhasa_ligand_builder",
+  "name": "lhasa-ligand-builder",
   "description": "Mooren's ligand builder: React + WebAssembly version of Layla - Coot's ligand builder",
   "version": "0.1.0",
   "type": "module",
