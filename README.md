@@ -4,8 +4,14 @@ Moorhen's frontend for Lhasa - web version of Coot's ligand builder
 
 ## Installation / embedding
 
-NPM package is coming soon.
-Before that happens, you have to do the build yourself.
+There is an experimental [`lhasa-ligand-builder`](https://www.npmjs.com/package/lhasa-ligand-builder) package.
+
+You can run to install it:
+`npm i lhasa-ligand-builder`
+
+If you're lucky, this should be enough to embed Lhasa in your project.
+If it doesn't work, let me know and I'll help to fix it.
+In the meantime, follow the instructions below to get a working Lhasa.
 
 ## How to build and run
 
