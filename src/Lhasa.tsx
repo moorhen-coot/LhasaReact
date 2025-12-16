@@ -11,13 +11,13 @@ import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
 import { parseInchikeyDatabase } from './inchikey_database_parse';
 
-class ToolButtonProps {
+type ToolButtonProps = {
   onclick?: () => void;
   action_name: string | undefined;
   caption: string | undefined;
-  caption_optional?: boolean = false;
+  caption_optional?: boolean;
   icon: string | undefined | null;
-  tooltip_body?: React.JSX.Element | null = null;
+  tooltip_body?: React.JSX.Element | null;
 }
 
 class ActiveToolContextData {
@@ -961,19 +961,19 @@ export function LhasaComponent({
           </span>)}
         </div>);
       };
-      m_tool_buttons.set(k, ToolButton({
-        onclick: () => {handler_map[k]()},
-        caption: v.caption,
-        caption_optional: v.caption_optional,
-        tooltip_body: <div className='lhasa_tooltip'>
+      m_tool_buttons.set(k, <ToolButton
+        onclick= {() => {handler_map[k]()}}
+        caption={v.caption}
+        caption_optional={v.caption_optional}
+        tooltip_body={<div className='lhasa_tooltip'>
           {v.tooltip_core}
           {v.hotkey && 
             hotkey_to_infoblock(v.hotkey)
           }
-        </div>,
-        icon: v.icon,
-        action_name: k
-      }));
+        </div>}
+        icon={v.icon}
+        action_name={k}
+      />);
     }
     return m_tool_buttons;
   }, [tool_button_data, handler_map]);
