@@ -10,6 +10,10 @@ import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
 import { parseInchikeyDatabase } from './inchikey_database_parse';
+import { useMoorhenInstance } from '../../InstanceManager'
+import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 type ToolButtonProps = {
   onclick?: () => void;
@@ -18,6 +22,7 @@ type ToolButtonProps = {
   caption_optional?: boolean;
   icon: string | undefined | null;
   tooltip_body?: React.JSX.Element | null;
+  popperContainer?: HTMLElement | null;
 }
 
 class ActiveToolContextData {
@@ -37,6 +42,10 @@ function ToolButton(props:ToolButtonProps) {
           enterDelay={1000}
           enterNextDelay={1000}
           disableInteractive
+                    PopperProps={{
+            container: props.popperContainer ?? undefined,
+            disablePortal: true,
+          }}
         >
           <ToggleButton
             selected={context.active_tool_name == props.action_name}
@@ -44,6 +53,8 @@ function ToolButton(props:ToolButtonProps) {
             value={'dummy'}
             // Doesn't work: autoCapitalize='false'
             style={{textTransform: 'none', padding: '0px'}}
+
+        
           >
             <div className='tool_button'>
             {props.icon &&
@@ -973,6 +984,7 @@ export function LhasaComponent({
         </div>}
         icon={v.icon}
         action_name={k}
+        popperContainer={muiPortalContainer}
       />);
     }
     return m_tool_buttons;
@@ -1026,6 +1038,66 @@ export function LhasaComponent({
     };
   }
 
+  const moorhenInstance = useMoorhenInstance()
+  const containerRef = moorhenInstance.getContainerRef()
+  const [muiPortalContainer, setMuiPortalContainer] = useState<HTMLElement | null>(null)
+
+    const [muiStyleContainer, setMuiStyleContainer] = useState<ShadowRoot | HTMLElement | null>(
+    typeof document !== 'undefined' ? document.head : null
+  )
+
+    useEffect(() => {
+    const el = containerRef?.current ?? null
+    setMuiPortalContainer(el)
+
+    const rootNode = (el?.getRootNode?.() ?? null) as (Document | ShadowRoot | null)
+    if (rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot) {
+      // Inject styles into the shadow root
+      setMuiStyleContainer(rootNode)
+    } else {
+      // Fallback for non-shadow usage
+      setMuiStyleContainer(document.head)
+    }
+  }, [containerRef])
+
+    const emotionCache = useMemo(() => {
+    if (!muiStyleContainer) return null
+    return createCache({
+      key: 'lhasa',
+      container: muiStyleContainer as any, // ShadowRoot is OK at runtime; cast for TS
+      prepend: true,
+    })
+  }, [muiStyleContainer])
+
+  const muiTheme = useMemo(() => {
+    return createTheme({
+      components: {
+        MuiModal: {
+          defaultProps: {
+            container: muiPortalContainer ?? undefined,
+          } as any,
+        },
+        MuiPopover: {
+          defaultProps: {
+            container: muiPortalContainer ?? undefined,
+          } as any,
+        },
+        MuiMenu: {
+          defaultProps: {
+            container: muiPortalContainer ?? undefined,
+          } as any,
+        },
+        MuiPopper: {
+          defaultProps: {
+            container: muiPortalContainer ?? undefined,
+            disablePortal: true,
+          } as any,
+        },
+      },
+    })
+  }, [muiPortalContainer])
+
+
   return (
     <>
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
@@ -1056,6 +1128,7 @@ export function LhasaComponent({
                   anchorEl={editButtonRef.current}
                   onClose={() => setEditOpen(false)}
                   className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  container={muiPortalContainer ?? undefined as any}
                 >
                   <MenuItem onClick={() => handler_map["Undo"]()} >
                     <Undo />
@@ -1079,6 +1152,7 @@ export function LhasaComponent({
                   anchorEl={optionButtonRef.current}
                   onClose={() => setOptionOpen(false)}
                   className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  container={muiPortalContainer ?? undefined as any}
                 >
                   <MenuItem>
                     <FormGroup>
@@ -1122,6 +1196,7 @@ export function LhasaComponent({
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                   onClose={() => setDisplayModeOpen(false)}
                   className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  container={muiPortalContainer ?? undefined as any}
                   //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                   >
                     <FormControl>
