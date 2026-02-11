@@ -6,6 +6,8 @@ import { cpSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+console.log("Running post-build asset copy script.");
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 const src = resolve(root, 'public');
