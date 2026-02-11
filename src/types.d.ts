@@ -119,6 +119,7 @@ export interface TextSpan extends ClassHandle {
   style: TextStyle;
   specifies_style: boolean;
   has_subspans(): boolean;
+  is_newline(): boolean;
   as_caption(): string;
   as_subspans(): TextSpanVector;
 }
