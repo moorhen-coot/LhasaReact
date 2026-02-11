@@ -72,7 +72,7 @@ const d_top= (min_scale-1)**2 / (min_scale+max_scale-2);
 const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
 const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
 
-class LhasaComponentProps {
+export interface LhasaComponentProps {
   Lhasa: MainModule | any;
   show_top_panel?: boolean;
   show_footer?: boolean;

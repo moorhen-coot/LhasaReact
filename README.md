@@ -1,27 +1,77 @@
 # LhasaReact
 
-Moorhen's frontend for Lhasa - web version of Coot's ligand builder
+Moorhen's ligand builder: a React + WebAssembly version of Layla (Coot's ligand builder), packaged as an npm library.
 
-## Installation / embedding
+## Quick start
 
-There is an experimental [`lhasa-ligand-builder`](https://www.npmjs.com/package/lhasa-ligand-builder) package.
+```bash
+npm install lhasa-ligand-builder
+```
 
-You can run to install it:
-`npm i lhasa-ligand-builder`
+```tsx
+import { LhasaEmbedder } from 'lhasa-ligand-builder'
+import 'lhasa-ligand-builder/style.css'
 
-If you're lucky, this should be enough to embed Lhasa in your project.
-If it doesn't work, let me know and I'll help to fix it.
-In the meantime, follow the instructions below to get a working Lhasa.
+function App() {
+  return <LhasaEmbedder assetsBaseUrl="/lhasa-assets/" />
+}
+```
 
-## How to build and run
+Copy the assets from `node_modules/lhasa-ligand-builder/dist/assets/` to your public directory (e.g. `public/lhasa-assets/`). The assets include `lhasa.js`, `lhasa.wasm`, `Components-inchikey.ich`, and the `icons/` directory.
+
+## Cross-origin isolation
+
+Lhasa's WASM module uses `SharedArrayBuffer`, which requires your page to be served with these HTTP headers:
+
+```
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+Without these headers, the WASM module will fail to load. During development with Vite, the bundled `vite-plugin-cross-origin-isolation` plugin handles this automatically.
+
+## `LhasaEmbedder` props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `assetsBaseUrl` | `string` | `''` | Base URL where `lhasa.js`, `lhasa.wasm`, icons and data files are served from. |
+| `loadingComponent` | `React.ReactNode` | `<div>Loading Lhasa...</div>` | Custom loading indicator shown while WASM initializes. |
+| `errorComponent` | `(error: Error) => React.ReactNode` | Renders error message | Custom error display. |
+| `show_top_panel` | `boolean` | `false` | Show the welcome/header panel. |
+| `show_footer` | `boolean` | `true` | Show the footer. |
+| `dark_mode` | `boolean` | `false` | Enable dark mode. |
+| `rdkit_molecule_pickle_list` | `{ pickle: string; id: string }[]` | — | Base64-encoded RDKit molecule pickles to load. |
+| `name_of_host_program` | `string` | `'Moorhen'` | Name shown in "Send to ..." buttons. |
+| `smiles_callback` | `(internal_id, id_from_prop, smiles) => void` | — | Called when a molecule changes. |
+| `bansu_endpoint` | `string` | `'https://www.ccp4.ac.uk/bansu'` | Bansu service endpoint URL. |
+| `icons_path_prefix` | `string` | auto from `assetsBaseUrl` | Override the icons path prefix. |
+| `data_path_prefix` | `string` | auto from `assetsBaseUrl` | Override the data files path prefix. |
+
+## Advanced: using `LhasaComponent` directly
+
+If you need full control over WASM loading (e.g. you already have a `MainModule` instance), use `LhasaComponent` directly:
+
+```tsx
+import { LhasaComponent } from 'lhasa-ligand-builder'
+import 'lhasa-ligand-builder/style.css'
+
+// `lhasaModule` is a MainModule instance you've initialized yourself
+<LhasaComponent
+  Lhasa={lhasaModule}
+  icons_path_prefix="/path/to/icons"
+  data_path_prefix="/path/to/data/"
+/>
+```
+
+## Building from source
 
 LhasaReact can be used standalone, outside of Moorhen.
 
 Lhasa is part of [Coot](https://github.com/pemsley/coot) and you need to compile the C++ WebAssembly module first.
 
-NOTE: All build scripts are Unix scripts. On Windows, you might need to use WSL or MinGW's shell (if it works with Emscripten?)
+NOTE: All build scripts are Unix scripts. On Windows, you may need WSL.
 
-### Building WebAssembly module
+### Building the WebAssembly module
 
 #### Tools you will need
 
@@ -35,13 +85,22 @@ The build procedure is very much like [Moorhen](https://github.com/moorhen-coot/
 
 * Run `get_sources` (download C++ dependencies)
 * Run `initial_build.sh` to build all the necessary dependencies using Emscripten
-* Run `build_lhasa.sh` to build Lhasa WebAssembly module
+* Run `build_lhasa.sh` to build the Lhasa WebAssembly module
 * Copy `lhasa.js`, `lhasa.worker.js` (if it exists) and `lhasa.wasm` from `Coot/lhasa/lhbuild/` to `LhasaReact/public`
 
-### Running LhasaReact
+### Running LhasaReact locally
 
-After you had built and copied the WebAssembly module, you can launch LhasaReact (you'll need Node.JS / npm):
+After building and copying the WebAssembly module:
 
-* Get JS dependencies: `npm install`
-* Run `npx vite serve`
-* Done!
+```bash
+npm install
+npm run dev
+```
+
+### Building the library
+
+```bash
+npm run build:lib
+```
+
+This produces `dist/` with the ESM bundle, CSS, type declarations, and all WASM/icon/data assets.
