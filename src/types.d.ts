@@ -1,17 +1,4 @@
 // TypeScript bindings for emscripten-generated code.  Automatically generated at compile time.
-declare namespace RuntimeExports {
-    let HEAPF32: any;
-    let HEAPF64: any;
-    let HEAP_DATA_VIEW: any;
-    let HEAP8: any;
-    let HEAPU8: any;
-    let HEAP16: any;
-    let HEAPU16: any;
-    let HEAP32: any;
-    let HEAPU32: any;
-    let HEAP64: any;
-    let HEAPU64: any;
-}
 interface WasmModule {
   __ZN5boost13serialization16singleton_module8get_lockEv(_0: number): number;
   __ZNK5boost7archive6detail11oserializerINS0_13text_oarchiveEN5RDKit9MolBundleEE16save_object_dataERNS1_14basic_oarchiveEPKv(_0: number, _1: number, _2: number): void;
@@ -26,6 +13,8 @@ export interface ClassHandle {
   delete(): void;
   deleteLater(): this;
   isDeleted(): boolean;
+  // @ts-ignore - If targeting lower than ESNext, this symbol might not exist.
+  [Symbol.dispose](): void;
   clone(): this;
 }
 export interface DisplayModeValue<T extends number> {
@@ -33,7 +22,7 @@ export interface DisplayModeValue<T extends number> {
 }
 export type DisplayMode = DisplayModeValue<0>|DisplayModeValue<1>|DisplayModeValue<2>;
 
-export interface DrawingCommandVector extends ClassHandle {
+export interface DrawingCommandVector extends ClassHandle, Iterable<DrawingCommand> {
   size(): number;
   get(_0: number): DrawingCommand | undefined;
   push_back(_0: DrawingCommand): void;
@@ -41,7 +30,7 @@ export interface DrawingCommandVector extends ClassHandle {
   set(_0: number, _1: DrawingCommand): boolean;
 }
 
-export interface PathElementVector extends ClassHandle {
+export interface PathElementVector extends ClassHandle, Iterable<PathElement> {
   size(): number;
   get(_0: number): PathElement | undefined;
   push_back(_0: PathElement): void;
@@ -118,13 +107,13 @@ export interface TextStyle extends ClassHandle {
 export interface TextSpan extends ClassHandle {
   style: TextStyle;
   specifies_style: boolean;
-  has_subspans(): boolean;
   is_newline(): boolean;
+  has_subspans(): boolean;
   as_caption(): string;
   as_subspans(): TextSpanVector;
 }
 
-export interface TextSpanVector extends ClassHandle {
+export interface TextSpanVector extends ClassHandle, Iterable<TextSpan> {
   push_back(_0: TextSpan): void;
   resize(_0: number, _1: TextSpan): void;
   size(): number;
@@ -243,12 +232,12 @@ export interface ImplWidgetCoreData extends ClassHandle {
 
 export interface SmilesMap extends ClassHandle {
   size(): number;
-  get(_0: number): EmbindString | undefined;
+  get(_0: number): string | undefined;
   set(_0: number, _1: EmbindString): void;
   keys(): MoleculeIdVector;
 }
 
-export interface MoleculeIdVector extends ClassHandle {
+export interface MoleculeIdVector extends ClassHandle, Iterable<number> {
   push_back(_0: number): void;
   resize(_0: number, _1: number): void;
   size(): number;
@@ -272,6 +261,8 @@ export interface Canvas extends ImplWidgetCoreData {
   set_display_mode(_0: DisplayMode): void;
   get_smiles(): SmilesMap;
   get_smiles_for_molecule(_0: number): string;
+  get_inchi_keys(): SmilesMap;
+  get_inchi_key_for_molecule(_0: number): string;
   get_pickled_molecule(_0: number): string;
   get_pickled_molecule_base64(_0: number): string;
   clear_molecules(): void;
@@ -372,5 +363,5 @@ interface EmbindModule {
   append_from_pickle_base64(_0: Canvas, _1: EmbindString): number;
 }
 
-export type MainModule = WasmModule & typeof RuntimeExports & EmbindModule;
+export type MainModule = WasmModule & EmbindModule;
 export default function MainModuleFactory (options?: unknown): Promise<MainModule>;
