@@ -11,10 +11,13 @@
       "import": "./dist/lhasa-ligand-builder.js",
       "types": "./dist/lib.d.ts"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css",
+    "./lhasa-vite-plugin": "./bundler_plugins/vite.mjs",
+    "./lhasa-webpack-plugin": "./bundler_plugins/webpack.cjs"
   },
   "files": [
-    "dist"
+    "dist",
+    "bundler_plugins"
   ],
   "sideEffects": [
     "**/*.css",

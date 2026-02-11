@@ -25,7 +25,49 @@ function App() {
 }
 ```
 
-Copy the assets from `node_modules/lhasa-ligand-builder/dist/assets/` to your public directory (e.g. `public/lhasa-assets/`). The assets include `lhasa.js`, `lhasa.wasm`, `Components-inchikey.ich`, and the `icons/` directory.
+### Asset setup
+
+Lhasa requires several runtime assets (`lhasa.js`, `lhasa.wasm`, `Components-inchikey.ich`, and the `icons/` directory) to be served by your web server. Use one of the bundler plugins below to handle this automatically, or copy the assets manually.
+
+#### Vite
+
+```js
+// vite.config.js
+import lhasaCopyAssets from 'lhasa-ligand-builder/lhasa-vite-plugin'
+
+export default {
+  plugins: [lhasaCopyAssets()],
+}
+```
+
+During development, the plugin serves assets via middleware. In production builds, it copies them into your output directory under `lhasa-assets/`.
+
+#### Webpack
+
+```js
+// webpack.config.js
+const LhasaCopyAssetsPlugin = require('lhasa-ligand-builder/lhasa-webpack-plugin')
+
+module.exports = {
+  plugins: [new LhasaCopyAssetsPlugin()],
+  devServer: {
+    static: [LhasaCopyAssetsPlugin.devServerStatic()],
+  },
+}
+```
+
+#### Plugin options
+
+Both plugins accept an options object:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `outputPath` | `'lhasa-assets'` | Sub-path in the build output where assets are placed. |
+| `assets` | All entries | Array of asset names to copy: `'lhasa.js'`, `'lhasa.wasm'`, `'Components-inchikey.ich'`, `'icons'`. |
+
+#### Manual copy (fallback)
+
+If you're not using Vite or Webpack, copy the assets from `node_modules/lhasa-ligand-builder/dist/assets/` to your public directory (e.g. `public/lhasa-assets/`).
 
 ### Cross-origin isolation
 
