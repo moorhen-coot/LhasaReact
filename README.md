@@ -81,23 +81,6 @@ Cross-Origin-Embedder-Policy: require-corp
 Without these headers, the WASM module will fail to load. 
 During development with Vite, the bundled `vite-plugin-cross-origin-isolation` plugin handles this automatically.
 
-### `LhasaEmbedder` props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `assetsBaseUrl` | `string` | `''` | Base URL where `lhasa.js`, `lhasa.wasm`, icons and data files are served from. |
-| `loadingComponent` | `React.ReactNode` | `<div>Loading Lhasa...</div>` | Custom loading indicator shown while WASM initializes. |
-| `errorComponent` | `(error: Error) => React.ReactNode` | Renders error message | Custom error display. |
-| `show_top_panel` | `boolean` | `false` | Show the welcome/header panel. |
-| `show_footer` | `boolean` | `true` | Show the footer. |
-| `dark_mode` | `boolean` | `false` | Enable dark mode. |
-| `rdkit_molecule_pickle_list` | `{ pickle: string; id: string }[]` | — | Base64-encoded RDKit molecule pickles to load. |
-| `name_of_host_program` | `string` | `'Moorhen'` | Name shown in "Send to ..." buttons. |
-| `smiles_callback` | `(internal_id, id_from_prop, smiles) => void` | — | Called when a molecule changes. |
-| `bansu_endpoint` | `string` | `'https://www.ccp4.ac.uk/bansu'` | Bansu service endpoint URL. |
-| `icons_path_prefix` | `string` | auto from `assetsBaseUrl` | Override the icons path prefix. |
-| `data_path_prefix` | `string` | auto from `assetsBaseUrl` | Override the data files path prefix. |
-
 ### Advanced: using `LhasaComponent` directly
 
 If you need full control over WASM loading (e.g. you already have a `MainModule` instance), use `LhasaComponent` directly:
