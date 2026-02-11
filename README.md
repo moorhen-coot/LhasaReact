@@ -1,12 +1,20 @@
 # LhasaReact
 
-Moorhen's ligand builder: a React + WebAssembly version of Layla (Coot's ligand builder), packaged as an npm library.
+Frontend for Lhasa - Moorhen's ligand builder: a React + WebAssembly version of Layla (Coot's ligand builder).
 
-## Quick start
+## Installation / embedding
+
+There is an experimental [`lhasa-ligand-builder`](https://www.npmjs.com/package/lhasa-ligand-builder) package.
+
+### Quick start
+
+You can install the package with:
 
 ```bash
 npm install lhasa-ligand-builder
 ```
+
+Then, embed Lhasa via the `LhasaEmbedder` component:
 
 ```tsx
 import { LhasaEmbedder } from 'lhasa-ligand-builder'
@@ -19,7 +27,7 @@ function App() {
 
 Copy the assets from `node_modules/lhasa-ligand-builder/dist/assets/` to your public directory (e.g. `public/lhasa-assets/`). The assets include `lhasa.js`, `lhasa.wasm`, `Components-inchikey.ich`, and the `icons/` directory.
 
-## Cross-origin isolation
+### Cross-origin isolation
 
 Lhasa's WASM module uses `SharedArrayBuffer`, which requires your page to be served with these HTTP headers:
 
@@ -28,9 +36,10 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
-Without these headers, the WASM module will fail to load. During development with Vite, the bundled `vite-plugin-cross-origin-isolation` plugin handles this automatically.
+Without these headers, the WASM module will fail to load. 
+During development with Vite, the bundled `vite-plugin-cross-origin-isolation` plugin handles this automatically.
 
-## `LhasaEmbedder` props
+### `LhasaEmbedder` props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -47,7 +56,7 @@ Without these headers, the WASM module will fail to load. During development wit
 | `icons_path_prefix` | `string` | auto from `assetsBaseUrl` | Override the icons path prefix. |
 | `data_path_prefix` | `string` | auto from `assetsBaseUrl` | Override the data files path prefix. |
 
-## Advanced: using `LhasaComponent` directly
+### Advanced: using `LhasaComponent` directly
 
 If you need full control over WASM loading (e.g. you already have a `MainModule` instance), use `LhasaComponent` directly:
 
