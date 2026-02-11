@@ -19,13 +19,13 @@ import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
 import { parseInchikeyDatabase } from './inchikey_database_parse';
 
-class ToolButtonProps {
+type ToolButtonProps = {
   onclick?: () => void;
   action_name: string | undefined;
   caption: string | undefined;
-  caption_optional?: boolean = false;
+  caption_optional?: boolean;
   icon: string | undefined | null;
-  tooltip_body?: React.JSX.Element | null = null;
+  tooltip_body?: React.JSX.Element | null;
 }
 
 class ActiveToolContextData {
@@ -76,7 +76,7 @@ const max_scale = 4;
 const min_scale = 0.4;
 const c_const = (min_scale*max_scale-1) / (min_scale+max_scale-2);
 const d_bottom = (1 - max_scale) / (min_scale - 1);
-const d_top= (min_scale-1)**2 / (min_scale+max_scale-2);
+const d_top = (min_scale-1)**2 / (min_scale+max_scale-2);
 const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
 const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
 
@@ -95,6 +95,8 @@ export interface LhasaComponentProps {
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
   dark_mode?: boolean;
+  max_width?: number | null;
+  max_height?: number | null;
 }
 
 
@@ -109,9 +111,11 @@ export function LhasaComponent({
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
   data_path_prefix = '',
   dark_mode = false,
+  max_width = null,
+  max_height = null
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
-    console.debug("on_render() called.");
+    // console.debug("on_render() called.");
   
     const css_color_from_lhasa_color = (lhasa_color: Color) => {
       return 'rgba(' + lhasa_color.r * 255 + ','+ lhasa_color.g * 255 + ',' + lhasa_color.b * 255 + ',' + lhasa_color.a + ')';
@@ -226,6 +230,7 @@ export function LhasaComponent({
       const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
       const min_size = 480;
       if(measured < min_size) {
+        // console.warn(`Horizontal canvas size measurement below minimum: ${measured}`);
         return min_size;
       }
       return measured;
@@ -234,6 +239,7 @@ export function LhasaComponent({
       const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
       const min_size = 270;
       if(measured < min_size) {
+        // console.warn(`Vertical canvas size measurement below minimum: ${measured}`);
         return min_size;
       }
       return measured;
@@ -969,19 +975,19 @@ export function LhasaComponent({
           </span>)}
         </div>);
       };
-      m_tool_buttons.set(k, ToolButton({
-        onclick: () => {handler_map[k]()},
-        caption: v.caption,
-        caption_optional: v.caption_optional,
-        tooltip_body: <div className='lhasa_tooltip'>
+      m_tool_buttons.set(k, <ToolButton
+        onclick= {() => {handler_map[k]()}}
+        caption={v.caption}
+        caption_optional={v.caption_optional}
+        tooltip_body={<div className='lhasa_tooltip'>
           {v.tooltip_core}
           {v.hotkey && 
             hotkey_to_infoblock(v.hotkey)
           }
-        </div>,
-        icon: v.icon,
-        action_name: k
-      }));
+        </div>}
+        icon={v.icon}
+        action_name={k}
+      />);
     }
     return m_tool_buttons;
   }, [tool_button_data, handler_map]);
@@ -1039,7 +1045,16 @@ export function LhasaComponent({
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
-            <div className={"lhasa_editor LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")} ref={editorRef}>
+            <div 
+              className={"lhasa_editor LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")} 
+              ref={editorRef}
+              style={
+                {
+                  maxWidth: max_width ? max_width + 'px' : undefined,
+                  maxHeight: max_height ? max_height + 'px' : undefined
+                }
+              }
+            >
               {show_top_panel &&
                 <div className="horizontal_container">
                   <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
