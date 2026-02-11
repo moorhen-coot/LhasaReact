@@ -64,6 +64,8 @@ export default defineConfig(async () => {
     plugins,
     ...(isLibBuild ? {
       build: {
+        // For library builds, we prevent Vite from copying the public directory.
+        // This is because the assets are copied separately in `scripts/copy-assets.mjs'.
         copyPublicDir: false,
         lib: {
           entry: 'src/lib.ts',
@@ -71,6 +73,7 @@ export default defineConfig(async () => {
           fileName: 'lhasa-ligand-builder',
         },
         rollupOptions: {
+          // Excludes React from the bundle, as it will be provided by the consumer of the library
           external: ['react', 'react-dom', 'react/jsx-runtime'],
         },
       }
