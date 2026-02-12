@@ -1,7 +1,7 @@
 {
   "name": "lhasa-ligand-builder",
   "description": "Moorhen's ligand builder: React + WebAssembly version of Layla - Coot's ligand builder",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "main": "dist/lhasa-ligand-builder.js",
   "module": "dist/lhasa-ligand-builder.js",
@@ -11,7 +11,7 @@
       "import": "./dist/lhasa-ligand-builder.js",
       "types": "./dist/lib.d.ts"
     },
-    "./style.css": "./dist/style.css",
+    "./style.css": "./dist/lhasa-ligand-builder.css",
     "./lhasa-vite-plugin": "./bundler_plugins/vite.mjs",
     "./lhasa-webpack-plugin": "./bundler_plugins/webpack.cjs"
   },
