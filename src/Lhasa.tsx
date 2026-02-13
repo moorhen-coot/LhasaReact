@@ -4,7 +4,15 @@ import { HotKeys } from "react-hotkeys"
 import { create as D3Create } from 'd3';
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
+import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache, TextStyle, TextSpanVector, GraphenePoint } from './types';
+import type { Text as LhasaText } from './types';
+import type { Selection } from 'd3';
+
+/// d3 selection of an SVG container (the root `<svg>` element).
+type SvgSelection = Selection<SVGSVGElement, undefined, null, undefined>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/// d3 selection of an SVG child element (e.g. `<text>`, `<tspan>`). Uses `any` due to d3's invariant generics.
+type SvgChildSelection = Selection<any, any, any, any>;
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
@@ -72,7 +80,7 @@ const d_top = (min_scale-1)**2 / (min_scale+max_scale-2);
 const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
 const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
 
-class LhasaComponentProps {
+export interface LhasaComponentProps {
   Lhasa: MainModule | any;
   show_top_panel?: boolean;
   show_footer?: boolean;
@@ -112,8 +120,8 @@ export function LhasaComponent({
     const css_color_from_lhasa_color = (lhasa_color: Color) => {
       return 'rgba(' + lhasa_color.r * 255 + ','+ lhasa_color.g * 255 + ',' + lhasa_color.b * 255 + ',' + lhasa_color.a + ')';
     }
-    const lhasa_text_to_d3js = (msvg, text) => {
-      const style_to_attrstring = (style) => {
+    const lhasa_text_to_d3js = (msvg: SvgSelection, text: LhasaText) => {
+      const style_to_attrstring = (style: TextStyle) => {
         let style_string = "";
         if(style.specifies_color) {
           style_string += "fill:";
@@ -143,9 +151,9 @@ export function LhasaComponent({
         }
         return style_string;
       };
-      const append_spans_to_node = (spans, text_node, text_origin) => {
+      const append_spans_to_node = (spans: TextSpanVector, text_node: SvgChildSelection, text_origin: GraphenePoint) => {
         for(let i = 0; i < spans.size(); i++) {
-          const span = spans.get(i);
+          const span = spans.get(i)!;
           let child = text_node
             // .enter()
             .append("tspan");
@@ -182,7 +190,7 @@ export function LhasaComponent({
       append_spans_to_node(text.spans, ret, text.origin);
       return ret;
     };
-    const text_measure_function = (text) => {
+    const text_measure_function = (text: LhasaText) => {
       // let size_info = new Lhasa.TextSize;
       let size_info = {
         'width': 0,
@@ -200,8 +208,8 @@ export function LhasaComponent({
           .attr("height", 100)
           .attr("id", "measurement_temporary");
         const text_elem = lhasa_text_to_d3js(msvg, text);
-        domNode.append(msvg.node());
-        const node = text_elem.node();
+        domNode.append(msvg.node()!);
+        const node = text_elem.node()!;
         // This has awful performance but I don't really have a choice
         const bbox = node.getBBox();
         size_info.width = Math.ceil(bbox.width);
@@ -262,7 +270,7 @@ export function LhasaComponent({
             const arc = element.as_arc();
   
             // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-            function polarToCartesian(centerX, centerY, radius, angleInRadians) {
+            function polarToCartesian(centerX: number, centerY: number, radius: number, angleInRadians: number) {
               //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
       
               return {
@@ -271,7 +279,7 @@ export function LhasaComponent({
               };
             }
       
-            function describeArc(x, y, radius, startAngle, endAngle){
+            function describeArc(x: number, y: number, radius: number, startAngle: number, endAngle: number){
       
                 var start = polarToCartesian(x, y, radius, endAngle);
                 var end = polarToCartesian(x, y, radius, startAngle);
@@ -306,7 +314,7 @@ export function LhasaComponent({
           } else if(element.is_line()) {
             const line = element.as_line();
   
-            function describeLine(x1, y1, x2, y2) {
+            function describeLine(x1: number, y1: number, x2: number, y2: number) {
               var p = path_started ? [] : ["M", x1, y1];
               var d = p.concat(["L", x2, y2]).join(" ");
               return d;
@@ -365,7 +373,7 @@ export function LhasaComponent({
   /// Database of InChIKey -> [Monomer code, Chemical name], fetched asynchronously
   const inchiKeyDatabase = useRef<Map<string, [string, string]> | null>(null);
 
-  const [svgNode, setSvgNode] = useState(null);
+  const [svgNode, setSvgNode] = useState<SVGSVGElement | null>(null);
   /// [molecule_id, smiles, [monomer_id, chem_name]?]]
   const [smiles, setSmiles] = useState<[number, string, [string, string]?][]>([]);
   const [scale, setScale] = useState<number>(1.0);
@@ -988,7 +996,7 @@ export function LhasaComponent({
   let key_map = useMemo(() => {
     let ret = Object.fromEntries(
       Object.entries(tool_button_data)
-        .filter(([k,v]) => 'hotkey' in v)
+        .filter(([_k,v]) => 'hotkey' in v)
         .map(([k,v]) => [k, v['hotkey']])
     );
     // Those are not tool buttons. We handle them manually.
@@ -1016,11 +1024,11 @@ export function LhasaComponent({
   const [editedSmiles, setEditedSmiles] = useState<number | null>(null);
 
 
-  const scale_mapper = (x) => {
+  const scale_mapper = (x: number) => {
     return theta_const ** (x + d_const) + c_const;
   };
 
-  const reverse_scale_mapper = (f) => {
+  const reverse_scale_mapper = (f: number) => {
     return Math.log(f - c_const) / Math.log(theta_const) - d_const;
   };
 
@@ -1211,7 +1219,7 @@ export function LhasaComponent({
                       scale={scale_mapper}
                       // valueLabelDisplay="auto"
                       // valueLabelFormat={(v) => v.toFixed(2)}
-                      onChange={(_ev, scale)=>{ lh.current?.set_scale(scale_mapper(scale))}}
+                      onChange={(_ev, scale)=>{ lh.current?.set_scale(scale_mapper(scale as number))}}
                     />
                     <IconButton
                       onClick={() => {const s = lh.current?.get_scale(); lh.current?.set_scale(s+0.05);}}
@@ -1382,7 +1390,7 @@ export function LhasaComponent({
               {showQedChecked &&
                 <div className="vertical_toolbar qed_panel">
                   <b>QED</b>
-                  <Tabs value={qedTab} onChange={(event, value) => setQedTab(value)}>
+                  <Tabs value={qedTab} onChange={(_event, value) => setQedTab(value)}>
 
                   {Array.from(qedInfo.keys()).map((mol_id) => {
                     // Counter-intuitively, a "Tab" here is what Gtk considers to be a tab label

@@ -1,4 +1,4 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Switch, Checkbox, FormControlLabel } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel } from "@mui/material";
 // import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
@@ -39,7 +39,7 @@ export function BansuButton(props: BansuPopupProps) {
     const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
 
-    const [workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
+    const [_workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
 
     const resetState = () => {
         setState(BansuPopupState.UserConfig);
@@ -151,7 +151,7 @@ export function BansuButton(props: BansuPopupProps) {
                             Close
                         </Button>
                         <Button 
-                            onClick={(e) => window.open(`${bansuEndpoint}/get_cif/${jobId}`)}
+                            onClick={() => window.open(`${bansuEndpoint}/get_cif/${jobId}`)}
                             // style={{flex: 'auto'}}
                             variant="contained"
                         >
@@ -225,12 +225,12 @@ export function BansuButton(props: BansuPopupProps) {
                     const socket = new WebSocket(`${websocketMode}://${bansuEndpoint_noprotocol}/ws/${jsonData.job_id}`);
 
                     // Connection opened
-                    socket.addEventListener("open", (event) => {
+                    socket.addEventListener("open", (_event) => {
                         console.log("Connection on WebSocket established.");
                         // setState(BansuPopupState.Waiting);
                     });
 
-                    socket.addEventListener("close", (event) => {
+                    socket.addEventListener("close", (_event) => {
                         console.log("Connection on WebSocket closed.");
                         // process.exit(0);
                     });
