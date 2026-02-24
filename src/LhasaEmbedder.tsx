@@ -4,11 +4,11 @@ import type { LhasaComponentProps } from './Lhasa'
 import type { MainModule } from './types'
 
 export interface LhasaEmbedderProps extends Omit<LhasaComponentProps, 'Lhasa'> {
-  /** Base URL where lhasa.js, lhasa.wasm, icons/, and Components-inchikey.ich are served from. */
+  /// Base URL where lhasa.js, lhasa.wasm, icons/, and Components-inchikey.ich are served from. 
   assetsBaseUrl?: string;
-  /** Custom loading indicator. Defaults to a simple "Loading Lhasa..." div. */
+  /// Custom loading indicator. Defaults to a simple "Loading Lhasa..." div.
   loadingComponent?: React.ReactNode;
-  /** Custom error display. Receives the Error object. */
+  /// Custom error display. Receives the Error object.
   errorComponent?: (error: Error) => React.ReactNode;
 }
 
