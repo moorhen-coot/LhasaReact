@@ -39,7 +39,7 @@ export function App() {
   <LhasaComponent 
     Lhasa={window.LhasaModule} 
     show_top_panel={true}
-    // show_footer={true}
+    show_footer={true}
     icons_path_prefix='icons'
     smiles_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
     // Works when using `npx vite server --port 5174`
@@ -47,7 +47,7 @@ export function App() {
     // CORS stuff is broken for localhost connections, it seems.
     // bansu_endpoint='http://localhost:5174'
 
-    bansu_endpoint='https://www.ccp4.ac.uk/bansu'
+    bansu_endpoint='https://quicillith.pl'
     data_path_prefix=''
     dark_mode={darkMode}
   /> : <div>

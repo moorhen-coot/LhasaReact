@@ -81,6 +81,7 @@ const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
 const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
 
 export interface LhasaComponentProps {
+  /// Provides Lhasa WebAssembly module to the component. Use LhasaEmbedder if you want to load the module automatically.
   Lhasa: MainModule | any;
   show_top_panel?: boolean;
   show_footer?: boolean;
@@ -98,6 +99,7 @@ export interface LhasaComponentProps {
   /// Arguments is an array of tuples: [internal molecule ID, ID of molecule from prop (if exists), SMILES string, tuple of [monomer code, chemical name] looked up from the InChIKey database (if exists)].
   /// "ID of molecule from prop", is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
   on_smiles_updated? : (smiles_array: [number, string | null, string, [string, string]?][]) => void;
+  /// Endpoint for Bansu server (https://github.com/hgonomeg/bansu). If not given, defaults to 'https://www.ccp4.ac.uk/bansu'. 
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
   dark_mode?: boolean;
@@ -109,7 +111,7 @@ export interface LhasaComponentProps {
 export function LhasaComponent({
   Lhasa, 
   show_top_panel = false, 
-  show_footer = true, 
+  show_footer = false, 
   icons_path_prefix = '', 
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
@@ -424,6 +426,16 @@ export function LhasaComponent({
       smiles_keys.delete();
       smiles_map.delete();
       setSmiles(smiles_array);
+      if (on_smiles_updated) {
+        const smiles_with_external_ids: [number, string | null, string, [string, string]?][] = smiles_array.map(
+          ([mol_id, smiles_str, inchi_lookup]) => {
+            const external_id = canvasIdsToPropsIdsRef.current.get(mol_id) ?? null;
+            return [mol_id, external_id, smiles_str, inchi_lookup];
+          }
+        );
+        console.debug("Calling on_smiles_updated...");
+        on_smiles_updated(smiles_with_external_ids);
+      }
       // const inchikey_map_keys = inchikey_map.keys();
       // inchikey_map.delete();
       // inchikey_map_keys.delete();
