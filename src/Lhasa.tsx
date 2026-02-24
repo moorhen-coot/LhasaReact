@@ -92,9 +92,12 @@ export interface LhasaComponentProps {
   name_of_host_program?: string;
   /// Called when the user presses the "Send to ..." button.
   /// Can be provided to facilitate integration with host program (one inside of which Lhasa is embedded).
+  /// 'id_from_prop' is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
-  // /// Called whenever the SMILES strings of any molecule in the canvas changes.
-  // on_smiles_updated? : (smiles_array: [number, string | null, string][]) => void;
+  /// Called whenever the SMILES strings of any molecule in the canvas changes.
+  /// Arguments is an array of tuples: [internal molecule ID, ID of molecule from prop (if exists), SMILES string, tuple of [monomer code, chemical name] looked up from the InChIKey database (if exists)].
+  /// "ID of molecule from prop", is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
+  on_smiles_updated? : (smiles_array: [number, string | null, string, [string, string]?][]) => void;
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
   dark_mode?: boolean;
@@ -111,7 +114,7 @@ export function LhasaComponent({
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback,
-  // on_smiles_updated,
+  on_smiles_updated,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
   data_path_prefix = '',
   dark_mode = false,
