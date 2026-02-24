@@ -85,13 +85,16 @@ export interface LhasaComponentProps {
   show_top_panel?: boolean;
   show_footer?: boolean;
   icons_path_prefix?: string;
-  /// Base64-encoded pickles
+  /// Base64-encoded RDKit pickles.
+  /// Used for providing a list of molecules to be loaded on initialization.
   rdkit_molecule_pickle_list?: { pickle: string; id: string }[];
   /// When Lhasa is embedded, what is it embedded in?
   name_of_host_program?: string;
-  /// Called when a molecule changes.
-  /// Can be provided to get updates when a molecule changes
+  /// Called when the user presses the "Send to ..." button.
+  /// Can be provided to facilitate integration with host program (one inside of which Lhasa is embedded).
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
+  // /// Called whenever the SMILES strings of any molecule in the canvas changes.
+  // on_smiles_updated? : (smiles_array: [number, string | null, string][]) => void;
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
   dark_mode?: boolean;
@@ -108,6 +111,7 @@ export function LhasaComponent({
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback,
+  // on_smiles_updated,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
   data_path_prefix = '',
   dark_mode = false,
