@@ -100,6 +100,7 @@ export interface LhasaComponentProps {
   /// "ID of molecule from prop", is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
   on_smiles_updated? : (smiles_array: [number, string | null, string, [string, string]?][]) => void;
   /// Endpoint for Bansu server (https://github.com/hgonomeg/bansu). If not given, defaults to 'https://www.ccp4.ac.uk/bansu'. 
+  /// Bansu is used for CIF file generation.
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
   dark_mode?: boolean;
