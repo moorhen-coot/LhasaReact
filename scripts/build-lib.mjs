@@ -25,8 +25,8 @@ function extractArg(args, flag, defaultValue) {
 }
 
 const outDir = extractArg(args, '--outDir', 'dist');
-// Note: The LHASA_BASE env var is currently not used by copy-assets.mjs
-const base   = extractArg(args, '--base',   '/');
+// '--base' is irrelevant for library builds
+// const base   = extractArg(args, '--base',   '/');
 
 execSync(`vite build ${args.join(' ')}`, {
     stdio: 'inherit',
@@ -37,5 +37,5 @@ execSync(`vite build ${args.join(' ')}`, {
 execSync('node scripts/copy-assets.mjs', {
     stdio: 'inherit',
     cwd: root,
-    env: { ...process.env, LHASA_OUTDIR: outDir, LHASA_BASE: base },
+    env: { ...process.env, LHASA_OUTDIR: outDir },
 });

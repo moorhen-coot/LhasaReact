@@ -2,9 +2,14 @@
 
 Frontend for Lhasa - Moorhen's ligand builder: a React + WebAssembly version of Layla (Coot's ligand builder).
 
+LhasaReact can also be used standalone, outside of Moorhen.
+
 ## Installation / embedding
 
-There is an experimental [`lhasa-ligand-builder`](https://www.npmjs.com/package/lhasa-ligand-builder) package.
+There is an npm package available: [`lhasa-ligand-builder`](https://www.npmjs.com/package/lhasa-ligand-builder).
+It makes it easy to embed Lhasa into your own React app!
+
+If you're not using React, have a look at `LhasaPlainJS` on [Github](https://github.com/moorhen-coot/LhasaPlainJS) and [npm](https://www.npmjs.com/package/lhasa-ligand-builder-plainjs) - it's a vanilla JavaScript wrapper version of this library.
 
 ### Quick start
 
@@ -65,6 +70,28 @@ Both plugins accept an options object:
 | `outputPath` | `'lhasa-assets'` | Sub-path in the build output where assets are placed. |
 | `assets` | All entries | Array of asset names to copy: `'lhasa.js'`, `'lhasa.wasm'`, `'Components-inchikey.ich'`, `'icons'`. |
 
+```js
+// vite.config.js — custom output path
+lhasaCopyAssets({
+  outputPath: 'static/lhasa',
+  // Optional override of defaults - if you know what you are doing
+  // assets: ['lhasa.js', 'lhasa.wasm'],
+})
+
+// webpack.config.js — custom output path
+new LhasaCopyAssetsPlugin({
+  outputPath: 'static/lhasa',
+  // Optional override of defaults - if you know what you are doing
+  // assets: ['lhasa.js', 'lhasa.wasm'],
+})
+```
+
+Remember to update `assetsBaseUrl` on `LhasaEmbedder` to match your chosen `outputPath`:
+
+```tsx
+<LhasaEmbedder assetsBaseUrl="/static/lhasa/" />
+```
+
 #### Manual copy (fallback)
 
 If you're not using Vite or Webpack, copy the assets from `node_modules/lhasa-ligand-builder/dist/assets/` to your public directory (e.g. `public/lhasa-assets/`).
@@ -97,11 +124,11 @@ import 'lhasa-ligand-builder/style.css'
 />
 ```
 
-## Building from source
+## Building from source (alternative)
 
-LhasaReact can be used standalone, outside of Moorhen.
+You can also build everything from source yourself.
 
-Lhasa is part of [Coot](https://github.com/pemsley/coot) and you need to compile the C++ WebAssembly module first.
+Lhasa's C++ sources are a part of [Coot](https://github.com/pemsley/coot) and you need to compile the C++ WebAssembly module first.
 
 NOTE: All build scripts are Unix scripts. On Windows, you may need WSL.
 
@@ -128,7 +155,10 @@ After building and copying the WebAssembly module:
 
 ```bash
 npm install
+# and then
 npm run dev
+# or, alternatively:
+npx vite serve
 ```
 
 ### Building the library
@@ -138,3 +168,11 @@ npm run build:lib
 ```
 
 This produces `dist/` with the ESM bundle, CSS, type declarations, and all WASM/icon/data assets.
+
+### Building the standalone demo app
+
+```bash
+npm run build
+# or, if you want more options passed to vite underneath:
+npm run build -- --outDir dist_dir/ --base /lhasa
+```
