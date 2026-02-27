@@ -26,7 +26,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:lib": "BUILD_MODE=lib vite build && node scripts/copy-assets.mjs",
+    "build:lib": "node scripts/build-lib.mjs",
     "prepublishOnly": "npm run build:lib",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"

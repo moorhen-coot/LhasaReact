@@ -11,7 +11,8 @@ console.log("Running post-build asset copy script.");
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 const src = resolve(root, 'public');
-const dest = resolve(root, 'dist', 'assets');
+const outDir = process.env.LHASA_OUTDIR ?? 'dist';
+const dest = resolve(root, outDir, 'assets');
 
 console.log(`Source directory: ${src}, Destination directory: ${dest}`);
 
