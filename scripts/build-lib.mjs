@@ -1,4 +1,4 @@
-// Wrapper for the library build. Exists so that flags like --outDir and --base
+// Wrapper for the library build. Exists so that flags like --outDir
 // can be forwarded to 'vite build' while also propagating the relevant values
 // to post-build scripts (e.g. copy-assets.mjs) via environment variables.
 
