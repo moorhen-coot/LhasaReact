@@ -37,12 +37,12 @@ case $1 in
 	show_help
 	;;
 	*)
-	if [ "x$2" = "x" ]; then
+	if [ "x$1" = "x" ]; then
   		echo Querying newest commit hash for hgonomeg/coot...
   		commit_hash=$(query_current_commit_hash_from_github hgonomeg coot main)
   		update_dep_hash coot $commit_hash
   	else
-  		update_dep_hash coot $2
+  		update_dep_hash coot $1
   	fi
 	;;
 esac
