@@ -48,24 +48,23 @@ jobs:
           git clone --branch main https://github.com/hgonomeg/coot.git wasm_build/coot
           git -C wasm_build/coot checkout ${{ steps.coot_version.outputs.commit }}
 
+      - name: Cache Emscripten SDK
+        uses: actions/cache@v4
+        with:
+          # Must match actions-cache-folder below.
+          path: emsdk-cache
+          # Key includes the version so different SDK versions get separate
+          # cache entries and don't overwrite each other.
+          key: emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
+
       - name: Set up Emscripten SDK
         uses: mymindstorm/setup-emsdk@v14
         with:
           version: ${{ inputs.emsdk_version || 'latest' }}
           # Tells setup-emsdk to install the SDK into this subdirectory of the
-          # workspace instead of the default location.  The actions/cache step
-          # below then saves/restores exactly this directory, so the SDK
-          # download is skipped on cache hits.
+          # workspace instead of the default location.  On a cache hit the
+          # directory is already populated, so the SDK download is skipped.
           actions-cache-folder: emsdk-cache
-
-      - name: Cache Emscripten SDK
-        uses: actions/cache@v4
-        with:
-          # Must match actions-cache-folder above.
-          path: emsdk-cache
-          # Key includes the version so different SDK versions get separate
-          # cache entries and don't overwrite each other.
-          key: emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Cache system dependencies
         uses: actions/cache@v4
