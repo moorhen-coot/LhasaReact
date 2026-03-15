@@ -88,12 +88,12 @@ copy_outputs() {
     cp -v $LHASA_CMAKE_BUILD_DIR/lhasa.{js,wasm,d.ts} $LHASA_WASM_OUTPUT_DIR/ 
 }
 
-do_build() {
+do_deps() {
     setcolor green
-    echo "Building Lhasa WebAssembly module with hgonomeg/coot commit=$coot_commit..."}
+    echo "Building Lhasa WASM dependencies with hgonomeg/coot commit=$coot_commit..."
     setcolor reset
     cdbuilddir
-    # Coot sources get downloaded to $LHASA_WASM_BUILD_DIR/coot 
+    # Coot sources get downloaded to $LHASA_WASM_BUILD_DIR/coot
     getcoot
     cd $COOT_LHASA_DIR || fail "Could not enter coot/lhasa directory"
     # Get dependency sources / verify sources are downloaded
@@ -101,15 +101,20 @@ do_build() {
     echo "Downloading dependencies..."
     setcolor reset
     ./get_sources || fail "Failed to get dependency sources for Lhasa WASM build!"
-    # Build dependencies
+    # Build dependencies into $INSTALL_DIR
     setcolor green
     echo "Building dependencies..."
     setcolor reset
     ./initial_build.sh || fail "Failed to build dependencies for Lhasa WASM build!"
+}
+
+do_build() {
+    do_deps
     # Build Lhasa WASM module
     setcolor green
-    echo "Building Lhasa WebAssembly module..."
+    echo "Building Lhasa WebAssembly module with hgonomeg/coot commit=$coot_commit..."
     setcolor reset
+    cd $COOT_LHASA_DIR || fail "Could not enter coot/lhasa directory"
     ./build_lhasa.sh || fail "Failed to build Lhasa WebAssembly module!"
     # Copy outputs
     setcolor green
@@ -123,9 +128,10 @@ do_build() {
 do_install() {
     setcolor green
     echo "Installing Lhasa WebAssembly module to public/ and src/ directories..."
-    cp $LHASA_REACT_ROOT_DIR/wasm_build/lhasa.{worker.js,js,wasm} $LHASA_REACT_ROOT_DIR/public/ &&\
-    cp $LHASA_REACT_ROOT_DIR/wasm_build/lhasa.d.ts $LHASA_REACT_ROOT_DIR/src/ &&\
+    cp -v $LHASA_REACT_ROOT_DIR/wasm_build/lhasa.{js,wasm} $LHASA_REACT_ROOT_DIR/public/ &&\
+    cp -v $LHASA_REACT_ROOT_DIR/wasm_build/lhasa.d.ts $LHASA_REACT_ROOT_DIR/src/ &&\
     echo "Installation successful!" || fail "Installation failed!"
+    setcolor reset
 }
 
 case $1 in
@@ -136,7 +142,9 @@ case $1 in
         do_build
         do_install
     ;;
-    # Todo --dependencies-only + Cache dependency builds in the GitHub Actions workflow.
+    -d|--dependencies-only)
+        do_deps
+    ;;
     *)
         if [ "x$1" = "x" ]; then
             do_build
