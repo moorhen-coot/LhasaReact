@@ -37,6 +37,20 @@ jobs:
           . ./COOT_VERSION
           echo "commit=${coot_commit}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve Emscripten SDK version
+        id: emsdk
+        # When the requested version is 'latest', resolve it to an actual
+        # release tag so that cache keys change when a new emsdk is released.
+        run: |
+          requested="${{ inputs.emsdk_version || 'latest' }}"
+          if [ "$requested" = "latest" ]; then
+            resolved=$(gh api repos/emscripten-core/emsdk/releases/latest --jq '.tag_name')
+            echo "Resolved 'latest' to emsdk version: $resolved"
+          else
+            resolved="$requested"
+          fi
+          echo "version=$resolved" >> "$GITHUB_OUTPUT"
+
       - name: Clone Coot repository
         # Coot must be checked out before the dependency cache step so that
         # hashFiles() can read VERSIONS, initial_build.sh, and get_sources
@@ -55,12 +69,12 @@ jobs:
           path: emsdk-cache
           # Key includes the version so different SDK versions get separate
           # cache entries and don't overwrite each other.
-          key: emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
+          key: emsdk-${{ steps.emsdk.outputs.version }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Set up Emscripten SDK
         uses: mymindstorm/setup-emsdk@v14
         with:
-          version: ${{ inputs.emsdk_version || 'latest' }}
+          version: ${{ steps.emsdk.outputs.version }}
           # Tells setup-emsdk to install the SDK into this subdirectory of the
           # workspace instead of the default location.  On a cache hit the
           # directory is already populated, so the SDK download is skipped.
@@ -93,7 +107,7 @@ jobs:
           # Dependencies change when their version pins (VERSIONS), download
           # script (get_sources), or build script (initial_build.sh) change —
           # NOT on every Coot commit.
-          key: wasm-deps-${{ hashFiles('wasm_build/coot/lhasa/VERSIONS', 'wasm_build/coot/lhasa/initial_build.sh', 'wasm_build/coot/lhasa/get_sources') }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
+          key: wasm-deps-${{ hashFiles('wasm_build/coot/lhasa/VERSIONS', 'wasm_build/coot/lhasa/initial_build.sh', 'wasm_build/coot/lhasa/get_sources') }}-emsdk-${{ steps.emsdk.outputs.version }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Build dependencies
         if: steps.cache_deps.outputs.cache-hit != 'true'
