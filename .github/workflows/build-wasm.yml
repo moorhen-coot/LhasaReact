@@ -22,6 +22,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Export runner image version
+        # ImageVersion is set by the runner image build scripts but is only
+        # available as a system environment variable, not in the `env` context.
+        # Writing it to $GITHUB_ENV makes it accessible in expressions like
+        # cache keys via ${{ env.ImageVersion }}.
+        run: echo "ImageVersion=${ImageVersion}" >> "$GITHUB_ENV"
+
       - name: Read Coot commit hash
         id: coot_version
         # Sources COOT_VERSION (a shell snippet that sets $coot_commit) and
@@ -53,9 +60,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /var/cache/apt/archives
-          # ImageVersion is the Ubuntu runner image version (e.g. 20240310.1.0),
-          # set by the image build scripts and incremented on each image update.
-          # More precise than env.ImageVersion, which tracks the runner agent instead.
+          # ImageVersion is the Ubuntu runner image version (e.g. 20240310.1.0).
+          # Including it in the key ensures the apt cache is invalidated when
+          # the runner image is updated.
           key: apt-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Install system dependencies
