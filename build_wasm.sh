@@ -126,7 +126,6 @@ case $1 in
     *)
         if [ "x$1" = "x" ]; then
             do_build
-        fi
         else
             setcolor red
             echo "Unknown argument: $1"
