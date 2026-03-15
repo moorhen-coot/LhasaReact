@@ -136,7 +136,20 @@ do_install() {
 
 case $1 in
     -h|--help)
-        echo "This script is used for building the WebAssembly-part of Lhasa."
+        echo "Build the WebAssembly module for Lhasa."
+        echo
+        echo "Usage: $0 [OPTION]"
+        echo
+        echo "Options:"
+        echo "  (none)                Build dependencies and the WASM module"
+        echo "  -d, --dependencies-only  Build only the C++ dependencies"
+        echo "  -i, --install         Build and copy outputs to public/ and src/"
+        echo "  -h, --help            Show this help message"
+        echo
+        echo "Environment variables:"
+        echo "  LHASA_REACT_ROOT_DIR   Root of the LhasaReact repo (default: script location)"
+        echo "  LHASA_WASM_BUILD_DIR   Build directory (default: \$LHASA_REACT_ROOT_DIR/wasm_build)"
+        echo "  LHASA_WASM_OUTPUT_DIR  Output directory (default: \$LHASA_WASM_BUILD_DIR/output)"
     ;;
     -i|--install)
         do_build
