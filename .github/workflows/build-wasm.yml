@@ -1,0 +1,117 @@
+name: Build WASM
+
+on:
+  workflow_dispatch:
+    inputs:
+      emsdk_version:
+        description: 'Emscripten SDK version'
+        required: false
+        default: 'latest'
+  push:
+    paths:
+      - 'COOT_VERSION'
+      - 'build_wasm.sh'
+      - '.github/workflows/build-wasm.yml'
+
+jobs:
+  build-wasm:
+    name: Build Lhasa WebAssembly
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Export runner image version
+        # ImageVersion is set by the runner image build scripts but is only
+        # available as a system environment variable, not in the `env` context.
+        # Writing it to $GITHUB_ENV makes it accessible in expressions like
+        # cache keys via ${{ env.ImageVersion }}.
+        run: echo "ImageVersion=${ImageVersion}" >> "$GITHUB_ENV"
+
+      - name: Read Coot commit hash
+        id: coot_version
+        # Sources COOT_VERSION (a shell snippet that sets $coot_commit) and
+        # exports the value as a step output for use in cache keys below.
+        run: |
+          . ./COOT_VERSION
+          echo "commit=${coot_commit}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve Emscripten SDK version
+        id: emsdk
+        # When the requested version is 'latest', resolve it to an actual
+        # release tag so that cache keys change when a new emsdk is released.
+        run: |
+          requested="${{ inputs.emsdk_version || 'latest' }}"
+          if [ "$requested" = "latest" ]; then
+            resolved=$(curl -sf "https://api.github.com/repos/emscripten-core/emsdk/tags?per_page=1" | python3 -c "import sys,json; print(json.load(sys.stdin)[0]['name'])")
+            echo "Resolved 'latest' to emsdk version: $resolved"
+          else
+            resolved="$requested"
+          fi
+          echo "version=$resolved" >> "$GITHUB_OUTPUT"
+
+      - name: Clone Coot repository
+        # Coot must be checked out before the dependency cache step so that
+        # hashFiles() can read VERSIONS, initial_build.sh, and get_sources
+        # from the coot/lhasa directory to compute the cache key.
+        # The getcoot function in build_wasm.sh will detect the existing
+        # checkout and skip re-cloning.
+        run: |
+          mkdir -p wasm_build
+          git clone --branch main https://github.com/hgonomeg/coot.git wasm_build/coot
+          git -C wasm_build/coot checkout ${{ steps.coot_version.outputs.commit }}
+
+      - name: Cache Emscripten SDK
+        uses: actions/cache@v4
+        with:
+          # Must match actions-cache-folder below.
+          path: emsdk-cache
+          # Key includes the version so different SDK versions get separate
+          # cache entries and don't overwrite each other.
+          key: emsdk-${{ steps.emsdk.outputs.version }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
+
+      - name: Set up Emscripten SDK
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{ steps.emsdk.outputs.version }}
+          # Tells setup-emsdk to install the SDK into this subdirectory of the
+          # workspace instead of the default location.  On a cache hit the
+          # directory is already populated, so the SDK download is skipped.
+          actions-cache-folder: emsdk-cache
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            meson ninja-build cmake curl \
+            python3 autoconf automake libtool
+
+      - name: Cache built dependencies
+        id: cache_deps
+        uses: actions/cache@v4
+        with:
+          # INSTALL_DIR in build_wasm.sh: the emscripten-compiled C++ dependency
+          # prefix populated by initial_build.sh.  Caching it avoids rebuilding
+          # the slow dependency compilation step on every run.
+          path: wasm_build/prefix
+          # Dependencies change when their version pins (VERSIONS), download
+          # script (get_sources), or build script (initial_build.sh) change —
+          # NOT on every Coot commit.
+          key: wasm-deps-${{ hashFiles('wasm_build/coot/lhasa/VERSIONS', 'wasm_build/coot/lhasa/initial_build.sh', 'wasm_build/coot/lhasa/get_sources') }}-emsdk-${{ steps.emsdk.outputs.version }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
+
+      - name: Build dependencies
+        if: steps.cache_deps.outputs.cache-hit != 'true'
+        run: ./build_wasm.sh --dependencies-only
+
+      - name: Build WASM
+        run: ./build_wasm.sh
+
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          # Artifact name embeds the Coot commit so each build is identifiable
+          # when downloading from the Actions UI or via the GitHub API.
+          name: lhasa-wasm-${{ steps.coot_version.outputs.commit }}
+          path: wasm_build/output/
+          if-no-files-found: error
