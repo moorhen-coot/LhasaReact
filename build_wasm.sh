@@ -31,7 +31,12 @@ fi
 LHASA_WASM_BUILD_DIR="${LHASA_REACT_ROOT_DIR}/wasm_build"
 LHASA_WASM_OUTPUT_DIR="${LHASA_WASM_BUILD_DIR}/output"
 COOT_LHASA_DIR="${LHASA_WASM_BUILD_DIR}/coot/lhasa"
+
 export LHASA_MAIN_DIR="${COOT_LHASA_DIR}"
+export DEPENDENCY_DIR="${LHASA_WASM_BUILD_DIR}/download"
+export INSTALL_DIR="${LHASA_WASM_BUILD_DIR}/prefix"
+export DEPENDENCY_BUILD_DIR="${LHASA_WASM_BUILD_DIR}/dep_build"
+export LHASA_CMAKE_BUILD_DIR="${LHASA_WASM_BUILD_DIR}/lhasa_build"
 
 fail() {
     setcolor red
@@ -56,15 +61,21 @@ getcoot() {
     cdbuilddir
     if [ -r coot ]; then
         if [ "x$(git -C coot rev-parse --short=10 main)" = "x$coot_commit" ];then
+            setcolor green
             echo "Using existing coot"
+            setcolor reset
         else
+            setcolor green
             echo "Checking-out existent coot to a different version ($(git -C coot rev-parse --short=10 main) -> $coot_commit)"
+            setcolor reset
             git -C coot fetch &&\
             git -C coot checkout $coot_commit &&\
             echo Using checked-out coot || fail "Failed to checkout coot!"
         fi
     else
+        setcolor green
         echo "Downloading hgonomeg/coot repo.."
+        setcolor reset
         git clone --branch main https://github.com/hgonomeg/coot.git coot &&\
         git -C coot fetch origin &&\
         git -C coot checkout $coot_commit || fail "Failed to clone and checkout coot!"
@@ -74,15 +85,16 @@ getcoot() {
 
 copy_outputs() {
     mkdir -p $LHASA_WASM_OUTPUT_DIR &&\
-    cp -v $COOT_LHASA_DIR/lhbuild/lhasa.{js,wasm,d.ts} $LHASA_WASM_OUTPUT_DIR/ 
+    cp -v $LHASA_CMAKE_BUILD_DIR/lhasa.{js,wasm,d.ts} $LHASA_WASM_OUTPUT_DIR/ 
 }
 
 do_build() {
     setcolor green
     echo "Building Lhasa WebAssembly module with hgonomeg/coot commit=$coot_commit..."}
-    cdbuilddir
-    getcoot
     setcolor reset
+    cdbuilddir
+    # Coot sources get downloaded to $LHASA_WASM_BUILD_DIR/coot 
+    getcoot
     cd $COOT_LHASA_DIR || fail "Could not enter coot/lhasa directory"
     # Get dependency sources / verify sources are downloaded
     setcolor green
