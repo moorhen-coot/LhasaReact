@@ -11,6 +11,7 @@ on:
     paths:
       - 'COOT_VERSION'
       - 'build_wasm.sh'
+      - '.github/workflows/build-wasm.yml'
 
 jobs:
   build-wasm:
