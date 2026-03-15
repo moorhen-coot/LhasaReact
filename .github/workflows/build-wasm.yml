@@ -44,7 +44,7 @@ jobs:
         run: |
           requested="${{ inputs.emsdk_version || 'latest' }}"
           if [ "$requested" = "latest" ]; then
-            resolved=$(gh api repos/emscripten-core/emsdk/releases/latest --jq '.tag_name')
+            resolved=$(curl -sf https://api.github.com/repos/emscripten-core/emsdk/releases/latest | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
             echo "Resolved 'latest' to emsdk version: $resolved"
           else
             resolved="$requested"
