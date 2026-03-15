@@ -8,9 +8,6 @@ on:
         required: false
         default: 'latest'
   push:
-    branches:
-      - main
-      - 21-move-wasm-build-script-to-the-lhasareact-repo-and-use-fixed-coot-commit-hash
     paths:
       - 'COOT_VERSION'
       - 'build_wasm.sh'
