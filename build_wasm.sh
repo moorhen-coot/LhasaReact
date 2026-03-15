@@ -128,8 +128,8 @@ do_build() {
 do_install() {
     setcolor green
     echo "Installing Lhasa WebAssembly module to public/ and src/ directories..."
-    cp -v $LHASA_REACT_ROOT_DIR/wasm_build/lhasa.{js,wasm} $LHASA_REACT_ROOT_DIR/public/ &&\
-    cp -v $LHASA_REACT_ROOT_DIR/wasm_build/lhasa.d.ts $LHASA_REACT_ROOT_DIR/src/ &&\
+    cp -v $LHASA_WASM_OUTPUT_DIR/lhasa.{js,wasm} $LHASA_REACT_ROOT_DIR/public/ &&\
+    cp -v $LHASA_WASM_OUTPUT_DIR/lhasa.d.ts $LHASA_REACT_ROOT_DIR/src/ &&\
     echo "Installation successful!" || fail "Installation failed!"
     setcolor reset
 }
