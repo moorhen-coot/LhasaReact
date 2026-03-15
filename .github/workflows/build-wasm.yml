@@ -49,7 +49,7 @@ jobs:
           path: emsdk-cache
           # Key includes the version so different SDK versions get separate
           # cache entries and don't overwrite each other.
-          key: emsdk-${{ inputs.emsdk_version || 'latest' }}
+          key: emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ runner.version }}
 
       - name: Cache system dependencies
         uses: actions/cache@v4
@@ -71,7 +71,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: wasm_build/coot
-          key: wasm-build-coot-${{ steps.coot_version.outputs.commit }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}
+          key: wasm-build-coot-${{ steps.coot_version.outputs.commit }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ runner.version }}
 
       - name: Build WASM
         run: ./build_wasm.sh
