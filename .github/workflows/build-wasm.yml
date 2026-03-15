@@ -50,6 +50,14 @@ jobs:
           # cache entries and don't overwrite each other.
           key: emsdk-${{ inputs.emsdk_version || 'latest' }}
 
+      - name: Cache system dependencies
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          # runner.version ties the cache to the runner image release, so it is
+          # automatically invalidated when GitHub updates the ubuntu-latest image.
+          key: apt-${{ runner.os }}-${{ runner.version }}
+
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
