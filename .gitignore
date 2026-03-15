@@ -29,4 +29,6 @@ public/lhasa.wasm
 *.sln
 *.sw?
 
-build_lhreact.sh
+*.local.sh
+
+wasm_build/
