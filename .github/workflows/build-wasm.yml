@@ -65,14 +65,6 @@ jobs:
             meson ninja-build cmake curl \
             python3 autoconf automake libtool
 
-    # Todo: Update the paths here
-    # Restores wasm_build/coot from cache if available
-      - name: Cache WASM build tree
-        uses: actions/cache@v4
-        with:
-          path: wasm_build/coot
-          key: wasm-build-coot-${{ steps.coot_version.outputs.commit }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
-
       - name: Cache built dependencies
         id: cache_deps
         uses: actions/cache@v4
