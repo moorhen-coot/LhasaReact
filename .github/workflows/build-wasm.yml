@@ -80,15 +80,6 @@ jobs:
           # directory is already populated, so the SDK download is skipped.
           actions-cache-folder: emsdk-cache
 
-      - name: Cache system dependencies
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt/archives
-          # ImageVersion is the Ubuntu runner image version (e.g. 20240310.1.0).
-          # Including it in the key ensures the apt cache is invalidated when
-          # the runner image is updated.
-          key: apt-${{ runner.os }}-${{ env.ImageVersion }}
-
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
