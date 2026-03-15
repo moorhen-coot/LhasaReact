@@ -47,15 +47,16 @@ jobs:
           path: emsdk-cache
           # Key includes the version so different SDK versions get separate
           # cache entries and don't overwrite each other.
-          key: emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ runner.version }}
+          key: emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Cache system dependencies
         uses: actions/cache@v4
         with:
           path: /var/cache/apt/archives
-          # runner.version ties the cache to the runner image release, so it is
-          # automatically invalidated when GitHub updates the ubuntu-latest image.
-          key: apt-${{ runner.os }}-${{ runner.version }}
+          # ImageVersion is the Ubuntu runner image version (e.g. 20240310.1.0),
+          # set by the image build scripts and incremented on each image update.
+          # More precise than env.ImageVersion, which tracks the runner agent instead.
+          key: apt-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Install system dependencies
         run: |
@@ -69,7 +70,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: wasm_build/coot
-          key: wasm-build-coot-${{ steps.coot_version.outputs.commit }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ runner.version }}
+          key: wasm-build-coot-${{ steps.coot_version.outputs.commit }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Build WASM
         run: ./build_wasm.sh
