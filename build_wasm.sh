@@ -85,7 +85,7 @@ getcoot() {
 
 copy_outputs() {
     mkdir -p $LHASA_WASM_OUTPUT_DIR &&\
-    cp -v $LHASA_CMAKE_BUILD_DIR/lhasa.{js,wasm,d.ts} $LHASA_WASM_OUTPUT_DIR/ 
+    cp -v $LHASA_CMAKE_BUILD_DIR/lhasa.* $LHASA_WASM_OUTPUT_DIR/ 
 }
 
 do_deps() {
