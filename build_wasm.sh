@@ -31,6 +31,7 @@ fi
 LHASA_WASM_BUILD_DIR="${LHASA_REACT_ROOT_DIR}/wasm_build"
 LHASA_WASM_OUTPUT_DIR="${LHASA_WASM_BUILD_DIR}/output"
 COOT_LHASA_DIR="${LHASA_WASM_BUILD_DIR}/coot/lhasa"
+export LHASA_MAIN_DIR="${COOT_LHASA_DIR}"
 
 fail() {
     setcolor red
