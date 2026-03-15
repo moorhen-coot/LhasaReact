@@ -123,6 +123,7 @@ case $1 in
         do_build
         do_install
     ;;
+    # Todo --dependencies-only + Cache dependency builds in the GitHub Actions workflow.
     *)
         if [ "x$1" = "x" ]; then
             do_build
