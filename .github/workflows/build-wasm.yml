@@ -37,6 +37,17 @@ jobs:
           . ./COOT_VERSION
           echo "commit=${coot_commit}" >> "$GITHUB_OUTPUT"
 
+      - name: Clone Coot repository
+        # Coot must be checked out before the dependency cache step so that
+        # hashFiles() can read VERSIONS, initial_build.sh, and get_sources
+        # from the coot/lhasa directory to compute the cache key.
+        # The getcoot function in build_wasm.sh will detect the existing
+        # checkout and skip re-cloning.
+        run: |
+          mkdir -p wasm_build
+          git clone --branch main https://github.com/hgonomeg/coot.git wasm_build/coot
+          git -C wasm_build/coot checkout ${{ steps.coot_version.outputs.commit }}
+
       - name: Set up Emscripten SDK
         uses: mymindstorm/setup-emsdk@v14
         with:
@@ -80,7 +91,10 @@ jobs:
           # prefix populated by initial_build.sh.  Caching it avoids rebuilding
           # the slow dependency compilation step on every run.
           path: wasm_build/prefix
-          key: wasm-deps-${{ steps.coot_version.outputs.commit }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
+          # Dependencies change when their version pins (VERSIONS), download
+          # script (get_sources), or build script (initial_build.sh) change —
+          # NOT on every Coot commit.
+          key: wasm-deps-${{ hashFiles('wasm_build/coot/lhasa/VERSIONS', 'wasm_build/coot/lhasa/initial_build.sh', 'wasm_build/coot/lhasa/get_sources') }}-emsdk-${{ inputs.emsdk_version || 'latest' }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Build dependencies
         if: steps.cache_deps.outputs.cache-hit != 'true'
