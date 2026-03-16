@@ -126,9 +126,9 @@ import 'lhasa-ligand-builder/style.css'
 
 ## Building from source (alternative)
 
-You can also build everything from source yourself.
+You can also build everything from source yourself, using the `build_wasm.sh` script found in this repo.
 
-Lhasa's C++ sources are a part of [Coot](https://github.com/pemsley/coot) and you need to compile the C++ WebAssembly module first.
+Lhasa's C++ sources are a part of [Coot](https://github.com/pemsley/coot) and the C++ WebAssembly module needs to be compiled first.
 
 NOTE: All build scripts are Unix scripts. On Windows, you may need WSL.
 
@@ -140,14 +140,25 @@ NOTE: All build scripts are Unix scripts. On Windows, you may need WSL.
 * meson
 * curl, tar, etc.
 
-Clone the [Coot](https://github.com/pemsley/coot) repo and go to `lhasa/`.
+Conveniently, now there is a build script: `build_wasm.sh`.
+It clones the [Coot](https://github.com/pemsley/coot) repo and builds the sources found at `lhasa/` and `layla/`.
 
-The build procedure is very much like [Moorhen](https://github.com/moorhen-coot/Moorhen)'s:
+You can just simply run 
+```bash
+./build_wasm.sh
+```
+and it will do everything for you, including downloading and building all C++ dependencies.
+For more options, run:
+```bash
+./build_wasm.sh --help
+```
+By default, the script will output artifacts to `wasm_build/outputs` (This is configurable with environment variables).
 
-* Run `get_sources` (download C++ dependencies)
-* Run `initial_build.sh` to build all the necessary dependencies using Emscripten
-* Run `build_lhasa.sh` to build the Lhasa WebAssembly module
-* Copy `lhasa.js`, `lhasa.worker.js` (if it exists) and `lhasa.wasm` from `Coot/lhasa/lhbuild/` to `LhasaReact/public`
+Then, after the build finishes, you can run:
+```bash
+./build_wasm.sh --install
+```
+in order to copy the freshly generated `lhasa.js` and `lhasa.wasm` to `LhasaReact/public` (and `lhasa.d.ts` to `LhasaReact/src`)
 
 ### Running LhasaReact locally
 
