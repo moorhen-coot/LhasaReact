@@ -51,7 +51,15 @@ jobs:
           fi
           echo "version=$resolved" >> "$GITHUB_OUTPUT"
 
+      - name: Cache Coot sources
+        uses: actions/cache@v4
+        id: cache_coot_src
+        with:
+          path: wasm_build/coot
+          key: coot-src-${{ steps.coot_version.outputs.commit }}
+
       - name: Clone Coot repository
+        if: steps.cache_coot_src.outputs.cache-hit != 'true'
         # Coot must be checked out before the dependency cache step so that
         # hashFiles() can read VERSIONS, initial_build.sh, and get_sources
         # from the coot/lhasa directory to compute the cache key.
@@ -91,10 +99,9 @@ jobs:
         id: cache_deps
         uses: actions/cache@v4
         with:
-          # INSTALL_DIR in build_wasm.sh: the emscripten-compiled C++ dependency
-          # prefix populated by initial_build.sh.  Caching it avoids rebuilding
-          # the slow dependency compilation step on every run.
-          path: wasm_build/prefix
+          path: |
+            wasm_build/prefix
+            wasm_build/download
           # Dependencies change when their version pins (VERSIONS), download
           # script (get_sources), or build script (initial_build.sh) change —
           # NOT on every Coot commit.
