@@ -1,6 +1,9 @@
 name: Build WASM
 
 on:
+  # Every Sunday at 05:00 UTC
+  schedule:
+  - cron: "0 5 * * 0"
   workflow_dispatch:
     inputs:
       emsdk_version:
@@ -10,6 +13,9 @@ on:
   push:
     tags:
       - 'v*'
+    # We need to add the wildcard here because otherwise 
+    # the tag specifier blocks non-v*-tagged pushes from triggering the workflow
+      - '**'
     branches:
       - '**'
     paths:
