@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  ci:
+    name: Run npm ${{ matrix.script }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        script: [typecheck, build, 'build:lib']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read Coot commit hash
+        id: coot_version
+        run: |
+          . ./COOT_VERSION
+          echo "commit=${coot_commit}" >> "$GITHUB_OUTPUT"
+
+      - name: Download WASM artifacts (from current branch)
+        id: wasm_from_current_branch
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          workflow: build-wasm.yml
+          branch: ${{ github.ref_name }}
+          name: lhasa-wasm-${{ steps.coot_version.outputs.commit }}
+          path: wasm-artifact
+          workflow_conclusion: success
+
+      - name: Download WASM artifacts (from main - fallback)
+        if: steps.wasm_from_current_branch.outcome == 'failure'
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          workflow: build-wasm.yml
+          branch: main
+          name: lhasa-wasm-${{ steps.coot_version.outputs.commit }}
+          path: wasm-artifact
+          workflow_conclusion: success
+
+      - name: Place WASM artifacts
+        run: |
+          cp -v wasm-artifact/lhasa.js public/
+          cp -v wasm-artifact/lhasa.wasm public/
+          cp -v wasm-artifact/lhasa.d.ts src/types.d.ts
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - run: npm run ${{ matrix.script }}

@@ -8,10 +8,15 @@ on:
         required: false
         default: 'latest'
   push:
+    tags:
+      - 'v*'
     paths:
       - 'COOT_VERSION'
       - 'build_wasm.sh'
       - '.github/workflows/build-wasm.yml'
+
+permissions:
+  contents: write
 
 jobs:
   build-wasm:
@@ -122,3 +127,12 @@ jobs:
           name: lhasa-wasm-${{ steps.coot_version.outputs.commit }}
           path: wasm_build/output/
           if-no-files-found: error
+
+      # Note: this is experimental
+      - name: Upload assets to version release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          gh release upload "$tag" wasm_build/output/* --clobber
