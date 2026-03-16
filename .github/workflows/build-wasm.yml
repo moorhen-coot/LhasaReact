@@ -112,7 +112,7 @@ jobs:
           # Dependencies change when their version pins (VERSIONS), download
           # script (get_sources), or build script (initial_build.sh) change —
           # NOT on every Coot commit.
-          key: wasm-deps-${{ hashFiles('wasm_build/coot/lhasa/VERSIONS', 'wasm_build/coot/lhasa/initial_build.sh', 'wasm_build/coot/lhasa/get_sources') }}-emsdk-${{ steps.emsdk.outputs.version }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
+          key: wasm-deps-${{ hashFiles('wasm_build/coot/lhasa/VERSIONS', 'wasm_build/coot/lhasa/initial_build.sh', 'wasm_build/coot/lhasa/get_sources') }}-emsdk-${{ steps.emsdk.outputs.version }}-runner-${{ runner.os }}
 
       - name: Build dependencies
         if: steps.cache_deps.outputs.cache-hit != 'true'
