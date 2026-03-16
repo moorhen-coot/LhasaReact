@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+  # Also triggers on workflow_run, when the 'Build WASM' workflow completes.
   workflow_run:
     workflows: [Build WASM]
     types: [completed]
@@ -11,6 +12,7 @@ jobs:
     # On workflow_run, only run if the WASM build succeeded.
     if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
 
+    # Matrix splits the job into three parallel runs, one for each script.
     name: Run npm ${{ matrix.script }}
     runs-on: ubuntu-latest
 
