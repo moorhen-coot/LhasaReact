@@ -158,7 +158,7 @@ Then, after the build finishes, you can run:
 ```bash
 ./build_wasm.sh --install
 ```
-in order to copy the freshly generated `lhasa.js` and `lhasa.wasm` to `LhasaReact/public` (and `lhasa.d.ts` to `LhasaReact/src`)
+in order to copy the freshly generated `lhasa.js` and `lhasa.wasm` to `LhasaReact/public` (and `lhasa.d.ts` to `LhasaReact/src/types.d.ts`)
 
 ### Running LhasaReact locally
 
