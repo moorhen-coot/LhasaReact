@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+
+
+# Comes from https://github.com/hgonomeg/coot
+coot_commit="6ee56c3b01"
