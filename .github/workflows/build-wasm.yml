@@ -10,6 +10,8 @@ on:
   push:
     tags:
       - 'v*'
+    branches:
+      - '**'
     paths:
       - 'COOT_VERSION'
       - 'build_wasm.sh'
