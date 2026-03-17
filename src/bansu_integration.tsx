@@ -1,4 +1,4 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel, Switch } from "@mui/material";
 // import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
@@ -38,6 +38,9 @@ export function BansuButton(props: BansuPopupProps) {
     const [posInQueue, setPosInQueue] = useState<number | null>(null);
     const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
+
+    const [acedrgFlagP, setAcedrgFlagP] = useState<boolean>(false);
+    const [acedrgFlagZ, setAcedrgFlagZ] = useState<boolean>(false);
 
     const [_workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
 
@@ -81,11 +84,28 @@ export function BansuButton(props: BansuPopupProps) {
                         }}
                         />
                     </div>
-                    Commandline flags
-                    <div className="horizontal_container_centered">
-                        {/* -z
-                        <Switch /> */}
-                        <i>TODO</i>
+                    Acedrg commandline flags
+                    <div className="vertical_panel">
+                        <FormControlLabel
+                            label="-p: Use existing coordinates"
+                            control={
+                                <Switch
+                                    style={{marginLeft: '5px'}}
+                                    checked={acedrgFlagP}
+                                    onChange={() => setAcedrgFlagP(!acedrgFlagP)}
+                                />
+                            }
+                        />
+                        <FormControlLabel
+                            label="-z: No geometry optimization"
+                            control={
+                                <Switch
+                                    style={{marginLeft: '5px'}}
+                                    checked={acedrgFlagZ}
+                                    onChange={() => setAcedrgFlagZ(!acedrgFlagZ)}
+                                />
+                            }
+                        />
                     </div>
                     <div className="horizontal_container_centered children_expanded">
                         <Button 
@@ -179,7 +199,7 @@ export function BansuButton(props: BansuPopupProps) {
                 </div>
             </div>;
         }
-    }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue, userConsent]);
+    }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue, userConsent, acedrgFlagP, acedrgFlagZ]);
 
     useEffect(() => {
         // return;
@@ -188,10 +208,11 @@ export function BansuButton(props: BansuPopupProps) {
                 setState(BansuPopupState.SpawningJob);
                 const postData = JSON.stringify({
                     'smiles': props.smiles,
-                    'commandline_args': []
+                    'commandline_args': [...(acedrgFlagP ? ['-p'] : []), ...(acedrgFlagZ ? ['-z'] : [])]
                 });
     
                 try {
+                    console.log("Spawning Bansu job with POST data: ", postData);
                     const res = await fetch(`${bansuEndpoint}/run_acedrg`, {
                         method: 'POST',
                         body: postData,
