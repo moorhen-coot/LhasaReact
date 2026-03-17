@@ -19,6 +19,8 @@ $lhasa_font_size: 0.65rem;
     /* Padding here breaks relative coords */
     /* padding: 5px; */
     cursor: default;
+    /* Scrolling in y-axis belongs to 'lhasa_main_panel'.
+    Otherwise the vertical scrollbar becomes invisible for some reason */
     overflow-x: auto;
     user-select: none;
     // max-width: 700px;
@@ -58,7 +60,11 @@ $lhasa_font_size: 0.65rem;
     flex: 1 1 auto;
     min-width: 480px;
     min-height: 270px;
+    /* note: we don't want scrolling in the x-axis here, 
+    because the vertical bar with chemical elements could scroll out of view.
+    Scrolling in the x-axis belongs to 'editor_canvas_container'. */
     overflow-y: auto;
+    /* the line below would break vertical scrolling */
     // overflow: hidden;
 }
 
