@@ -104,6 +104,8 @@ export interface LhasaComponentProps {
   bansu_endpoint?: string | undefined;
   data_path_prefix?: string;
   dark_mode?: boolean;
+  width?: number | null;
+  height?: number | null;
   max_width?: number | null;
   max_height?: number | null;
 }
@@ -121,6 +123,8 @@ export function LhasaComponent({
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
   data_path_prefix = '',
   dark_mode = false,
+  width = null,
+  height = null,
   max_width = null,
   max_height = null
 } : LhasaComponentProps) {
@@ -1070,6 +1074,8 @@ export function LhasaComponent({
               ref={editorRef}
               style={
                 {
+                  width: width ? width + 'px' : undefined,
+                  height: height ? height + 'px' : undefined,
                   maxWidth: max_width ? max_width + 'px' : undefined,
                   maxHeight: max_height ? max_height + 'px' : undefined
                 }
