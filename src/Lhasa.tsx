@@ -1071,6 +1071,7 @@ export function LhasaComponent({
               style={
                 {
                   maxWidth: max_width ? max_width + 'px' : undefined,
+                  // todo: fix max_height likely being broken
                   maxHeight: max_height ? max_height + 'px' : undefined
                 }
               }
