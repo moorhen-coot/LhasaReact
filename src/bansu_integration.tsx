@@ -1,4 +1,4 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Switch, Checkbox, FormControlLabel } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel } from "@mui/material";
 // import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
@@ -12,6 +12,7 @@ class BansuPopupProps {
     smiles!: string;
     anchorEl?: HTMLElement | null;
     bansu_endpoint!: string;
+    dark_mode!: boolean;
     // internal_id: 
 }
 
@@ -38,7 +39,7 @@ export function BansuButton(props: BansuPopupProps) {
     const [finishedJobOutput, setFinishedJobOutput] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
 
-    const [workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
+    const [_workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
 
     const resetState = () => {
         setState(BansuPopupState.UserConfig);
@@ -59,9 +60,10 @@ export function BansuButton(props: BansuPopupProps) {
                         While Bansu does not store logs containing chemical data, please note that<br/><b>by using a remote instance of Bansu you're trusting the instance's owner with your data.</b><br/>
                         <br/>
                         <FormControlLabel 
-                            label="I understand and agree to proceed" 
+                            label="I understand and agree to proceed"
                             control={
                             <Checkbox 
+                                style={{marginLeft: '5px'}}
                                 checked={userConsent}
                                 onChange={() => setUserConsent(!userConsent)}
                             />} 
@@ -149,7 +151,7 @@ export function BansuButton(props: BansuPopupProps) {
                             Close
                         </Button>
                         <Button 
-                            onClick={(e) => window.open(`${bansuEndpoint}/get_cif/${jobId}`)}
+                            onClick={() => window.open(`${bansuEndpoint}/get_cif/${jobId}`)}
                             // style={{flex: 'auto'}}
                             variant="contained"
                         >
@@ -223,12 +225,12 @@ export function BansuButton(props: BansuPopupProps) {
                     const socket = new WebSocket(`${websocketMode}://${bansuEndpoint_noprotocol}/ws/${jsonData.job_id}`);
 
                     // Connection opened
-                    socket.addEventListener("open", (event) => {
+                    socket.addEventListener("open", (_event) => {
                         console.log("Connection on WebSocket established.");
                         // setState(BansuPopupState.Waiting);
                     });
 
-                    socket.addEventListener("close", (event) => {
+                    socket.addEventListener("close", (_event) => {
                         console.log("Connection on WebSocket closed.");
                         // process.exit(0);
                     });
@@ -299,7 +301,7 @@ export function BansuButton(props: BansuPopupProps) {
                 anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
                 transformOrigin={{ vertical: 'center', horizontal: 'center'}}
             >
-                <div className="vertical_popup lhasa_editor LhasaMuiStyling" style={{maxWidth:  '400px', maxHeight: '400px'}}>
+                <div className={"vertical_popup lhasa_editor LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")} style={{maxWidth:  '400px', maxHeight: '400px'}}>
                     <div className="vertical_popup_title">
                         Restraints generation via Bansu
                     </div>

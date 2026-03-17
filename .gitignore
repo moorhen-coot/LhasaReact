@@ -9,9 +9,15 @@ lerna-debug.log*
 
 node_modules
 dist
+*_dist
 dist-ssr
 *.local
 
+public/lhasa.js
+public/lhasa.wasm
+
+
+.npmrc
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +28,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+*.local.sh
+
+wasm_build/

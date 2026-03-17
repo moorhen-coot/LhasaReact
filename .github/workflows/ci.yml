@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+  # Also triggers on workflow_run, when the 'Build WASM' workflow completes.
+  workflow_run:
+    workflows: [Build WASM]
+    types: [completed]
+
+jobs:
+  ci:
+    # On workflow_run, only run if the WASM build succeeded.
+    if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
+
+    # Matrix splits the job into three parallel runs, one for each script.
+    name: Run npm ${{ matrix.script }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        script: [typecheck, build, 'build:lib']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # workflow_run runs in the context of the default branch, so we
+          # must explicitly check out the commit that triggered the build.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Read Coot commit hash
+        id: coot_version
+        run: |
+          . ./COOT_VERSION
+          echo "commit=${coot_commit}" >> "$GITHUB_OUTPUT"
+
+      - name: Download WASM artifacts (from current branch)
+        id: wasm_from_current_branch
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          workflow: build-wasm.yml
+          branch: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+          name: lhasa-wasm-${{ steps.coot_version.outputs.commit }}
+          path: wasm-artifact
+          workflow_conclusion: success
+
+      - name: Download WASM artifacts (from main - fallback)
+        if: steps.wasm_from_current_branch.outcome == 'failure'
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          workflow: build-wasm.yml
+          branch: main
+          name: lhasa-wasm-${{ steps.coot_version.outputs.commit }}
+          path: wasm-artifact
+          workflow_conclusion: success
+
+      - name: Check WASM artifacts available
+        id: wasm_check
+        run: |
+          if [ -d wasm-artifact ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::WASM artifacts not available. CI will re-run automatically when the Build WASM workflow completes."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Place WASM artifacts
+        if: steps.wasm_check.outputs.available == 'true'
+        run: |
+          cp -v wasm-artifact/lhasa.js public/
+          cp -v wasm-artifact/lhasa.wasm public/
+          cp -v wasm-artifact/lhasa.d.ts src/types.d.ts
+
+      - name: Set up Node.js
+        if: steps.wasm_check.outputs.available == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.wasm_check.outputs.available == 'true'
+        run: npm ci
+
+      - name: Run npm ${{ matrix.script }}
+        if: steps.wasm_check.outputs.available == 'true'
+        run: npm run ${{ matrix.script }}

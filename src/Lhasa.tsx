@@ -4,19 +4,28 @@ import { HotKeys } from "react-hotkeys"
 import { create as D3Create } from 'd3';
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache } from './types';
+import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache, TextStyle, TextSpanVector, GraphenePoint } from './types';
+import type { Text as LhasaText } from './types';
+import type { Selection } from 'd3';
+
+/// d3 selection of an SVG container (the root `<svg>` element).
+type SvgSelection = Selection<SVGSVGElement, undefined, null, undefined>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/// d3 selection of an SVG child element (e.g. `<text>`, `<tspan>`). Uses `any` due to d3's invariant generics.
+type SvgChildSelection = Selection<any, any, any, any>;
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
 import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
+import { parseInchikeyDatabase } from './inchikey_database_parse';
 
-class ToolButtonProps {
+type ToolButtonProps = {
   onclick?: () => void;
   action_name: string | undefined;
   caption: string | undefined;
-  caption_optional?: boolean = false;
+  caption_optional?: boolean;
   icon: string | undefined | null;
-  tooltip_body?: JSX.Element | null = null;
+  tooltip_body?: React.JSX.Element | null;
 }
 
 class ActiveToolContextData {
@@ -67,44 +76,62 @@ const max_scale = 4;
 const min_scale = 0.4;
 const c_const = (min_scale*max_scale-1) / (min_scale+max_scale-2);
 const d_bottom = (1 - max_scale) / (min_scale - 1);
-const d_top= (min_scale-1)**2 / (min_scale+max_scale-2);
+const d_top = (min_scale-1)**2 / (min_scale+max_scale-2);
 const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
 const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
 
-class LhasaComponentProps {
+export interface LhasaComponentProps {
+  /// Provides Lhasa WebAssembly module to the component. Use LhasaEmbedder if you want to load the module automatically.
   Lhasa: MainModule | any;
   show_top_panel?: boolean;
   show_footer?: boolean;
   icons_path_prefix?: string;
-  /// Base64-encoded pickles
+  /// Base64-encoded RDKit pickles.
+  /// Used for providing a list of molecules to be loaded on initialization.
   rdkit_molecule_pickle_list?: { pickle: string; id: string }[];
   /// When Lhasa is embedded, what is it embedded in?
   name_of_host_program?: string;
-  /// Called when a molecule changes.
-  /// Can be provided to get updates when a molecule changes
+  /// Called when the user presses the "Send to ..." button.
+  /// Can be provided to facilitate integration with host program (one inside of which Lhasa is embedded).
+  /// 'id_from_prop' is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
   smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
+  /// Called whenever the SMILES strings of any molecule in the canvas changes.
+  /// Arguments is an array of tuples: [internal molecule ID, ID of molecule from prop (if exists), SMILES string, tuple of [monomer code, chemical name] looked up from the InChIKey database (if exists)].
+  /// "ID of molecule from prop", is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
+  on_smiles_updated? : (smiles_array: [number, string | null, string, [string, string]?][]) => void;
+  /// Endpoint for Bansu server (https://github.com/hgonomeg/bansu). If not given, defaults to 'https://www.ccp4.ac.uk/bansu'. 
+  /// Bansu is used for CIF file generation.
   bansu_endpoint?: string | undefined;
+  data_path_prefix?: string;
+  dark_mode?: boolean;
+  max_width?: number | null;
+  max_height?: number | null;
 }
 
 
 export function LhasaComponent({
   Lhasa, 
   show_top_panel = false, 
-  show_footer = true, 
+  show_footer = false, 
   icons_path_prefix = '', 
   rdkit_molecule_pickle_list,
   name_of_host_program = 'Moorhen',
   smiles_callback,
-  bansu_endpoint = 'https://quicillith.pl'
+  on_smiles_updated,
+  bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
+  data_path_prefix = '',
+  dark_mode = false,
+  max_width = null,
+  max_height = null
 } : LhasaComponentProps) {
   function on_render(lh: Canvas, text_measurement_cache: TextMeasurementCache, text_measurement_worker_div: string) {
-    console.debug("on_render() called.");
+    // console.debug("on_render() called.");
   
     const css_color_from_lhasa_color = (lhasa_color: Color) => {
       return 'rgba(' + lhasa_color.r * 255 + ','+ lhasa_color.g * 255 + ',' + lhasa_color.b * 255 + ',' + lhasa_color.a + ')';
     }
-    const lhasa_text_to_d3js = (msvg, text) => {
-      const style_to_attrstring = (style) => {
+    const lhasa_text_to_d3js = (msvg: SvgSelection, text: LhasaText) => {
+      const style_to_attrstring = (style: TextStyle) => {
         let style_string = "";
         if(style.specifies_color) {
           style_string += "fill:";
@@ -134,9 +161,9 @@ export function LhasaComponent({
         }
         return style_string;
       };
-      const append_spans_to_node = (spans, text_node) => {
+      const append_spans_to_node = (spans: TextSpanVector, text_node: SvgChildSelection, text_origin: GraphenePoint) => {
         for(let i = 0; i < spans.size(); i++) {
-          const span = spans.get(i);
+          const span = spans.get(i)!;
           let child = text_node
             // .enter()
             .append("tspan");
@@ -144,7 +171,12 @@ export function LhasaComponent({
             child.attr("style", style_to_attrstring(span.style));
           }
           if(span.has_subspans()) {
-            append_spans_to_node(span.as_subspans(), child);
+            append_spans_to_node(span.as_subspans(), child, text_origin);
+          } else if(span.is_newline()) {
+            child.attr("dy", "1em");
+            child.attr("x", text_origin.x);
+            // Invisible U+2063 to force tspan to be rendered
+            child.text("⁣");
           } else {
             const caption = span.as_caption();
             child.text(caption);
@@ -165,10 +197,10 @@ export function LhasaComponent({
       if(text.spans.size() == 0) {
         console.warn("Text contains no spans!");
       }
-      append_spans_to_node(text.spans, ret);
+      append_spans_to_node(text.spans, ret, text.origin);
       return ret;
     };
-    const text_measure_function = (text) => {
+    const text_measure_function = (text: LhasaText) => {
       // let size_info = new Lhasa.TextSize;
       let size_info = {
         'width': 0,
@@ -186,8 +218,8 @@ export function LhasaComponent({
           .attr("height", 100)
           .attr("id", "measurement_temporary");
         const text_elem = lhasa_text_to_d3js(msvg, text);
-        domNode.append(msvg.node());
-        const node = text_elem.node();
+        domNode.append(msvg.node()!);
+        const node = text_elem.node()!;
         // This has awful performance but I don't really have a choice
         const bbox = node.getBBox();
         size_info.width = Math.ceil(bbox.width);
@@ -208,6 +240,7 @@ export function LhasaComponent({
       const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
       const min_size = 480;
       if(measured < min_size) {
+        // console.warn(`Horizontal canvas size measurement below minimum: ${measured}`);
         return min_size;
       }
       return measured;
@@ -216,6 +249,7 @@ export function LhasaComponent({
       const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
       const min_size = 270;
       if(measured < min_size) {
+        // console.warn(`Vertical canvas size measurement below minimum: ${measured}`);
         return min_size;
       }
       return measured;
@@ -246,7 +280,7 @@ export function LhasaComponent({
             const arc = element.as_arc();
   
             // Thanks to: https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-            function polarToCartesian(centerX, centerY, radius, angleInRadians) {
+            function polarToCartesian(centerX: number, centerY: number, radius: number, angleInRadians: number) {
               //var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
       
               return {
@@ -255,7 +289,7 @@ export function LhasaComponent({
               };
             }
       
-            function describeArc(x, y, radius, startAngle, endAngle){
+            function describeArc(x: number, y: number, radius: number, startAngle: number, endAngle: number){
       
                 var start = polarToCartesian(x, y, radius, endAngle);
                 var end = polarToCartesian(x, y, radius, startAngle);
@@ -290,7 +324,7 @@ export function LhasaComponent({
           } else if(element.is_line()) {
             const line = element.as_line();
   
-            function describeLine(x1, y1, x2, y2) {
+            function describeLine(x1: number, y1: number, x2: number, y2: number) {
               var p = path_started ? [] : ["M", x1, y1];
               var d = p.concat(["L", x2, y2]).join(" ");
               return d;
@@ -346,9 +380,12 @@ export function LhasaComponent({
   const isFirstRenderRef = useRef<boolean>(false);
   // Assigns internal molecule IDs to external pickle IDs as given by rdkit_molecule_pickle_map
   const canvasIdsToPropsIdsRef = useRef<Map<number, string>>(new Map<number, string>());
+  /// Database of InChIKey -> [Monomer code, Chemical name], fetched asynchronously
+  const inchiKeyDatabase = useRef<Map<string, [string, string]> | null>(null);
 
-  const [svgNode, setSvgNode] = useState(null);
-  const [smiles, setSmiles] = useState<[number, string][]>([]);
+  const [svgNode, setSvgNode] = useState<SVGSVGElement | null>(null);
+  /// [molecule_id, smiles, [monomer_id, chem_name]?]]
+  const [smiles, setSmiles] = useState<[number, string, [string, string]?][]>([]);
   const [scale, setScale] = useState<number>(1.0);
   const [statusText, setStatusText] = useState<string>('');
   const [xElementInputShown, setXElementInputShown] = useState<boolean>(false);
@@ -366,24 +403,43 @@ export function LhasaComponent({
     });
 
     const on_status_updated = function (status_txt: string) {
-      // For now
-      console.log("Status: " + status_txt);
-      // todo: fix
       setStatusText(status_txt);
     };
     lh.connect("status_updated", on_status_updated);
     lh.connect("smiles_changed", function () {
-      const smiles_array: [number, string][] = [];
+      const smiles_array: [number, string, [string, string]?][] = [];
       const smiles_map = lh.get_smiles();
       const smiles_keys = smiles_map.keys();
+
+      const inchikey_map = lh.get_inchi_keys();
+
       for(let i = 0; i < smiles_keys.size(); i++) {
         const mol_id = smiles_keys.get(i);
-        const smiles_tuple = [mol_id, smiles_map.get(mol_id)] as [number, string];
+        const inchi_key = inchikey_map.get(mol_id) as string;
+        let inchi_lookup_result : [string, string] | null = null;
+        if (inchiKeyDatabase.current?.has(inchi_key)) {
+          inchi_lookup_result = inchiKeyDatabase.current?.get(inchi_key) as [string, string];
+        }
+        const smiles_tuple = [mol_id, smiles_map.get(mol_id), inchi_lookup_result] as [number, string, [string, string]?];
+        console.log(`Inchi lookup: mol_id=${mol_id} key=${inchi_key} ${inchi_lookup_result ?  `monomer_id=${inchi_lookup_result[0]} chem_name=${inchi_lookup_result[1]}` : inchiKeyDatabase.current != null ? ` not found in database` : ` (database not loaded)`}`);
         smiles_array.push(smiles_tuple);
       }
       smiles_keys.delete();
       smiles_map.delete();
       setSmiles(smiles_array);
+      if (on_smiles_updated) {
+        const smiles_with_external_ids: [number, string | null, string, [string, string]?][] = smiles_array.map(
+          ([mol_id, smiles_str, inchi_lookup]) => {
+            const external_id = canvasIdsToPropsIdsRef.current.get(mol_id) ?? null;
+            return [mol_id, external_id, smiles_str, inchi_lookup];
+          }
+        );
+        console.debug("Calling on_smiles_updated...");
+        on_smiles_updated(smiles_with_external_ids);
+      }
+      // const inchikey_map_keys = inchikey_map.keys();
+      // inchikey_map.delete();
+      // inchikey_map_keys.delete();
     });
     lh.connect("molecule_deleted", function (mol_id: number) {
       console.log("Molecule with id " + mol_id + " has been deleted.");
@@ -423,6 +479,41 @@ export function LhasaComponent({
       console.log("Setting up LhasaCanvas.");
       lh.current = setupLhasaCanvas(tmc.current);
     }
+
+    const InchiKeyDatabaseLoaderTask = async () => {
+      if (inchiKeyDatabase.current !== null) {
+        return;
+      }
+      let retries_remaining = 15;
+      while (retries_remaining > 0) {
+        try {
+          let begin_time = performance.now();
+          console.log("Fetching InchiKeyDatabase...");
+          const response: Response = await fetch(data_path_prefix + "Components-inchikey.ich");
+          if (!response.ok) {
+            throw new Error(`InchiKeyDatabase fetch status: ${response.status}`);
+          }
+          const raw_data = await response.text();
+          let end_time = performance.now();
+          console.log(`InchiKeyDatabase fetched successfully in ${(end_time - begin_time).toFixed(2)} ms. Size = ${raw_data.length} bytes. Parsing...`);
+          begin_time = performance.now();
+          const db = parseInchikeyDatabase(raw_data);
+          end_time = performance.now();
+          inchiKeyDatabase.current = db;
+          console.log(`InchiKeyDatabase parsed successfully in ${(end_time - begin_time).toFixed(2)} ms. Entries = ${db.size}.`);
+          break;
+        } catch (err) {
+          console.error(`Could not fetch InchiKeyDatabase: ${err}\n ${retries_remaining > 0 ? `\nRetrying again in two seconds (retries remaining: ${retries_remaining})...` : "\nGiving up."}`);
+          retries_remaining -= 1;
+          // Sleep for 2 seconds before retrying
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
+        }
+      }
+    };
+
+    InchiKeyDatabaseLoaderTask();
+
     return () => {
       if (lh.current !== null && !lh.current?.isDeleted()) {
         console.warn("Cleaning up component upon unmounting.");
@@ -434,7 +525,7 @@ export function LhasaComponent({
       }
       canvasIdsToPropsIdsRef.current = new Map<number, string>();
     };
-  }, []);
+  }, []); // Empty dependency array: run only once on mount and cleanup on unmount
 
   useEffect(() => {
       if(rdkit_molecule_pickle_list !== undefined) {
@@ -527,7 +618,9 @@ export function LhasaComponent({
     }
   }, [svgNode]);
 
-  const carbon_ring_tooltip = useRef<JSX.Element>(<div>
+  const icons_path_final = dark_mode ? icons_path_prefix + "/dark" : icons_path_prefix;
+
+  const carbon_ring_tooltip = useRef<React.JSX.Element>(<div>
     <b>Carbon Ring Tool</b><br/>
     Insert a carbon ring.<br/>
     <br/>
@@ -537,7 +630,7 @@ export function LhasaComponent({
     <b>Left click on empty canvas</b> - Initialize a new molecule with the selected kind of carbon ring.
   </div>);
 
-  const element_tool_tooltip = useRef<JSX.Element>(<div>
+  const element_tool_tooltip = useRef<React.JSX.Element>(<div>
     <b>Element Tool</b><br/>
     Add a new atom or replace an existent atom with the chosen element.<br/>
     <br/>
@@ -551,7 +644,7 @@ export function LhasaComponent({
     Move: { 
       caption:"Move",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Translation)),
-      icon: icons_path_prefix + "/layla_move_tool.svg",
+      icon: icons_path_final + "/layla_move_tool.svg",
       hotkey:"m",
       caption_optional: true,
       tooltip_core: <div>
@@ -565,7 +658,7 @@ export function LhasaComponent({
     Rotate: { 
       caption:"Rotate",
       raw_handler:() => switch_tool(new Lhasa.TransformTool(Lhasa.TransformMode.Rotation)),
-      icon: icons_path_prefix + "/lhasa_rotate_tool.svg",
+      icon: icons_path_final + "/lhasa_rotate_tool.svg",
       hotkey:"r",
       caption_optional: true,
       tooltip_core: <div>
@@ -581,7 +674,7 @@ export function LhasaComponent({
     Flip_around_X: { 
       caption:"Flip around X",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Horizontal)),
-      icon: icons_path_prefix + "/lhasa_flip_x_tool.svg",
+      icon: icons_path_final + "/lhasa_flip_x_tool.svg",
       hotkey:"alt+f",
       caption_optional: true,
       tooltip_core: <div>
@@ -595,7 +688,7 @@ export function LhasaComponent({
     Flip_around_Y: { 
       caption:"Flip around Y",
       raw_handler:() => switch_tool(new Lhasa.FlipTool(Lhasa.FlipMode.Vertical)),
-      icon: icons_path_prefix + "/lhasa_flip_y_tool.svg",
+      icon: icons_path_final + "/lhasa_flip_y_tool.svg",
       hotkey:"ctrl+alt+f",
       caption_optional: true,
       tooltip_core: <div>
@@ -609,7 +702,7 @@ export function LhasaComponent({
     Delete_hydrogens: { 
       caption:"Delete hydrogens",
       raw_handler:() => switch_tool(new Lhasa.RemoveHydrogensTool()),
-      icon: icons_path_prefix + "/layla_delete_hydrogens_tool.svg",
+      icon: icons_path_final + "/layla_delete_hydrogens_tool.svg",
       hotkey:"alt+delete",
       caption_optional: true,
       tooltip_core: <div>
@@ -623,7 +716,7 @@ export function LhasaComponent({
     Format: { 
       caption:"Format",
       raw_handler:() => switch_tool(new Lhasa.FormatTool()),
-      icon: icons_path_prefix + "/layla_format_tool.svg",
+      icon: icons_path_final + "/layla_format_tool.svg",
       hotkey:"f",
       caption_optional: true,
       tooltip_core: <div>
@@ -637,7 +730,7 @@ export function LhasaComponent({
     Single_Bond: { 
       caption:"Single Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Single)),
-      icon: icons_path_prefix + "/layla_single_bond.svg",
+      icon: icons_path_final + "/layla_single_bond.svg",
       hotkey:"s",
       caption_optional: true,
       tooltip_core: <div>
@@ -652,7 +745,7 @@ export function LhasaComponent({
     Double_Bond: { 
       caption:"Double Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Double)),
-      icon: icons_path_prefix + "/layla_double_bond.svg",
+      icon: icons_path_final + "/layla_double_bond.svg",
       hotkey:"d",
       caption_optional: true,
       tooltip_core: <div>
@@ -667,7 +760,7 @@ export function LhasaComponent({
     Triple_Bond: { 
       caption:"Triple Bond",
       raw_handler:() => switch_tool(new Lhasa.BondModifier(Lhasa.BondModifierMode.Triple)),
-      icon: icons_path_prefix + "/layla_triple_bond.svg",
+      icon: icons_path_final + "/layla_triple_bond.svg",
       hotkey:"t",
       caption_optional: true,
       tooltip_core: <div>
@@ -682,7 +775,7 @@ export function LhasaComponent({
     Geometry: { 
       caption:"Geometry",
       raw_handler:() => switch_tool(new Lhasa.GeometryModifier()),
-      icon: icons_path_prefix + "/layla_geometry_tool.svg",
+      icon: icons_path_final + "/layla_geometry_tool.svg",
       hotkey:"g",
       caption_optional: true,
       tooltip_core: <div>
@@ -696,7 +789,7 @@ export function LhasaComponent({
     Charge: { 
       caption:"Charge",
       raw_handler:() => switch_tool(new Lhasa.ChargeModifier()),
-      icon: icons_path_prefix + "/layla_charge_tool.svg",
+      icon: icons_path_final + "/layla_charge_tool.svg",
       hotkey:"v",
       caption_optional: true,
       tooltip_core: <div>
@@ -710,7 +803,7 @@ export function LhasaComponent({
     Delete: { 
       caption:"Delete",
       raw_handler:() => switch_tool(new Lhasa.DeleteTool()),
-      icon: icons_path_prefix + "/lhasa_delete_tool.svg",
+      icon: icons_path_final + "/lhasa_delete_tool.svg",
       hotkey:"delete",
       caption_optional: true,
       tooltip_core: <div>
@@ -729,7 +822,7 @@ export function LhasaComponent({
     C3: { 
       caption:"3-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPropaneRing)),
-      icon: icons_path_prefix + "/layla_3c.svg",
+      icon: icons_path_final + "/layla_3c.svg",
       hotkey:"3",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -737,7 +830,7 @@ export function LhasaComponent({
     C4: { 
       caption:"4-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloButaneRing)),
-      icon: icons_path_prefix + "/layla_4c.svg",
+      icon: icons_path_final + "/layla_4c.svg",
       hotkey:"4",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -745,7 +838,7 @@ export function LhasaComponent({
     C5: { 
       caption:"5-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloPentaneRing)),
-      icon: icons_path_prefix + "/layla_5c.svg",
+      icon: icons_path_final + "/layla_5c.svg",
       hotkey:"5",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -753,7 +846,7 @@ export function LhasaComponent({
     C6: { 
       caption:"6-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHexaneRing)),
-      icon: icons_path_prefix + "/layla_6c.svg",
+      icon: icons_path_final + "/layla_6c.svg",
       hotkey:"6",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -761,7 +854,7 @@ export function LhasaComponent({
     Arom6: { 
       caption:"6-Arom",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.BenzeneRing)),
-      icon: icons_path_prefix + "/layla_6arom.svg",
+      icon: icons_path_final + "/layla_6arom.svg",
       hotkey:["b","alt+6"],
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -769,7 +862,7 @@ export function LhasaComponent({
     C7: { 
       caption:"7-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloHeptaneRing)),
-      icon: icons_path_prefix + "/layla_7c.svg",
+      icon: icons_path_final + "/layla_7c.svg",
       hotkey:"7",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -777,7 +870,7 @@ export function LhasaComponent({
     C8: { 
       caption:"8-C",
       raw_handler:() => switch_tool(new Lhasa.StructureInsertion(Lhasa.LhasaStructure.CycloOctaneRing)),
-      icon: icons_path_prefix + "/layla_8c.svg",
+      icon: icons_path_final + "/layla_8c.svg",
       hotkey:"8",
       caption_optional: true,
       tooltip_core: carbon_ring_tooltip.current
@@ -870,7 +963,7 @@ export function LhasaComponent({
       caption_optional: false,
       tooltip_core: element_tool_tooltip.current
     }
-  }}, [icons_path_prefix]);
+  }}, [icons_path_final]);
 
   function wrap_handler(action_name: string, raw_handler: () => void) : () => void {
     return () => {
@@ -891,7 +984,7 @@ export function LhasaComponent({
   }, [tool_button_data]);
 
   let tool_buttons = useMemo(() => {
-    let m_tool_buttons = new Map<string,JSX.Element>();
+    let m_tool_buttons = new Map<string,React.JSX.Element>();
     for(const [k,v] of Object.entries(tool_button_data)) {
       const hotkey_to_infoblock = (hotkey: string | string[]) => {
         let hotkey_arr = typeof hotkey === 'string' ? [hotkey] : hotkey;
@@ -902,19 +995,19 @@ export function LhasaComponent({
           </span>)}
         </div>);
       };
-      m_tool_buttons.set(k, ToolButton({
-        onclick: () => {handler_map[k]()},
-        caption: v.caption,
-        caption_optional: v.caption_optional,
-        tooltip_body: <div className='lhasa_tooltip'>
+      m_tool_buttons.set(k, <ToolButton
+        onclick= {() => {handler_map[k]()}}
+        caption={v.caption}
+        caption_optional={v.caption_optional}
+        tooltip_body={<div className='lhasa_tooltip'>
           {v.tooltip_core}
           {v.hotkey && 
             hotkey_to_infoblock(v.hotkey)
           }
-        </div>,
-        icon: v.icon,
-        action_name: k
-      }));
+        </div>}
+        icon={v.icon}
+        action_name={k}
+      />);
     }
     return m_tool_buttons;
   }, [tool_button_data, handler_map]);
@@ -923,7 +1016,7 @@ export function LhasaComponent({
   let key_map = useMemo(() => {
     let ret = Object.fromEntries(
       Object.entries(tool_button_data)
-        .filter(([k,v]) => 'hotkey' in v)
+        .filter(([_k,v]) => 'hotkey' in v)
         .map(([k,v]) => [k, v['hotkey']])
     );
     // Those are not tool buttons. We handle them manually.
@@ -951,20 +1044,37 @@ export function LhasaComponent({
   const [editedSmiles, setEditedSmiles] = useState<number | null>(null);
 
 
-  const scale_mapper = (x) => {
+  const scale_mapper = (x: number) => {
     return theta_const ** (x + d_const) + c_const;
   };
 
-  const reverse_scale_mapper = (f) => {
+  const reverse_scale_mapper = (f: number) => {
     return Math.log(f - c_const) / Math.log(theta_const) - d_const;
   };
+
+  const getTargetOffset = (touch: React.Touch, event: React.TouchEvent<HTMLDivElement>) => {
+    const boundingRect = (event.target as Element).getBoundingClientRect();
+    return {
+      x: touch.clientX - boundingRect.left,
+      y: touch.clientY - boundingRect.top
+    };
+  }
 
   return (
     <>
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
           <StyledEngineProvider injectFirst>
-            <div className="lhasa_editor LhasaMuiStyling" ref={editorRef}>
+            <div 
+              className={"lhasa_editor LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")} 
+              ref={editorRef}
+              style={
+                {
+                  maxWidth: max_width ? max_width + 'px' : undefined,
+                  maxHeight: max_height ? max_height + 'px' : undefined
+                }
+              }
+            >
               {show_top_panel &&
                 <div className="horizontal_container">
                   <img src={icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} />
@@ -972,10 +1082,6 @@ export function LhasaComponent({
                     <h3>Welcome to Lhasa!</h3>
                     <p>
                       Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
-                      Lhasa is experimental software.
-                    </p>
-                    <p>
-                      This is a demo UI for development purposes.
                     </p>
                   </div>
                 </div>
@@ -992,7 +1098,7 @@ export function LhasaComponent({
                   open={editOpened}
                   anchorEl={editButtonRef.current}
                   onClose={() => setEditOpen(false)}
-                  className="LhasaMuiStyling"
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                 >
                   <MenuItem onClick={() => handler_map["Undo"]()} >
                     <Undo />
@@ -1015,7 +1121,7 @@ export function LhasaComponent({
                   open={optionOpened}
                   anchorEl={optionButtonRef.current}
                   onClose={() => setOptionOpen(false)}
-                  className="LhasaMuiStyling"
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                 >
                   <MenuItem>
                     <FormGroup>
@@ -1058,7 +1164,7 @@ export function LhasaComponent({
                   anchorEl={displayModeButtonRef.current}
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                   onClose={() => setDisplayModeOpen(false)}
-                  className="LhasaMuiStyling"
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                   //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                   >
                     <FormControl>
@@ -1133,7 +1239,7 @@ export function LhasaComponent({
                       scale={scale_mapper}
                       // valueLabelDisplay="auto"
                       // valueLabelFormat={(v) => v.toFixed(2)}
-                      onChange={(_ev, scale)=>{ lh.current?.set_scale(scale_mapper(scale))}}
+                      onChange={(_ev, scale)=>{ lh.current?.set_scale(scale_mapper(scale as number))}}
                     />
                     <IconButton
                       onClick={() => {const s = lh.current?.get_scale(); lh.current?.set_scale(s+0.05);}}
@@ -1179,7 +1285,7 @@ export function LhasaComponent({
                 { tool_buttons.get("X") }
                 </div>
                 <div 
-                  className="editor_canvas_container"
+                  className={"editor_canvas_container" + (dark_mode ? " lhasa_dark_mode" : "")}
                   onContextMenu={(e) => {e.preventDefault();}}
                   onMouseMove={(event) => {
                     // console.log('Mousemove');
@@ -1205,6 +1311,30 @@ export function LhasaComponent({
                   }}
                   onWheel={(event) => {
                     lh.current?.on_scroll(event.deltaX, event.deltaY, event.altKey);
+                  }}
+                  onTouchStart={(event) => {
+                    // console.log('touchstart');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_left_click(offset.x, offset.y, event.altKey, event.ctrlKey, event.shiftKey);
+                    }
+                  }}
+                  onTouchEnd={(event) => {
+                    // console.log('touchend');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_left_click_released(offset.x, offset.y, event.altKey, event.ctrlKey, event.shiftKey);
+                    }
+                  }}
+                  onTouchMove={(event) => {
+                    // console.log('touchmove');
+                    if (event.touches.length === 1) {
+                      const touch = event.touches[0];
+                      const offset = getTargetOffset(touch, event);
+                      lh.current?.on_hover(offset.x, offset.y, event.altKey, event.ctrlKey);
+                    }
                   }}
 
                   ref={svgRef}
@@ -1240,6 +1370,7 @@ export function LhasaComponent({
                           smiles={smiles_tuple[1]}
                           anchorEl={editorRef.current}
                           bansu_endpoint={bansu_endpoint}
+                          dark_mode={dark_mode}
                         />
                       }
                       <TextField 
@@ -1249,6 +1380,11 @@ export function LhasaComponent({
                         onBlur={(_event) => setEditedSmiles(null)}
                         onChange={(event) => lh.current.update_molecule_from_smiles(smiles_tuple[0], event.target.value)}
                       />
+                      {smiles_tuple[2] && 
+                        <div style={{alignSelf: "center"}}>
+                          {smiles_tuple[2][0]} {smiles_tuple[2][1]}
+                        </div>
+                      }
                       </div>)}
                   </div>
                   {/* <Divider /> */}
@@ -1274,7 +1410,7 @@ export function LhasaComponent({
               {showQedChecked &&
                 <div className="vertical_toolbar qed_panel">
                   <b>QED</b>
-                  <Tabs value={qedTab} onChange={(event, value) => setQedTab(value)}>
+                  <Tabs value={qedTab} onChange={(_event, value) => setQedTab(value)}>
 
                   {Array.from(qedInfo.keys()).map((mol_id) => {
                     // Counter-intuitively, a "Tab" here is what Gtk considers to be a tab label
