@@ -19,10 +19,8 @@ $lhasa_font_size: 0.65rem;
     /* Padding here breaks relative coords */
     /* padding: 5px; */
     cursor: default;
+    overflow-x: auto;
     user-select: none;
-    overflow: auto;
-    min-width: 480px;
-    min-height: 270px;
     // max-width: 700px;
     // min-width: 300px;
     // max-height: 500px;
@@ -58,8 +56,10 @@ $lhasa_font_size: 0.65rem;
 
 .lhasa_main_panel {
     flex: 1 1 auto;
-    min-height: 260px;
-    overflow: hidden;
+    min-width: 480px;
+    min-height: 270px;
+    overflow-y: auto;
+    // overflow: hidden;
     // overflow-y: auto;
 }
 
