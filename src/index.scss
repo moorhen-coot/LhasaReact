@@ -49,6 +49,15 @@ $lhasa_font_size: 0.65rem;
     padding: 2 * $lhasa_base_padding;
     width: fit-content;
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lhasa_main_panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .lhasa_editor.lhasa_dark_mode {

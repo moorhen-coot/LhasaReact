@@ -1071,7 +1071,6 @@ export function LhasaComponent({
               style={
                 {
                   maxWidth: max_width ? max_width + 'px' : undefined,
-                  // todo: fix max_height likely being broken
                   maxHeight: max_height ? max_height + 'px' : undefined
                 }
               }
@@ -1271,7 +1270,7 @@ export function LhasaComponent({
                   </div>
                 </>
               }
-              <div /*id_="main_horizontal_container"*/ className="horizontal_panel">
+              <div /*id_="main_horizontal_container"*/ className="horizontal_panel lhasa_main_panel">
                 <div /*id_="element_toolbar"*/ className="vertical_toolbar">
                 { tool_buttons.get("C") }
                 { tool_buttons.get("N") }
