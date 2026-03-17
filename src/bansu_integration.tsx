@@ -322,7 +322,7 @@ export function BansuButton(props: BansuPopupProps) {
                 anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
                 transformOrigin={{ vertical: 'center', horizontal: 'center'}}
             >
-                <div className={"vertical_popup lhasa_editor LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")} style={{maxWidth:  '400px', maxHeight: '400px'}}>
+                <div className={"vertical_popup lhasa_editor LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")} style={{maxWidth:  '400px', maxHeight: '500px'}}>
                     <div className="vertical_popup_title">
                         Restraints generation via Bansu
                     </div>
