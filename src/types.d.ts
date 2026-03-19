@@ -198,13 +198,9 @@ export interface ActiveTool extends ClassHandle {
 }
 
 export type SizingInfo = {
-  requested_size: number
+  width: number,
+  height: number
 };
-
-export interface MeasurementDirectionValue<T extends number> {
-  value: T;
-}
-export type MeasurementDirection = MeasurementDirectionValue<0>|MeasurementDirectionValue<1>;
 
 export type QEDInfo = {
   number_of_hydrogen_bond_acceptors: number,
@@ -272,7 +268,8 @@ export interface Canvas extends ImplWidgetCoreData {
   on_left_click_released(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
   on_right_click(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
   on_right_click_released(_0: number, _1: number, _2: boolean, _3: boolean, _4: boolean): void;
-  measure(_0: MeasurementDirection): SizingInfo;
+  measure(): SizingInfo;
+  set_minimum_dimensions(_0: number, _1: number): void;
   connect(_0: EmbindString, _1: any): void;
 }
 
@@ -348,7 +345,6 @@ interface EmbindModule {
     new(): ActiveTool;
   };
   make_active_tool(_0: any): ActiveTool;
-  MeasurementDirection: {HORIZONTAL: MeasurementDirectionValue<0>, VERTICAL: MeasurementDirectionValue<1>};
   ImplWidgetCoreData: {};
   SmilesMap: {
     new(): SmilesMap;

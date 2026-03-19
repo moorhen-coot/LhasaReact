@@ -80,6 +80,9 @@ const d_top = (min_scale-1)**2 / (min_scale+max_scale-2);
 const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
 const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
 
+const lhasa_canvas_min_width = 480;
+const lhasa_canvas_min_height = 270;
+
 export interface LhasaComponentProps {
   /// Provides Lhasa WebAssembly module to the component. Use LhasaEmbedder if you want to load the module automatically.
   Lhasa: MainModule | any;
@@ -240,28 +243,13 @@ export function LhasaComponent({
     const ren = new Lhasa.Renderer(text_measure_function, text_measurement_cache);
     lh.render(ren);
     const commands = ren.get_commands();
-    const get_width = () => {
-      const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
-      const min_size = 480;
-      if(measured < min_size) {
-        console.warn(`Horizontal canvas size measurement below minimum: ${measured}`);
-        return min_size;
-      }
-      return measured;
-    };
-    const get_height = () => {
-      const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
-      const min_size = 270;
-      if(measured < min_size) {
-        console.warn(`Vertical canvas size measurement below minimum: ${measured}`);
-        return min_size;
-      }
-      return measured;
-    };
+
+    // The measure function now ensures that the canvas has at least the minimum dimensions.
+    const svg_dim = lh.measure();
     const svg = D3Create("svg")
       .attr("class", "lhasa_drawing")
-      .attr("width", get_width())
-      .attr("height", get_height());
+      .attr("width", svg_dim.width)
+      .attr("height", svg_dim.height);
   
     for(var i = 0; i < commands.size(); i++) {
       const command = commands.get(i);
@@ -401,6 +389,7 @@ export function LhasaComponent({
 
   const setupLhasaCanvas = (tmc: TextMeasurementCache) => {
     const lh = new Lhasa.Canvas();
+    lh.set_minimum_dimensions(lhasa_canvas_min_width ,lhasa_canvas_min_height);
     lh.connect("queue_redraw", () => {
       const node = on_render(lh, tmc, text_measurement_worker_div);
       setSvgNode(node);
