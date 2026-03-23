@@ -1,9 +1,10 @@
 import React from 'react'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 
 import ReactDOM from 'react-dom/client'
 import { LhasaComponent } from './Lhasa.tsx'
 import './index.scss'
+import './main.scss'
 // import { Window } from './index';
 import { FormControlLabel, Switch, Grid, Collapse, TextField, Checkbox } from '@mui/material'
 
@@ -44,6 +45,27 @@ export function App() {
   const [maxHeightConstraint, setMaxHeightConstraint] = useState(1024);
 
   const [isLhasaAttached, setLhasaAttached] = useState(window.LhasaModule !== undefined);
+  const dragging = useRef(false);
+  const dragStart = useRef({x: 0, y: 0, w: 0, h: 0});
+
+  const onResizeHandlePointerDown = useCallback((e: React.PointerEvent) => {
+    dragging.current = true;
+    dragStart.current = {x: e.clientX, y: e.clientY, w: widthConstraint, h: heightConstraint};
+    setWidthConstraintEnabled(true);
+    setHeightConstraintEnabled(true);
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [widthConstraint, heightConstraint]);
+
+  const onResizeHandlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    const {x, y, w, h} = dragStart.current;
+    setWidthConstraint(Math.max(0, w + e.clientX - x));
+    setHeightConstraint(Math.max(0, h + e.clientY - y));
+  }, []);
+
+  const onResizeHandlePointerUp = useCallback(() => {
+    dragging.current = false;
+  }, []);
 
   const handleLhasaAttached = useCallback(() => {
       if (window.LhasaModule !== undefined) {
@@ -154,7 +176,15 @@ export function App() {
         </div>
       </Collapse>
     </div>
-     {showLhasa ? MaybeLhasaComponent : null}
+     {showLhasa ? <div className={darkMode ? 'lhasa_dark_mode' : undefined} style={{position: 'relative', width: 'fit-content'}}>
+       {MaybeLhasaComponent}
+       {showSizingConstraints && <div
+         className="lhasa_resize_handle"
+         onPointerDown={onResizeHandlePointerDown}
+         onPointerMove={onResizeHandlePointerMove}
+         onPointerUp={onResizeHandlePointerUp}
+       />}
+     </div> : null}
     </>
   )
 }
