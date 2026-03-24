@@ -1,13 +1,12 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type UserConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import crossOriginIsolation from 'vite-plugin-cross-origin-isolation'
 import topLevelAwait from 'vite-plugin-top-level-await'
-import { readFileSync } from 'fs'
 
 const isLibBuild = process.env.BUILD_MODE === 'lib';
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => {
+export default defineConfig(async (_env) => {
   const plugins = [
     react(),
     crossOriginIsolation(),
@@ -24,7 +23,7 @@ export default defineConfig(async () => {
     plugins.push(dts({ copyDtsFiles: true }));
   }
 
-  return {
+  const config: UserConfig = {
     server: {
       headers: {
         // This is for the backend, I think
@@ -55,7 +54,6 @@ export default defineConfig(async () => {
     css: {
       preprocessorOptions: {
         scss: {
-          api: 'modern-compiler', // or "modern", "legacy"
           importers: [
             // ...
           ],
@@ -80,4 +78,5 @@ export default defineConfig(async () => {
       }
     } : {}),
   };
+  return config;
 })
