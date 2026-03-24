@@ -17,6 +17,7 @@ import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl,
 import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
+import { AboutPopup } from './about_popup';
 import { parseInchikeyDatabase } from './inchikey_database_parse';
 
 type ToolButtonProps = {
@@ -79,6 +80,9 @@ const d_bottom = (1 - max_scale) / (min_scale - 1);
 const d_top = (min_scale-1)**2 / (min_scale+max_scale-2);
 const d_const = (Math.log(d_top))/(2 * Math.log(d_bottom));
 const theta_const = (max_scale -1)**2 / (min_scale - 1)**2;
+
+const lhasa_canvas_min_width = 480;
+const lhasa_canvas_min_height = 270;
 
 export interface LhasaComponentProps {
   /// Provides Lhasa WebAssembly module to the component. Use LhasaEmbedder if you want to load the module automatically.
@@ -240,28 +244,13 @@ export function LhasaComponent({
     const ren = new Lhasa.Renderer(text_measure_function, text_measurement_cache);
     lh.render(ren);
     const commands = ren.get_commands();
-    const get_width = () => {
-      const measured = lh.measure(Lhasa.MeasurementDirection.HORIZONTAL).requested_size;
-      const min_size = 480;
-      if(measured < min_size) {
-        // console.warn(`Horizontal canvas size measurement below minimum: ${measured}`);
-        return min_size;
-      }
-      return measured;
-    };
-    const get_height = () => {
-      const measured = lh.measure(Lhasa.MeasurementDirection.VERTICAL).requested_size;
-      const min_size = 270;
-      if(measured < min_size) {
-        // console.warn(`Vertical canvas size measurement below minimum: ${measured}`);
-        return min_size;
-      }
-      return measured;
-    };
+
+    // The measure function now ensures that the canvas has at least the minimum dimensions.
+    const svg_dim = lh.measure();
     const svg = D3Create("svg")
       .attr("class", "lhasa_drawing")
-      .attr("width", get_width())
-      .attr("height", get_height());
+      .attr("width", svg_dim.width)
+      .attr("height", svg_dim.height);
   
     for(var i = 0; i < commands.size(); i++) {
       const command = commands.get(i);
@@ -401,6 +390,7 @@ export function LhasaComponent({
 
   const setupLhasaCanvas = (tmc: TextMeasurementCache) => {
     const lh = new Lhasa.Canvas();
+    lh.set_minimum_dimensions(lhasa_canvas_min_width ,lhasa_canvas_min_height);
     lh.connect("queue_redraw", () => {
       const node = on_render(lh, tmc, text_measurement_worker_div);
       setSvgNode(node);
@@ -1037,6 +1027,11 @@ export function LhasaComponent({
 
   const displayModeButtonRef = useRef<HTMLLIElement | null>(null);
   const [displayModeOpened, setDisplayModeOpen] = useState<boolean>(false);
+
+  const helpButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [helpOpened, setHelpOpened] = useState<boolean>(false);
+  const aboutButtonRef = useRef<HTMLLIElement | null>(null);
+  const [aboutOpened, setAboutOpen] = useState<boolean>(false);
   
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
   
@@ -1087,7 +1082,7 @@ export function LhasaComponent({
                   <div /*id_="lhasa_hello"*/ >
                     <h3>Welcome to Lhasa!</h3>
                     <p>
-                      Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
+                      Lhasa is the web (React.JS + WebAssembly) port of Layla — Coot's Ligand Builder.<br/>
                     </p>
                   </div>
                 </div>
@@ -1197,6 +1192,33 @@ export function LhasaComponent({
                       </RadioGroup>
                     </FormControl>
                   </Popover>
+                </Menu>
+                <Button
+                  ref={helpButtonRef}
+                  disableElevation
+                  onClick={(_evt) => setHelpOpened((prev) => !prev)}
+                >
+                  Help
+                </Button>
+                <Menu
+                  open={helpOpened}
+                  anchorEl={helpButtonRef.current}
+                  onClose={() => setHelpOpened(false)}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                >
+                  <MenuItem
+                    ref={aboutButtonRef}
+                    onClick={(_evt) => setAboutOpen(true)}
+                  >
+                    About
+                  </MenuItem>
+                  <AboutPopup
+                    dark_mode={dark_mode}
+                    icons_path_prefix={icons_path_prefix}
+                    open={aboutOpened}
+                    anchorEl={aboutButtonRef.current}
+                    onClose={() => setAboutOpen(false)}
+                  />
                 </Menu>
               </div>
               <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">

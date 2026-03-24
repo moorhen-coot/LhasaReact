@@ -1,0 +1,31 @@
+.lhasa_resize_handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    background:
+        linear-gradient(135deg,
+            transparent 0%, transparent 50%,
+            rgba(0, 0, 0, 0.24) 50%, rgba(0, 0, 0, 0.24) 55%,
+            transparent 55%, transparent 70%,
+            rgba(0, 0, 0, 0.24) 70%, rgba(0, 0, 0, 0.24) 75%,
+            transparent 75%, transparent 90%,
+            rgba(0, 0, 0, 0.24) 90%, rgba(0, 0, 0, 0.24) 95%,
+            transparent 95%);
+    touch-action: none;
+}
+
+.lhasa_dark_mode .lhasa_resize_handle {
+    $bright: rgba(255, 255, 255, 0.6);
+    background:
+        linear-gradient(135deg,
+            transparent 0%, transparent 50%,
+            $bright 50%, $bright 55%,
+            transparent 55%, transparent 70%,
+            $bright 70%, $bright 75%,
+            transparent 75%, transparent 90%,
+            $bright 90%, $bright 95%,
+            transparent 95%);
+}
