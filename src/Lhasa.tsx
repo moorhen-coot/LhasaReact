@@ -17,6 +17,7 @@ import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl,
 import { Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
+import { AboutPopup } from './about_popup';
 import { parseInchikeyDatabase } from './inchikey_database_parse';
 
 type ToolButtonProps = {
@@ -1026,6 +1027,11 @@ export function LhasaComponent({
 
   const displayModeButtonRef = useRef<HTMLLIElement | null>(null);
   const [displayModeOpened, setDisplayModeOpen] = useState<boolean>(false);
+
+  const helpButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [helpOpened, setHelpOpened] = useState<boolean>(false);
+  const aboutButtonRef = useRef<HTMLLIElement | null>(null);
+  const [aboutOpened, setAboutOpen] = useState<boolean>(false);
   
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
   
@@ -1076,7 +1082,7 @@ export function LhasaComponent({
                   <div /*id_="lhasa_hello"*/ >
                     <h3>Welcome to Lhasa!</h3>
                     <p>
-                      Lhasa is a WebAssemby port of Layla - Coot's Ligand Editor.<br/>
+                      Lhasa is the web (React.JS + WebAssembly) port of Layla — Coot's Ligand Builder.<br/>
                     </p>
                   </div>
                 </div>
@@ -1186,6 +1192,33 @@ export function LhasaComponent({
                       </RadioGroup>
                     </FormControl>
                   </Popover>
+                </Menu>
+                <Button
+                  ref={helpButtonRef}
+                  disableElevation
+                  onClick={(_evt) => setHelpOpened((prev) => !prev)}
+                >
+                  Help
+                </Button>
+                <Menu
+                  open={helpOpened}
+                  anchorEl={helpButtonRef.current}
+                  onClose={() => setHelpOpened(false)}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                >
+                  <MenuItem
+                    ref={aboutButtonRef}
+                    onClick={(_evt) => setAboutOpen(true)}
+                  >
+                    About
+                  </MenuItem>
+                  <AboutPopup
+                    dark_mode={dark_mode}
+                    icons_path_prefix={icons_path_prefix}
+                    open={aboutOpened}
+                    anchorEl={aboutButtonRef.current}
+                    onClose={() => setAboutOpen(false)}
+                  />
                 </Menu>
               </div>
               <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">
