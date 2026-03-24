@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import crossOriginIsolation from 'vite-plugin-cross-origin-isolation'
 import topLevelAwait from 'vite-plugin-top-level-await'
+import { readFileSync } from 'fs'
 
 const isLibBuild = process.env.BUILD_MODE === 'lib';
 

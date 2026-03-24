@@ -1,5 +1,4 @@
 import { Popover, Button } from "@mui/material";
-import { version } from '../package.json';
 
 import './index.scss';
 import './customize_mui.scss';
@@ -53,7 +52,8 @@ export function AboutPopup(props: AboutPopupProps) {
                     <p>
                         <b>License:</b> GPL v3
                     </p>
-                    <p><b>Version:</b> {version}</p>
+                    {/* Unfortunately, no other method of pasting the version number works in Moorhen. */}
+                    <p><b>Version:</b>0.4.0-dev</p>
                     <p>Copyright &copy; Global Phasing Ltd. 2024 - 2026</p>
                     <Button variant="outlined" onClick={props.onClose}>Close</Button>
                 </div>
