@@ -52,6 +52,7 @@ export function AboutPopup(props: AboutPopupProps) {
                     <p>
                         <b>License:</b> GPL v3
                     </p>
+                    {/* TODO: Add version info */}
                     <p>Copyright &copy; Global Phasing Ltd. 2024 - 2026</p>
                     <Button variant="outlined" onClick={props.onClose}>Close</Button>
                 </div>
