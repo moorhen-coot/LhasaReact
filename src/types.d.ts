@@ -362,6 +362,7 @@ interface EmbindModule {
     new(): Canvas;
   };
   append_from_smiles(_0: Canvas, _1: EmbindString): number;
+  append_from_import(_0: Canvas, _1: EmbindString, _2: CheminformaticsFileFormat): number;
   append_from_pickle_base64(_0: Canvas, _1: EmbindString): number;
   export_mol(_0: Canvas, _1: number, _2: CheminformaticsFileFormat): string;
 }
