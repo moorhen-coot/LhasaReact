@@ -1019,6 +1019,9 @@ export function LhasaComponent({
     return ret;
   }, [tool_button_data]);
 
+  const fileButtonRef = useRef<HTMLButtonElement | null>(null)
+  const [fileOpened, setFileOpen] = useState<boolean>(false);
+
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const [editOpened, setEditOpen] = useState<boolean>(false);
 
@@ -1088,7 +1091,22 @@ export function LhasaComponent({
                 </div>
               }
               <div className="horizontal_toolbar">
-                <Button 
+                <Button
+                  ref={fileButtonRef}
+                  disableElevation
+                  onClick={(_evt) => setFileOpen((prev) => !prev)}
+                >
+                  File
+                </Button>
+                <Menu
+                  open={fileOpened}
+                  anchorEl={fileButtonRef.current}
+                  onClose={() => setFileOpen(false)}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                >
+                  {/* TODO: File menu options (import/export) */}
+                </Menu>
+                <Button
                   ref={editButtonRef}
                   disableElevation
                   onClick={(_evt) => setEditOpen((prev) => !prev)}
