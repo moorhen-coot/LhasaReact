@@ -4,7 +4,7 @@ import { HotKeys } from "react-hotkeys"
 import { create as D3Create } from 'd3';
 import './index.scss';
 import './customize_mui.scss';
-import { Canvas, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache, TextStyle, TextSpanVector, GraphenePoint } from './types';
+import { Canvas, CheminformaticsFileFormat, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache, TextStyle, TextSpanVector, GraphenePoint } from './types';
 import type { Text as LhasaText } from './types';
 import type { Selection } from 'd3';
 
@@ -14,7 +14,7 @@ type SvgSelection = Selection<SVGSVGElement, undefined, null, undefined>;
 /// d3 selection of an SVG child element (e.g. `<text>`, `<tspan>`). Uses `any` due to d3's invariant generics.
 type SvgChildSelection = Selection<any, any, any, any>;
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
-import { Redo, Undo } from '@mui/icons-material';
+import { ChevronRight, FileDownload, FileUpload, Image, Redo, Undo } from '@mui/icons-material';
 import { QedPropertyInfobox } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
 import { AboutPopup } from './about_popup';
@@ -1022,6 +1022,75 @@ export function LhasaComponent({
   const fileButtonRef = useRef<HTMLButtonElement | null>(null)
   const [fileOpened, setFileOpen] = useState<boolean>(false);
 
+  const importMenuItemRef = useRef<HTMLLIElement | null>(null);
+  const [importOpened, setImportOpen] = useState<boolean>(false);
+
+  const exportMenuItemRef = useRef<HTMLLIElement | null>(null);
+  const [exportOpened, setExportOpen] = useState<boolean>(false);
+
+  // This sub-menu appears when there are multiple molecules on the canvas and the user has chosen the export format 
+  // (by clicking on a format sub-menu in the export menu) - and now needs to choose the molecule to export.
+  const [exportMolMenuAnchor, setExportMolMenuAnchor] = useState<HTMLLIElement | null>(null);
+  const [exportMolMenuFormat, setExportMolMenuFormat] = useState<{format: CheminformaticsFileFormat, extension: string} | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [importFormat, setImportFormat] = useState<CheminformaticsFileFormat | null>(null);
+
+  const fileFormats = [
+    { name: "Molfile", format: Lhasa.CheminformaticsFileFormat.Molfile, extension: ".mol" },
+    { name: "SDF", format: Lhasa.CheminformaticsFileFormat.SDF, extension: ".sdf" },
+    { name: "InChI", format: Lhasa.CheminformaticsFileFormat.InChI, extension: ".inchi" },
+    { name: "CDXML", format: Lhasa.CheminformaticsFileFormat.CDXML, extension: ".cdxml" },
+  ];
+
+  function handleImportFile(format: CheminformaticsFileFormat) {
+    setImportFormat(format);
+    setImportOpen(false);
+    setFileOpen(false);
+    fileInputRef.current?.click();
+  }
+
+  function onFileSelected(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file || !importFormat) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      try {
+        Lhasa.append_from_import(lh.current, content, importFormat);
+      } catch (err) {
+        console.warn("Could not import molecule:", err);
+        setStatusText(`Import failed. ${err instanceof Error ? err.message : String(err)}`);
+      }
+    };
+    reader.readAsText(file);
+    // Reset event target (our hidden input element) so the same file can be re-selected again
+    event.target.value = '';
+  }
+
+  function handleExportMol(molId: number, smilesStr: string, format: CheminformaticsFileFormat, extension: string) {
+    try {
+      const content = Lhasa.export_mol(lh.current, molId, format);
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      // This element will be garbage-collected because it's detached from the document.
+      // We don't have to clean up later.
+      const a = document.createElement('a');
+      a.href = url;
+      // Sanitize SMILES string for use as a filename (e.g. "O=C(C)Oc1ccccc1" -> "O_C_C_Oc1ccccc1")
+      a.download = smilesStr.replace(/[^a-zA-Z0-9]/g, '_') + extension;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.warn("Could not export molecule:", err);
+      setStatusText(`Export failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    setExportMolMenuAnchor(null);
+    setExportMolMenuFormat(null);
+    setExportOpen(false);
+    setFileOpen(false);
+  }
+
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const [editOpened, setEditOpen] = useState<boolean>(false);
 
@@ -1098,14 +1167,111 @@ export function LhasaComponent({
                 >
                   File
                 </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={onFileSelected}
+                />
                 <Menu
                   open={fileOpened}
                   anchorEl={fileButtonRef.current}
-                  onClose={() => setFileOpen(false)}
+                  onClose={() => { setFileOpen(false); setImportOpen(false); setExportOpen(false); }}
                   className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
                 >
-                  {/* TODO: File menu options (import/export) */}
+                  <MenuItem
+                    ref={importMenuItemRef}
+                    onClick={() => setImportOpen(true)}
+                  >
+                    <FileUpload /> Import from... <ChevronRight />
+                  </MenuItem>
+                  <MenuItem
+                    ref={exportMenuItemRef}
+                    onClick={() => {
+                      if (smiles.length === 0) {
+                        setStatusText("Nothing to be exported!");
+                        setFileOpen(false);
+                        setExportOpen(false);
+                      } else {
+                        setExportOpen(true);
+                      }
+                    }}
+                  >
+                    <FileDownload /> Export into... <ChevronRight />
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      const liveSvg = svgRef.current?.querySelector("svg");
+                      if (!liveSvg) {
+                        setStatusText("Nothing to be exported!");
+                      } else {
+                        const serializer = new XMLSerializer();
+                        const svgString = serializer.serializeToString(liveSvg);
+                        const blob = new Blob([svgString], { type: 'image/svg+xml' });
+                        const url = URL.createObjectURL(blob);
+                        // This element will be garbage-collected because it's detached from the document.
+                        // We don't have to clean up later.
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'lhasa_canvas.svg';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }
+                      setFileOpen(false);
+                    }}
+                  >
+                    <Image /> Export SVG
+                  </MenuItem>
                 </Menu>
+                <Popover
+                  open={importOpened}
+                  anchorEl={importMenuItemRef.current}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  onClose={() => setImportOpen(false)}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                >
+                  {fileFormats.map((fmt) => (
+                    <MenuItem key={fmt.name} onClick={() => handleImportFile(fmt.format)}>
+                      {fmt.name} ({fmt.extension})
+                    </MenuItem>
+                  ))}
+                </Popover>
+                <Popover
+                  open={exportOpened}
+                  anchorEl={exportMenuItemRef.current}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  onClose={() => { setExportOpen(false); setExportMolMenuAnchor(null); setExportMolMenuFormat(null); }}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                >
+                  {fileFormats.map((fmt) => (
+                    smiles.length === 1
+                      ? <MenuItem key={fmt.name} onClick={() => handleExportMol(smiles[0][0], smiles[0][1], fmt.format, fmt.extension)}>
+                          {fmt.name} ({fmt.extension})
+                        </MenuItem>
+                      : <MenuItem
+                          key={fmt.name}
+                          onClick={(evt) => {
+                            setExportMolMenuAnchor(evt.currentTarget);
+                            setExportMolMenuFormat({ format: fmt.format, extension: fmt.extension });
+                          }}
+                        >
+                          {fmt.name} ({fmt.extension}) <ChevronRight />
+                        </MenuItem>
+                  ))}
+                </Popover>
+                <Popover
+                  open={exportMolMenuAnchor !== null && exportMolMenuFormat !== null}
+                  anchorEl={exportMolMenuAnchor}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  onClose={() => { setExportMolMenuAnchor(null); setExportMolMenuFormat(null); }}
+                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                >
+                  {smiles.map(([molId, smilesStr]) => (
+                    <MenuItem key={molId} onClick={() => handleExportMol(molId, smilesStr, exportMolMenuFormat!.format, exportMolMenuFormat!.extension)}>
+                      {smilesStr}
+                    </MenuItem>
+                  ))}
+                </Popover>
                 <Button
                   ref={editButtonRef}
                   disableElevation
@@ -1176,7 +1342,7 @@ export function LhasaComponent({
                       ref={displayModeButtonRef}
                       onClick={(_evt) => setDisplayModeOpen((prev) => !prev)}
                   >
-                      Display Mode...
+                      Display Mode... <ChevronRight />
                   </MenuItem>
                   <Popover
                   open={displayModeOpened}
