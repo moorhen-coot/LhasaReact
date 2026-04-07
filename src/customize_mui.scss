@@ -37,6 +37,28 @@
     @include normalize_padding;
 }
 
+// Unclear if this does anything
+// .LhasaMuiStyling .MuiSelect-root {
+//     @include normalize_text;
+//     @include normalize_padding;
+// }
+
+.LhasaMuiStyling .MuiSelect-select {
+    @include normalize_text;
+    @include normalize_padding;
+}
+
+.LhasaMuiStyling.lhasa_dark_mode .MuiSelect-select {
+    color: index.$lhasa_text_color_dark;
+    background-color: index.$lhasa_background_color_dark;
+}
+
+// Unclear if this does anything
+// .LhasaMuiStyling .MuiMenuItem-root {
+//     @include normalize_text;
+//     @include normalize_padding;
+// }
+
 .LhasaMuiStyling.lhasa_dark_mode .MuiButtonBase-root {
     color: index.$lhasa_text_color_dark;
     border-color: index.$lhasa_border_color_dark;
@@ -92,6 +114,7 @@
     margin-top: index.$lhasa_base_padding * 2;
 }
 
-// // .LhasaMuiStyling .MuiSwitch-root {
-
+// Breaks Switches
+// .LhasaMuiStyling .MuiSwitch-root {
+//     @include normalize_padding;
 // }

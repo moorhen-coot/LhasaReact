@@ -1,6 +1,6 @@
 import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel, Switch, Select, MenuItem } from "@mui/material";
 // import Grid from '@mui/material/Grid2';
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 // import WebSocket from 'ws';
 // import * as http from 'http';
 
@@ -44,7 +44,19 @@ export function BansuButton(props: BansuPopupProps) {
 
     const [selectedMolIndex, setSelectedMolIndex] = useState<number>(0);
 
-    const [_workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
+    // Trigger for the spawn effect. Incremented (not watched by value) so that
+    // intermediate setState calls inside the async pipeline don't re-fire (and thus don't cleanup) the effect.
+    const [spawnCounter, setSpawnCounter] = useState<number>(0);
+
+    const abortRef = useRef<AbortController | null>(null);
+
+    const cancelJob = () => {
+        if (abortRef.current) {
+            abortRef.current.abort();
+            abortRef.current = null;
+        }
+        setState(BansuPopupState.UserConfig);
+    };
 
     const resetState = () => {
         setState(BansuPopupState.UserConfig);
@@ -78,18 +90,21 @@ export function BansuButton(props: BansuPopupProps) {
                     <div className="horizontal_container_centered">
                         Molecule
                         <Select
-                            size="small"
+                            // size="small"
                             value={Math.min(selectedMolIndex, props.smiles_list.length - 1)}
                             onChange={(event) => setSelectedMolIndex(event.target.value as number)}
                             disabled={props.smiles_list.length <= 1}
-                            style={{flex: 1, marginLeft: '8px'}}
+                            // This appears to fix alignment of text in the drop-down
+                            className={"LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")}
+                            MenuProps={{ className: "LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "") }}
+                            style={{flex: 1}}
                         >
                             {props.smiles_list.map(([_molId, smilesStr], index) => (
                                 <MenuItem key={index} value={index}>{smilesStr}</MenuItem>
                             ))}
                         </Select>
                     </div>
-                    <div className="horizontal_container_centered">
+                    <div className="horizontal_container_centered children_expanded" >
                         Bansu instance
                         <Input defaultValue={bansuEndpoint} placeholder={props.bansu_endpoint} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                             if(event.target.value !== "") {
@@ -131,7 +146,7 @@ export function BansuButton(props: BansuPopupProps) {
                             Cancel
                         </Button>
                         <Button 
-                            onClick={() => setState(BansuPopupState.SpawningJob)}
+                            onClick={() => { setState(BansuPopupState.SpawningJob); setSpawnCounter(c => c + 1); }}
                             variant="contained"
                             disabled={!userConsent}
                         >
@@ -143,12 +158,14 @@ export function BansuButton(props: BansuPopupProps) {
                 return <div className="vertical_panel">
                     Spawning Bansu job...
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
+                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
                 </div>;
             case BansuPopupState.ConnectingOnWebsocket:
                 return <div className="vertical_panel">
                     Estabilishing event listener connection...
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
+                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
                 </div>;
             case BansuPopupState.Queued:
                 return <div className="vertical_panel">
@@ -157,12 +174,14 @@ export function BansuButton(props: BansuPopupProps) {
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
                     <small>Position in queue: {posInQueue}</small>
+                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
                 </div>;
             case BansuPopupState.Waiting:
                 return <div className="vertical_panel">
                     Waiting for Bansu job to complete...
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
+                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
                 </div>;
             case BansuPopupState.Ready:
                 return <div className="vertical_panel">
@@ -218,15 +237,17 @@ export function BansuButton(props: BansuPopupProps) {
     }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue, userConsent, acedrgFlagP, acedrgFlagZ, selectedMolIndex, props.smiles_list]);
 
     useEffect(() => {
-        // return;
-        if(popoverOpened && state == BansuPopupState.SpawningJob) {
-            let promise = new Promise<void>(async () => {
-                setState(BansuPopupState.SpawningJob);
+        if(spawnCounter === 0) return;
+        {
+            const abort = new AbortController();
+            abortRef.current = abort;
+
+            (async () => {
                 const postData = JSON.stringify({
                     'smiles': props.smiles_list[selectedMolIndex][1],
                     'commandline_args': [...(acedrgFlagP ? ['-p'] : []), ...(acedrgFlagZ ? ['-z'] : [])]
                 });
-    
+
                 try {
                     console.log("Spawning Bansu job with POST data: ", postData);
                     const res = await fetch(`${bansuEndpoint}/run_acedrg`, {
@@ -235,15 +256,18 @@ export function BansuButton(props: BansuPopupProps) {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        // mode: 'no-cors'
+                        signal: abort.signal,
                     });
+                    if (abort.signal.aborted) return;
                     const jsonData = await res.json();
+                    if (abort.signal.aborted) return;
                     console.log("Got json from /run_acedrg: ", jsonData);
                     if(jsonData.job_id === null) {
                         let emsg = `Server returned null job id / no job id. Error message is: ${jsonData.error_message}`;
                         console.error(emsg);
                         setErrorString(emsg);
                         setState(BansuPopupState.Error);
+                        return;
                     }
                     setJobId(jsonData.job_id);
                     setState(BansuPopupState.ConnectingOnWebsocket);
@@ -264,29 +288,29 @@ export function BansuButton(props: BansuPopupProps) {
                     // Connection opened
                     socket.addEventListener("open", (_event) => {
                         console.log("Connection on WebSocket established.");
-                        // setState(BansuPopupState.Waiting);
                     });
 
                     socket.addEventListener("close", (_event) => {
                         console.log("Connection on WebSocket closed.");
-                        // process.exit(0);
                     });
 
                     socket.addEventListener("error", (event) => {
                         console.error("Connection on WebSocket errored-out: ", event);
+                        abortRef.current = null;
                         setErrorString(`WebSocket error: ${event}`);
                         setState(BansuPopupState.Error);
                     });
 
                     // Listen for messages
                     socket.addEventListener("message", (event) => {
-                        //console.debug("Websocket message from server ", event.data);
                         const json = JSON.parse(event.data);
                         console.debug("Got JSON from WS: ", json);
                         if(json.status == "Failed") {
+                            abortRef.current = null;
                             setErrorString(`Job failed:\n Failure reason: ${json.failure_reason}\n ${json.error_message ? "Error message: " + json.error_message + "\n ": ""} Output:${JSON.stringify(json.job_output)}`);
                             setState(BansuPopupState.Error);
                         } else if(json.status == "Finished") {
+                            abortRef.current = null;
                             setFinishedJobOutput(JSON.stringify(json.job_output));
                             setState(BansuPopupState.Ready);
                         } else if(json.status == "Pending") {
@@ -297,22 +321,30 @@ export function BansuButton(props: BansuPopupProps) {
                         }
                     });
 
+                    // Close the WebSocket if the abort signal fires (e.g. user clicks Cancel)
+                    abort.signal.addEventListener("abort", () => {
+                        console.log("Aborting WebSocket connection (if it is still opened).");
+                        socket.close();
+                    });
+
                 } catch(exception) {
+                    if (abort.signal.aborted) return;
+                    abortRef.current = null;
                     console.error(`Problem with HTTP request: ${exception}`);
                     setErrorString(`${exception}`);
                     setState(BansuPopupState.Error);
                 }
-            });
-            setWorkerPromise(promise);
+            })();
         }
 
         return () => {
-            // todo: cleanup
-            // if(workerPromise) {
-            //     workerPromise
-            // }
+            if (abortRef.current) {
+                console.log("Aborting ongoing Bansu connection pipeline. HTTP(S)/WebSocket connections shall be terminated.");
+                abortRef.current.abort();
+                abortRef.current = null;
+            }
         };
-    }, [state, popoverOpened]);
+    }, [spawnCounter]);
 
     return (
         <StyledEngineProvider injectFirst>
