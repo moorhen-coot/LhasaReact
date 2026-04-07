@@ -17,6 +17,11 @@ export interface ClassHandle {
   [Symbol.dispose](): void;
   clone(): this;
 }
+export interface CheminformaticsFileFormatValue<T extends number> {
+  value: T;
+}
+export type CheminformaticsFileFormat = CheminformaticsFileFormatValue<0>|CheminformaticsFileFormatValue<1>|CheminformaticsFileFormatValue<2>|CheminformaticsFileFormatValue<3>;
+
 export interface DisplayModeValue<T extends number> {
   value: T;
 }
@@ -274,6 +279,7 @@ export interface Canvas extends ImplWidgetCoreData {
 }
 
 interface EmbindModule {
+  CheminformaticsFileFormat: {Molfile: CheminformaticsFileFormatValue<0>, SDF: CheminformaticsFileFormatValue<1>, InChI: CheminformaticsFileFormatValue<2>, CDXML: CheminformaticsFileFormatValue<3>};
   DisplayMode: {Standard: DisplayModeValue<0>, AtomIndices: DisplayModeValue<1>, AtomNames: DisplayModeValue<2>};
   DrawingCommandVector: {
     new(): DrawingCommandVector;
@@ -356,7 +362,9 @@ interface EmbindModule {
     new(): Canvas;
   };
   append_from_smiles(_0: Canvas, _1: EmbindString): number;
+  append_from_import(_0: Canvas, _1: EmbindString, _2: CheminformaticsFileFormat): number;
   append_from_pickle_base64(_0: Canvas, _1: EmbindString): number;
+  export_mol(_0: Canvas, _1: number, _2: CheminformaticsFileFormat): string;
 }
 
 export type MainModule = WasmModule & EmbindModule;
