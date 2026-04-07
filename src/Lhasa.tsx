@@ -94,6 +94,7 @@ export interface LhasaComponentProps {
   /// Used for providing a list of molecules to be loaded on initialization.
   rdkit_molecule_pickle_list?: { pickle: string; id: string }[];
   /// When Lhasa is embedded, what is it embedded in?
+  /// This needs to be set in order for the "Send to {name_of_host_program}" button to appear.
   name_of_host_program?: string | null;
   /// Called when the user presses the "Send to ..." button.
   /// Can be provided to facilitate integration with host program (one inside of which Lhasa is embedded).
@@ -1104,7 +1105,10 @@ export function LhasaComponent({
   const [helpOpened, setHelpOpened] = useState<boolean>(false);
   const aboutButtonRef = useRef<HTMLLIElement | null>(null);
   const [aboutOpened, setAboutOpen] = useState<boolean>(false);
-  
+
+  const sendToButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [sendToMenuOpen, setSendToMenuOpen] = useState<boolean>(false);
+
   const [aimChecked, setAimChecked] = useState<boolean>(() => lh.current?.get_allow_invalid_molecules());
   
   const [showToolButtonLabels, setShowToolButtonLabels] = useState<boolean>(true);
@@ -1404,6 +1408,48 @@ export function LhasaComponent({
                     onClose={() => setAboutOpen(false)}
                   />
                 </Menu>
+                {smiles_callback && name_of_host_program && smiles.length > 0 && <>
+                  <Button
+                    ref={sendToButtonRef}
+                    disableElevation
+                    onClick={(_evt) => {
+                      if (smiles.length === 1) {
+                        const lookup_result = canvasIdsToPropsIdsRef.current.get(smiles[0][0]);
+                        const external_id = lookup_result !== undefined ? lookup_result : null;
+                        smiles_callback(smiles[0][0], external_id, smiles[0][1]);
+                      } else {
+                        setSendToMenuOpen((prev) => !prev);
+                      }
+                    }}
+                  >
+                    Send to {name_of_host_program}
+                  </Button>
+                  <Menu
+                    open={sendToMenuOpen}
+                    anchorEl={sendToButtonRef.current}
+                    onClose={() => setSendToMenuOpen(false)}
+                    className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  >
+                    {smiles.map(([molId, smilesStr]) => (
+                      <MenuItem key={molId} onClick={() => {
+                        const lookup_result = canvasIdsToPropsIdsRef.current.get(molId);
+                        const external_id = lookup_result !== undefined ? lookup_result : null;
+                        smiles_callback(molId, external_id, smilesStr);
+                        setSendToMenuOpen(false);
+                      }}>
+                        {smilesStr}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>}
+                {bansu_endpoint && smiles.length > 0 &&
+                  <BansuButton
+                    smiles_list={smiles.map(([molId, smilesStr]) => [molId, smilesStr])}
+                    anchorEl={editorRef.current}
+                    bansu_endpoint={bansu_endpoint}
+                    dark_mode={dark_mode}
+                  />
+                }
               </div>
               <div /*id_="molecule_tools_toolbar"*/ className="horizontal_toolbar">
                 { tool_buttons.get("Move") }
@@ -1569,23 +1615,7 @@ export function LhasaComponent({
                 <AccordionDetails>
                   <div className="smiles_display vertical_panel">
                     {smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
-                      {smiles_callback && name_of_host_program && <Button variant="contained" onClick={() => {
-                        const lookup_result = canvasIdsToPropsIdsRef.current.get(smiles_tuple[0]);
-                        let external_id = null;
-                        if(lookup_result !== undefined) {
-                          external_id = lookup_result;
-                        }
-                        smiles_callback(smiles_tuple[0], external_id, smiles_tuple[1])
-                      }}>Send to {name_of_host_program}</Button>}
-                      {bansu_endpoint &&
-                        <BansuButton 
-                          smiles={smiles_tuple[1]}
-                          anchorEl={editorRef.current}
-                          bansu_endpoint={bansu_endpoint}
-                          dark_mode={dark_mode}
-                        />
-                      }
-                      <TextField 
+                      <TextField
                         variant="standard"
                         value={editedSmiles !== smiles_tuple[0] ? smiles_tuple[1] : undefined}
                         onFocus={(_event) => setEditedSmiles(smiles_tuple[0])}

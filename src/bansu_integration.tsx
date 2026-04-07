@@ -1,4 +1,4 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel, Switch } from "@mui/material";
+import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel, Switch, Select, MenuItem } from "@mui/material";
 // import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from "react";
 // import WebSocket from 'ws';
@@ -9,11 +9,11 @@ import './index.scss';
 import './customize_mui.scss';
 
 class BansuPopupProps {
-    smiles!: string;
+    /// List of molecules on the canvas: [internal molecule ID, SMILES string].
+    smiles_list!: [number, string][];
     anchorEl?: HTMLElement | null;
     bansu_endpoint!: string;
     dark_mode!: boolean;
-    // internal_id: 
 }
 
 // Do I want to use an enum?
@@ -41,6 +41,8 @@ export function BansuButton(props: BansuPopupProps) {
 
     const [acedrgFlagP, setAcedrgFlagP] = useState<boolean>(false);
     const [acedrgFlagZ, setAcedrgFlagZ] = useState<boolean>(false);
+
+    const [selectedMolIndex, setSelectedMolIndex] = useState<number>(0);
 
     const [_workerPromise, setWorkerPromise] = useState<null | Promise<void>>(null);
 
@@ -73,6 +75,20 @@ export function BansuButton(props: BansuPopupProps) {
                         />
                     </div>
                     <b>Bansu job configuration</b>
+                    <div className="horizontal_container_centered">
+                        Molecule
+                        <Select
+                            size="small"
+                            value={Math.min(selectedMolIndex, props.smiles_list.length - 1)}
+                            onChange={(event) => setSelectedMolIndex(event.target.value as number)}
+                            disabled={props.smiles_list.length <= 1}
+                            style={{flex: 1, marginLeft: '8px'}}
+                        >
+                            {props.smiles_list.map(([_molId, smilesStr], index) => (
+                                <MenuItem key={index} value={index}>{smilesStr}</MenuItem>
+                            ))}
+                        </Select>
+                    </div>
                     <div className="horizontal_container_centered">
                         Bansu instance
                         <Input defaultValue={bansuEndpoint} placeholder={props.bansu_endpoint} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,7 +215,7 @@ export function BansuButton(props: BansuPopupProps) {
                 </div>
             </div>;
         }
-    }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue, userConsent, acedrgFlagP, acedrgFlagZ]);
+    }, [state, popoverOpened, jobId, errorString, finishedJobOutput, posInQueue, userConsent, acedrgFlagP, acedrgFlagZ, selectedMolIndex, props.smiles_list]);
 
     useEffect(() => {
         // return;
@@ -207,7 +223,7 @@ export function BansuButton(props: BansuPopupProps) {
             let promise = new Promise<void>(async () => {
                 setState(BansuPopupState.SpawningJob);
                 const postData = JSON.stringify({
-                    'smiles': props.smiles,
+                    'smiles': props.smiles_list[selectedMolIndex][1],
                     'commandline_args': [...(acedrgFlagP ? ['-p'] : []), ...(acedrgFlagZ ? ['-z'] : [])]
                 });
     
