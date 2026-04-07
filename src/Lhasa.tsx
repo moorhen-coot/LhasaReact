@@ -121,7 +121,7 @@ export function LhasaComponent({
   show_footer = false, 
   icons_path_prefix = '', 
   rdkit_molecule_pickle_list,
-  name_of_host_program = 'Moorhen',
+  name_of_host_program = null,
   smiles_callback,
   on_smiles_updated,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
