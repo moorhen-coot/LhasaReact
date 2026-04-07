@@ -94,7 +94,7 @@ export interface LhasaComponentProps {
   /// Used for providing a list of molecules to be loaded on initialization.
   rdkit_molecule_pickle_list?: { pickle: string; id: string }[];
   /// When Lhasa is embedded, what is it embedded in?
-  name_of_host_program?: string;
+  name_of_host_program?: string | null;
   /// Called when the user presses the "Send to ..." button.
   /// Can be provided to facilitate integration with host program (one inside of which Lhasa is embedded).
   /// 'id_from_prop' is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
