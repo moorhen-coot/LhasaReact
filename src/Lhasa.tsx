@@ -1569,7 +1569,7 @@ export function LhasaComponent({
                 <AccordionDetails>
                   <div className="smiles_display vertical_panel">
                     {smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
-                      {smiles_callback && <Button variant="contained" onClick={() => {
+                      {smiles_callback && name_of_host_program && <Button variant="contained" onClick={() => {
                         const lookup_result = canvasIdsToPropsIdsRef.current.get(smiles_tuple[0]);
                         let external_id = null;
                         if(lookup_result !== undefined) {
