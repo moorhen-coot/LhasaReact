@@ -1,5 +1,5 @@
 import { defineConfig, type UserConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import crossOriginIsolation from 'vite-plugin-cross-origin-isolation'
 
 const isLibBuild = process.env.BUILD_MODE === 'lib';
