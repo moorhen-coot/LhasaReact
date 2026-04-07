@@ -1,7 +1,6 @@
 import { defineConfig, type UserConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import crossOriginIsolation from 'vite-plugin-cross-origin-isolation'
-import topLevelAwait from 'vite-plugin-top-level-await'
 
 const isLibBuild = process.env.BUILD_MODE === 'lib';
 
@@ -10,12 +9,6 @@ export default defineConfig(async (_env) => {
   const plugins = [
     react(),
     crossOriginIsolation(),
-    topLevelAwait({
-      // The export name of top-level await promise for each chunk module
-      promiseExportName: "__tla",
-      // The function to generate import names of top-level await promise in each chunk module
-      promiseImportName: i => `__tla_${i}`
-    })
   ];
 
   if (isLibBuild) {
@@ -71,7 +64,7 @@ export default defineConfig(async (_env) => {
           formats: ['es'] as const,
           fileName: 'lhasa-ligand-builder',
         },
-        rollupOptions: {
+        rolldownOptions: {
           // Excludes React from the bundle, as it will be provided by the consumer of the library
           external: ['react', 'react-dom', 'react/jsx-runtime'],
         },
