@@ -1,33 +1,42 @@
 @use 'sass:color';
 
 $lhasa_background_color: rgba(119, 119, 119, 0.076);
+$lhasa_background_color_dark: rgb(53, 53, 53);
 $lhasa_text_color: black;
+$lhasa_text_color_dark: white;
 $lhasa_qed_value_color: color.adjust($lhasa_text_color, $saturation: +50%, $lightness: +50%, $hue: 196);
+$lhasa_qed_value_color_dark: color.adjust($lhasa_text_color, $saturation: +75%, $lightness: +65%, $hue: 310);
 $lhasa_border_color: rgba(0, 0, 0, 0.24);
+$lhasa_border_color_dark: rgba(255, 255, 255, 0.24);
 $lhasa_toolbar_border_color: rgba(184, 0, 0, 0.181);
-$lhasa_base_padding: 5px;
+$lhasa_toolbar_border_color_dark: rgba(250, 85, 85, 0.281);
+$lhasa_base_padding: 3px;
 $lhasa_padding_minor: 2px;
-$lhasa_font_size: small;
+$lhasa_font_size: 0.65rem;
 
 .editor_canvas_container {
     border: $lhasa_border_color 1px solid;
     /* Padding here breaks relative coords */
     /* padding: 5px; */
     cursor: default;
+    /* Scrolling in y-axis belongs to 'lhasa_main_panel'.
+    Otherwise the vertical scrollbar becomes invisible for some reason */
+    overflow-x: auto;
     user-select: none;
-    overflow: auto;
-    width: 720px;
-    height: 512px;
-    // max-width: 700px;
-    // min-width: 300px;
-    // max-height: 500px;
-    // min-height: 320px;
+    flex: 1 1 auto;
+    background-color: white;
+}
+
+.editor_canvas_container.lhasa_dark_mode {
+    border-color: $lhasa_border_color_dark;
 }
 
 .lhasa_drawing {
     background-color: white;
     /* Removes weird, empty margin-like area */
     margin-bottom: -$lhasa_base_padding;
+    // Disable default scroll on touch behaviour
+    touch-action: none;
 }
 
 .lhasa_editor {
@@ -38,6 +47,26 @@ $lhasa_font_size: small;
     padding: 2 * $lhasa_base_padding;
     width: fit-content;
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lhasa_main_panel {
+    flex: 1 1 auto;
+    min-width: 480px;
+    min-height: 270px;
+    /* note: we don't want scrolling in the x-axis here, 
+    because the vertical bar with chemical elements could scroll out of view.
+    Scrolling in the x-axis belongs to 'editor_canvas_container'. */
+    overflow-y: auto;
+    /* the line below would break vertical scrolling */
+    // overflow: hidden;
+}
+
+.lhasa_editor.lhasa_dark_mode {
+    background-color: $lhasa_background_color_dark;
+    color: $lhasa_text_color_dark;
 }
 
 // For the menus
@@ -50,10 +79,17 @@ $lhasa_font_size: small;
     // font-family: monospace;
 }
 
+.lhasa_dark_mode .keybind_hint {
+    background-color: $lhasa_background_color_dark;
+    color: color.adjust($lhasa_text_color_dark, $saturation: -20%, $lightness: -40%);
+    // color: pink;
+}
+
 .lhasa_tooltip_keybind_infoblock {
     padding: $lhasa_base_padding * 2;
     margin-top: $lhasa_base_padding;
-    border-radius: 4px;
+    border-radius: 3px;
+    // This border color works well in both modes
     border: rgba(255, 255, 255, 0.405) 1px solid;
 }
 
@@ -61,9 +97,9 @@ $lhasa_font_size: small;
     margin: $lhasa_base_padding;
     // font-size: medium;
     // margin-top: $lhasa_base_padding * 8;
-    border-radius: 4px;
+    border-radius: 3px;
     color: lightblue;
-    background-color: color.adjust(lightblue, $alpha: -0.7);
+    background-color: color.adjust(lightblue, $alpha: -0.8);
     padding: $lhasa_base_padding;
 }
 
@@ -76,15 +112,23 @@ $lhasa_font_size: small;
 
 @mixin toolbar {
     border: $lhasa_toolbar_border_color 1px solid;
-    border-radius: 4px;
+    border-radius: 3px;
     padding: $lhasa_base_padding;
     /* align-items: center; */
 }
 
+@mixin toolbar_dark {
+    border-color: $lhasa_toolbar_border_color_dark;
+}
+
 @mixin panel {
     border: $lhasa_border_color 1px solid;
-    border-radius: 4px;
+    border-radius: 3px;
     padding: $lhasa_base_padding;
+}
+
+@mixin panel_dark {
+    border-color: $lhasa_border_color_dark;
 }
 
 .scale_panel {
@@ -119,7 +163,7 @@ $lhasa_font_size: small;
     letter-spacing: 0em;
 }
 
-@mixin center_vertical_flex {
+@mixin center_flex {
     text-align: center;
     justify-content: center;
     /* CSS is weird */
@@ -135,6 +179,15 @@ $lhasa_font_size: small;
     @include horizontal_container;
 }
 
+.horizontal_container_centered {
+    @include horizontal_container;
+    @include center_flex;
+}
+
+.children_expanded > * {
+    flex-grow: 1;
+}
+
 @mixin vertical_container {
     @include vertical_flex;
     gap: $lhasa_base_padding;
@@ -147,6 +200,10 @@ $lhasa_font_size: small;
     margin-top: $lhasa_padding_minor;
 }
 
+.lhasa_dark_mode .horizontal_toolbar {
+    @include toolbar_dark;
+}
+
 .vertical_toolbar {
     @include toolbar;
     @include vertical_container;
@@ -155,9 +212,17 @@ $lhasa_font_size: small;
     align-items: normal;
 }
 
+.lhasa_dark_mode .vertical_toolbar {
+    @include toolbar_dark;
+}
+
 .vertical_panel {
     @include vertical_container;
     @include panel;
+}
+
+.lhasa_dark_mode .vertical_panel {
+    @include panel_dark;
 }
 
 .horizontal_panel {
@@ -165,16 +230,45 @@ $lhasa_font_size: small;
     @include panel;
 }
 
+.lhasa_dark_mode .horizontal_panel {
+    @include panel_dark;
+}
+
 .lhasa_icon {
-    width: 24px;
+    width: 18px;
 }
 
 .tool_button {
     @include vertical_container;
-    @include center_vertical_flex;
+    @include center_flex;
     @include lhasa_disable_MUI_swelling;
     gap: $lhasa_padding_minor;
     padding: $lhasa_base_padding;
+}
+
+.vertical_popup {
+    @include vertical_container;
+    @include center_flex;
+    gap: $lhasa_padding_minor * 4;
+    padding: $lhasa_base_padding * 4;
+}
+
+.vertical_popup_title {
+    @include horizontal_container;
+    font-size: larger;
+    font-weight: bold;
+    // todo: dark_theme
+    border-bottom: color.adjust($lhasa_toolbar_border_color, $saturation: +90%, $lightness: -0%, $alpha: +0.7) 2px solid;
+    margin-bottom: $lhasa_base_padding;
+    // border-radius: 4px;
+    // padding: $lhasa_base_padding;
+    flex-grow: 1;
+    justify-content: center;
+    align-self: normal;
+}
+
+.lhasa_dark_mode .vertical_popup_title {
+    border-color: color.adjust($lhasa_toolbar_border_color_dark, $saturation: +90%, $lightness: -0%, $alpha: +0.7);
 }
 
 .smiles_display {
@@ -200,6 +294,10 @@ $lhasa_font_size: small;
     font-weight: bold;
 }
 
+.lhasa_dark_mode .qed_property_value {
+    color: $lhasa_qed_value_color_dark;
+}
+
 .qed_property_label {
     font-weight: bolder;
 }
@@ -210,6 +308,22 @@ $lhasa_font_size: small;
     color: $lhasa_text_color;
     font-size: $lhasa_font_size;
     border-style: ridge;
+}
+
+.lhasa_editor.lhasa_dark_mode input {
+    background-color: $lhasa_background_color_dark;
+    // border-color: $lhasa_toolbar_border_color_dark;
+    color: $lhasa_text_color_dark;
+    // this is broken
+    // /* Apply infinite transition to block autofill styles */
+    // // transition: background-color 9999s, color 9999s;
+}
+
+//Fix 'internal-autofill-selected' whitish background in Chrome
+.lhasa_editor.lhasa_dark_mode input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px $lhasa_background_color inset !important;
+    box-shadow: 0 0 0px 1000px $lhasa_background_color_dark inset !important;
+    -webkit-text-fill-color: $lhasa_text_color_dark !important;
 }
 
 .smiles_input {
@@ -227,8 +341,25 @@ $lhasa_font_size: small;
     background-color: $lhasa_background_color;
 }
 
+.lhasa_dark_mode .pre_render_message{
+    color: $lhasa_text_color_dark;
+}
+
+.warning_box {
+    color: darkred;
+    background-color: color.adjust(darkorange, $alpha: -0.90);
+    border: red 1px solid;
+    border-radius: 3px;
+    padding: $lhasa_base_padding;
+}
+
+.lhasa_dark_mode .warning_box {
+    color: red;
+    // background-color: ;
+}
+
 .text_measurement_worker_div {
-    /* Cancels out the gap in the owning container 
+    /* Cancels out the gap in the owning container
     so that we get nice alignment */
     margin-left: -$lhasa_base_padding;
 }
