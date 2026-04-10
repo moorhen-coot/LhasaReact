@@ -107,6 +107,8 @@ export interface LhasaComponentProps {
   /// Endpoint for Bansu server (https://github.com/hgonomeg/bansu). If not given, defaults to 'https://www.ccp4.ac.uk/bansu'. 
   /// Bansu is used for CIF file generation.
   bansu_endpoint?: string | undefined;
+  /// Called when the Bansu dialog's 'Send to ...' button is clicked. It fetches the CIF file from the bansu_endpoint and passes its content as a string to the callback.
+  bansu_callback?: (cif_text: string) => void;
   data_path_prefix?: string;
   dark_mode?: boolean;
   width?: number | null;
@@ -124,6 +126,7 @@ export function LhasaComponent({
   rdkit_molecule_pickle_list,
   name_of_host_program = null,
   smiles_callback,
+  bansu_callback,
   on_smiles_updated,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
   data_path_prefix = '',
@@ -1448,6 +1451,8 @@ export function LhasaComponent({
                     anchorEl={editorRef.current}
                     bansu_endpoint={bansu_endpoint}
                     dark_mode={dark_mode}
+                    bansu_callback={bansu_callback}
+                    name_of_host_program={name_of_host_program}
                   />
                 }
               </div>

@@ -14,6 +14,8 @@ class BansuPopupProps {
     anchorEl?: HTMLElement | null;
     bansu_endpoint!: string;
     dark_mode!: boolean;
+    bansu_callback?: (url: string) => void;
+    name_of_host_program?: string | null;
 }
 
 // Do I want to use an enum?
@@ -212,6 +214,22 @@ export function BansuButton(props: BansuPopupProps) {
                         >
                             Download CIF
                         </Button>
+                        {props.bansu_callback &&
+                            <Button
+                                onClick={async () => {
+                                    try {
+                                        const response = await fetch(`${bansuEndpoint}/get_cif/${jobId}`);
+                                        const cifText = await response.text();
+                                        props.bansu_callback?.(cifText);
+                                    } catch (err) {
+                                        console.error("Error fetching CIF:", err);
+                                    }
+                                }}
+                                variant="contained"
+                            >
+                                Send to {props.name_of_host_program ? props.name_of_host_program : "host program"}
+                            </Button>
+                        }
                     </div>
                 </div>;
             case BansuPopupState.Error:

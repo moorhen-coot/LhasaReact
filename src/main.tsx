@@ -32,6 +32,11 @@ export function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [showFooter, setShowFooter] = useState(true);
   const [showTopPanel, setShowTopPanel] = useState(true);
+
+  const [nameOfHostProgramUsed, setNameOfHostProgramUsed] = useState(true);
+  // This is just an example here.
+  const [nameOfHostProgram, setNameOfHostProgram] = useState("host application");
+
   const [showSizingConstraints, setShowSizingConstraints] = useState(false);
 
   const [widthConstraintEnabled, setWidthConstraintEnabled] = useState(false);
@@ -90,8 +95,9 @@ export function App() {
     show_footer={showFooter}
     icons_path_prefix='icons'
     smiles_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
-    // This is redundant but I want to be verbose here.
-    name_of_host_program={null}
+    bansu_callback={(cif_file) => console.log("Received CIF file from Bansu:\n", cif_file)}
+    // This is just an example here.
+    name_of_host_program={nameOfHostProgramUsed ? nameOfHostProgram : null}
     // Works when using `npx vite server --port 5174`
     // Inside `vite.config.js` there is a proxy setup to redirect this to an actual bansu instance.
     // CORS stuff is broken for localhost connections, it seems.
@@ -136,15 +142,23 @@ export function App() {
             label={"Show Top Panel"}
           />
         </Grid>
-        <Grid size={2}>
+        <Grid size={1}>
           <FormControlLabel
             control={<Switch checked={showSizingConstraints} onChange={(event) => setShowSizingConstraints(event.target.checked)} />}
             label={"Sizing Constraints"}
           />
         </Grid>
+        <Grid size={1}>
+          <FormControlLabel
+            control={<Switch checked={nameOfHostProgramUsed} onChange={(event) => setNameOfHostProgramUsed(event.target.checked)} />}
+            label={<div>
+              Pass <code>name_of_host_program</code>
+            </div>}
+          />
+        </Grid>
       </Grid>
-      <Collapse in={showSizingConstraints}>
-        <div className="vertical_panel" style={{ maxWidth: 400, paddingBottom: 10}}>
+      <Collapse in={showSizingConstraints} style={{paddingBottom: 10, paddingTop: 10}}>
+        <div className="vertical_panel" style={{ maxWidth: 400, paddingBottom: 10, paddingTop: 10}}>
           <b>Fixed Size</b>
           <Grid container columns={2}>
             <Grid size={1}>
@@ -175,6 +189,17 @@ export function App() {
               </div>
             </Grid>
           </Grid>
+        </div>
+      </Collapse>
+      <Collapse in={nameOfHostProgramUsed} style={{paddingBottom: 10, paddingTop: 10}}>
+        <div className="vertical_panel" style={{ maxWidth: 400}}>
+          <b>Name of host program</b>
+          <TextField
+            // label={"Name of host program"}
+            disabled={!nameOfHostProgramUsed}
+            value={nameOfHostProgram}
+            onChange={(e) => setNameOfHostProgram(e.target.value)}
+          />
         </div>
       </Collapse>
     </div>
