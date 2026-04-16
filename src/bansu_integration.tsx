@@ -9,12 +9,12 @@ import './index.scss';
 import './customize_mui.scss';
 
 class BansuPopupProps {
-    /// List of molecules on the canvas: [internal molecule ID, SMILES string].
-    smiles_list!: [number, string][];
+    /// List of molecules on the canvas: [internal molecule ID, ID from prop (or null if not initialized from prop), SMILES string].
+    smiles_list!: [number, string | null, string][];
     anchorEl?: HTMLElement | null;
     bansu_endpoint!: string;
     dark_mode!: boolean;
-    bansu_callback?: (url: string) => void;
+    bansu_callback?: (internal_id: number, id_from_prop: string | null, cif_text: string) => void;
     name_of_host_program?: string | null;
 }
 
@@ -101,7 +101,7 @@ export function BansuButton(props: BansuPopupProps) {
                             MenuProps={{ className: "LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "") }}
                             style={{flex: 1}}
                         >
-                            {props.smiles_list.map(([_molId, smilesStr], index) => (
+                            {props.smiles_list.map(([_molId, _idFromProp, smilesStr], index) => (
                                 <MenuItem key={index} value={index}>{smilesStr}</MenuItem>
                             ))}
                         </Select>
@@ -220,7 +220,8 @@ export function BansuButton(props: BansuPopupProps) {
                                     try {
                                         const response = await fetch(`${bansuEndpoint}/get_cif/${jobId}`);
                                         const cifText = await response.text();
-                                        props.bansu_callback?.(cifText);
+                                        const [internalId, idFromProp] = props.smiles_list[selectedMolIndex];
+                                        props.bansu_callback?.(internalId, idFromProp, cifText);
                                     } catch (err) {
                                         console.error("Error fetching CIF:", err);
                                     }
@@ -262,7 +263,7 @@ export function BansuButton(props: BansuPopupProps) {
 
             (async () => {
                 const postData = JSON.stringify({
-                    'smiles': props.smiles_list[selectedMolIndex][1],
+                    'smiles': props.smiles_list[selectedMolIndex][2],
                     'commandline_args': [...(acedrgFlagP ? ['-p'] : []), ...(acedrgFlagZ ? ['-z'] : [])]
                 });
 

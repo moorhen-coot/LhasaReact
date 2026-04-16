@@ -108,7 +108,7 @@ export interface LhasaComponentProps {
   /// Bansu is used for CIF file generation.
   bansu_endpoint?: string | undefined;
   /// Called when the Bansu dialog's 'Send to ...' button is clicked. It fetches the CIF file from the bansu_endpoint and passes its content as a string to the callback.
-  bansu_callback?: (cif_text: string) => void;
+  bansu_callback?: (internal_id: number, id_from_prop: string | null, cif_text: string) => void;
   data_path_prefix?: string;
   dark_mode?: boolean;
   width?: number | null;
@@ -1447,7 +1447,7 @@ export function LhasaComponent({
                 </>}
                 {bansu_endpoint && smiles.length > 0 &&
                   <BansuButton
-                    smiles_list={smiles.map(([molId, smilesStr]) => [molId, smilesStr])}
+                    smiles_list={smiles.map(([molId, smilesStr]) => [molId, canvasIdsToPropsIdsRef.current.get(molId) ?? null, smilesStr])}
                     anchorEl={editorRef.current}
                     bansu_endpoint={bansu_endpoint}
                     dark_mode={dark_mode}
