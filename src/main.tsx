@@ -95,7 +95,7 @@ export function App() {
     show_footer={showFooter}
     icons_path_prefix='icons'
     smiles_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
-    bansu_callback={(cif_file) => console.log("Received CIF file from Bansu:\n", cif_file)}
+    bansu_callback={(internal_id, id_from_prop, cif_file) => console.log("Received CIF file from Bansu: ID=", internal_id, "Id-From-Prop=", id_from_prop, "\n", cif_file)}
     // This is just an example here.
     name_of_host_program={nameOfHostProgramUsed ? nameOfHostProgram : null}
     // Works when using `npx vite server --port 5174`
