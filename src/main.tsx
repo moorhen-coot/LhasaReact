@@ -94,7 +94,7 @@ export function App() {
     show_top_panel={showTopPanel}
     show_footer={showFooter}
     icons_path_prefix='icons'
-    send_to_host_program_callback={(internal_id, id_from_prop, smiles) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop", id_from_prop)}
+    send_to_host_program_callback={(internal_id, id_from_prop, smiles, rdkit_pickle) => console.log("ID=", internal_id," SMILES=", smiles, "Id-From-Prop=", id_from_prop, "RDKit-Pickle-Base64=", rdkit_pickle)}
     bansu_callback={(internal_id, id_from_prop, cif_file) => console.log("Received CIF file from Bansu: ID=", internal_id, "Id-From-Prop=", id_from_prop, "\n", cif_file)}
     // This is just an example here.
     name_of_host_program={nameOfHostProgramUsed ? nameOfHostProgram : null}
