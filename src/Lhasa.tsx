@@ -13,9 +13,9 @@ type SvgSelection = Selection<SVGSVGElement, undefined, null, undefined>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 /// d3 selection of an SVG child element (e.g. `<text>`, `<tspan>`). Uses `any` due to d3's invariant generics.
 type SvgChildSelection = Selection<any, any, any, any>;
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tooltip } from '@mui/material';
 import { ChevronRight, FileDownload, FileUpload, Image, Redo, Undo } from '@mui/icons-material';
-import { QedPropertyInfobox } from './qed_property_infobox';
+import { QEDTabs } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
 import { AboutPopup } from './about_popup';
 import { parseInchikeyDatabase } from './inchikey_database_parse';
@@ -1668,78 +1668,10 @@ export function LhasaComponent({
                   </div>
                 </AccordionDetails>
               </Accordion>
-              {showQedChecked &&
+              {showQedChecked && qedInfo.size > 0 &&
                 <div className="vertical_toolbar qed_panel">
                   <b>QED</b>
-                  <Tabs value={qedTab} onChange={(_event, value) => setQedTab(value)}>
-
-                  {Array.from(qedInfo.keys()).map((mol_id) => {
-                    // Counter-intuitively, a "Tab" here is what Gtk considers to be a tab label
-                    return <Tab 
-                      key={mol_id}
-                      label={mol_id.toString()}
-                      value={mol_id}
-                    />;
-                  })}
-                  </Tabs>
-                  {Array.from(qedInfo.keys()).map((mol_id) => {
-                    // This is the proper tab
-                    return <div hidden={qedTab !== mol_id} role="tabpanel" key={mol_id}>
-                      <div className="horizontal_container">
-                        <div className="vertical_panel" style={{flexGrow: 1}}>
-                          <QedPropertyInfobox 
-                            property_name='QED score:'
-                            display_value={qedInfo.get(mol_id)?.qed_score.toFixed(4)}
-                            progressbar_value={qedInfo.get(mol_id)?.qed_score}
-                          />
-                          <QedPropertyInfobox 
-                            property_name='MW'
-                            display_value={qedInfo.get(mol_id)?.molecular_weight.toFixed(4)}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_mw}
-                          />
-                          <QedPropertyInfobox 
-                            property_name='PSA'
-                            display_value={qedInfo.get(mol_id)?.molecular_polar_surface_area.toFixed(4)}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_psa}
-                          />
-                        </div>
-                        <div className="vertical_panel" style={{flexGrow: 1}}>  
-                          <QedPropertyInfobox 
-                            property_name='cLogP'
-                            display_value={qedInfo.get(mol_id)?.alogp.toFixed(4)}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_alogp}
-                          />
-                          <QedPropertyInfobox 
-                            property_name='#ALERTS'
-                            display_value={qedInfo.get(mol_id)?.number_of_alerts}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_alert}
-                          />
-                          <QedPropertyInfobox 
-                            property_name='#HBA'
-                            display_value={qedInfo.get(mol_id)?.number_of_hydrogen_bond_acceptors}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_hba}
-                          />
-                        </div>
-                        <div className="vertical_panel" style={{flexGrow: 1}}>    
-                          <QedPropertyInfobox 
-                            property_name='#HBD'
-                            display_value={qedInfo.get(mol_id)?.number_of_hydrogen_bond_donors}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_hbd}
-                          />
-                          <QedPropertyInfobox 
-                            property_name='#AROM'
-                            display_value={qedInfo.get(mol_id)?.number_of_aromatic_rings}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_arom}
-                          />
-                          <QedPropertyInfobox 
-                            property_name='#RotBonds'
-                            display_value={qedInfo.get(mol_id)?.number_of_rotatable_bonds}
-                            progressbar_value={qedInfo.get(mol_id)?.ads_rotb}
-                          />
-                        </div>
-                      </div>
-                    </div>;
-                  })}
+                  <QEDTabs qedInfo={qedInfo} currentTab={qedTab} onTabChange={setQedTab} />
                 </div>
               }
               {show_footer &&
