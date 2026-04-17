@@ -1431,7 +1431,7 @@ export function LhasaComponent({
                       if (smiles.length === 1) {
                         const lookup_result = canvasIdsToPropsIdsRef.current.get(smiles[0][0]);
                         const external_id = lookup_result !== undefined ? lookup_result : null;
-                        const rdkit_pickle_base64 = lh.current.export_mol_to_pickle_base64(smiles[0][0]);
+                        const rdkit_pickle_base64 = Lhasa.export_mol_to_pickle_base64(lh.current, smiles[0][0]);
                         send_to_host_program_callback(smiles[0][0], external_id, smiles[0][1], rdkit_pickle_base64);
                       } else {
                         setSendToMenuOpen((prev) => !prev);
@@ -1450,7 +1450,7 @@ export function LhasaComponent({
                       <MenuItem key={molId} onClick={() => {
                         const lookup_result = canvasIdsToPropsIdsRef.current.get(molId);
                         const external_id = lookup_result !== undefined ? lookup_result : null;
-                        const rdkit_pickle_base64 = lh.current.export_mol_to_pickle_base64(molId);
+                        const rdkit_pickle_base64 = Lhasa.export_mol_to_pickle_base64(lh.current, molId);
                         send_to_host_program_callback(molId, external_id, smilesStr, rdkit_pickle_base64);
                         setSendToMenuOpen(false);
                       }}>
