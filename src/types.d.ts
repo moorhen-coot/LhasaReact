@@ -367,6 +367,7 @@ interface EmbindModule {
   append_from_import(_0: Canvas, _1: EmbindString, _2: CheminformaticsFileFormat): number;
   append_from_pickle_base64(_0: Canvas, _1: EmbindString): number;
   export_mol(_0: Canvas, _1: number, _2: CheminformaticsFileFormat): string;
+  export_mol_to_pickle_base64(_0: Canvas, _1: number): string;
 }
 
 export type MainModule = WasmModule & EmbindModule;
