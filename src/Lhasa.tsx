@@ -99,7 +99,8 @@ export interface LhasaComponentProps {
   /// Called when the user presses the "Send to ..." button.
   /// Can be provided to facilitate integration with host program (one inside of which Lhasa is embedded).
   /// 'id_from_prop' is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
-  smiles_callback?: (internal_id: number, id_from_prop: string | null, smiles: string) => void;
+  /// 'rdkit_pickle_base64' is the base64-encoded RDKit pickle of the molecule.
+  send_to_host_program_callback?: (internal_id: number, id_from_prop: string | null, smiles: string, rdkit_pickle_base64: string) => void;
   /// Called whenever the SMILES strings of any molecule in the canvas changes.
   /// Arguments is an array of tuples: [internal molecule ID, ID of molecule from prop (if exists), SMILES string, tuple of [monomer code, chemical name] looked up from the InChIKey database (if exists)].
   /// "ID of molecule from prop", is the ID of the molecule as given by the prop 'rdkit_molecule_pickle_list', or null if the molecule was not initialized from that list.
@@ -125,7 +126,7 @@ export function LhasaComponent({
   icons_path_prefix = '', 
   rdkit_molecule_pickle_list,
   name_of_host_program = null,
-  smiles_callback,
+  send_to_host_program_callback,
   bansu_callback,
   on_smiles_updated,
   bansu_endpoint = 'https://www.ccp4.ac.uk/bansu',
@@ -1422,7 +1423,7 @@ export function LhasaComponent({
                     onClose={() => setAboutOpen(false)}
                   />
                 </Menu>
-                {smiles_callback && name_of_host_program && smiles.length > 0 && <>
+                {send_to_host_program_callback && name_of_host_program && smiles.length > 0 && <>
                   <Button
                     ref={sendToButtonRef}
                     disableElevation
@@ -1430,7 +1431,8 @@ export function LhasaComponent({
                       if (smiles.length === 1) {
                         const lookup_result = canvasIdsToPropsIdsRef.current.get(smiles[0][0]);
                         const external_id = lookup_result !== undefined ? lookup_result : null;
-                        smiles_callback(smiles[0][0], external_id, smiles[0][1]);
+                        const rdkit_pickle_base64 = Lhasa.export_mol_to_pickle_base64(lh.current, smiles[0][0]);
+                        send_to_host_program_callback(smiles[0][0], external_id, smiles[0][1], rdkit_pickle_base64);
                       } else {
                         setSendToMenuOpen((prev) => !prev);
                       }
@@ -1448,7 +1450,8 @@ export function LhasaComponent({
                       <MenuItem key={molId} onClick={() => {
                         const lookup_result = canvasIdsToPropsIdsRef.current.get(molId);
                         const external_id = lookup_result !== undefined ? lookup_result : null;
-                        smiles_callback(molId, external_id, smilesStr);
+                        const rdkit_pickle_base64 = Lhasa.export_mol_to_pickle_base64(lh.current, molId);
+                        send_to_host_program_callback(molId, external_id, smilesStr, rdkit_pickle_base64);
                         setSendToMenuOpen(false);
                       }}>
                         {smilesStr}
