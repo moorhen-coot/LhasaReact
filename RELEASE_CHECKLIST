@@ -1,0 +1,5 @@
+
+
+* Update version number in package.json and src/about_popup.tsx
+* Run `npm update; npm install`
+* Install the WASM blob (`./build_wasm.sh -i`)
