@@ -53,7 +53,7 @@ export function AboutPopup(props: AboutPopupProps) {
                         <b>License:</b> GPL v3
                     </p>
                     {/* Unfortunately, no other method of pasting the version number works in Moorhen. */}
-                    <p><b>Version:</b> 0.4.1</p>
+                    <p><b>Version:</b> 0.5.0-dev</p>
                     <p>Copyright &copy; Global Phasing Ltd. 2024 - 2026</p>
                     <Button variant="outlined" onClick={props.onClose}>Close</Button>
                 </div>
