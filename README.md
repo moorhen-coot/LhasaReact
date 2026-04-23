@@ -4,6 +4,10 @@ Frontend for Lhasa - Moorhen's ligand builder: a React + WebAssembly version of 
 
 LhasaReact can also be used standalone, outside of Moorhen.
 
+## Features
+
+TODO: Expand this section before next release
+
 ## Installation / embedding
 
 There is an npm package available: [`lhasa-ligand-builder`](https://www.npmjs.com/package/lhasa-ligand-builder).
