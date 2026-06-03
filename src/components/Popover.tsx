@@ -48,8 +48,8 @@ export function CustomPopover({
       className={`lhasa_popover${className ? ' ' + className : ''}`}
       style={{
         position: 'absolute',
-        top: visible ? position.top : -9999,
-        left: visible ? position.left : -9999,
+        top: position.top,
+        left: position.left,
         visibility: visible ? 'visible' : 'hidden',
         zIndex: 1400,
       }}
