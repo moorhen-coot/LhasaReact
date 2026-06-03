@@ -1,12 +1,11 @@
-import { Popover, Button, Tooltip, StyledEngineProvider, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel, Switch, Select, MenuItem } from "@mui/material";
-// import Grid from '@mui/material/Grid2';
+import { CustomPopover, Button, Tooltip, AccordionSummary, AccordionDetails, Accordion, Input, Checkbox, FormControlLabel, Switch, Select, SelectMenuItem } from "./components";
 import { useCallback, useEffect, useRef, useState } from "react";
 // import WebSocket from 'ws';
 // import * as http from 'http';
 
 // Do I really need that here?
 import './index.scss';
-import './customize_mui.scss';
+import './components.scss';
 
 class BansuPopupProps {
     /// List of molecules on the canvas: [internal molecule ID, ID from prop (or null if not initialized from prop), SMILES string].
@@ -94,15 +93,13 @@ export function BansuButton(props: BansuPopupProps) {
                         <Select
                             // size="small"
                             value={Math.min(selectedMolIndex, props.smiles_list.length - 1)}
-                            onChange={(event) => setSelectedMolIndex(event.target.value as number)}
+                            onChange={(event) => setSelectedMolIndex(Number(event.target.value))}
                             disabled={props.smiles_list.length <= 1}
-                            // This appears to fix alignment of text in the drop-down
-                            className={"LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")}
-                            MenuProps={{ className: "LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "") }}
+                            className={props.dark_mode ? "lhasa_dark_mode" : ""}
                             style={{flex: 1}}
                         >
                             {props.smiles_list.map(([_molId, _idFromProp, smilesStr], index) => (
-                                <MenuItem key={index} value={index}>{smilesStr}</MenuItem>
+                                <SelectMenuItem key={index} value={index}>{smilesStr}</SelectMenuItem>
                             ))}
                         </Select>
                     </div>
@@ -143,13 +140,13 @@ export function BansuButton(props: BansuPopupProps) {
                     <div className="horizontal_container_centered children_expanded">
                         <Button 
                             onClick={() => setPopoverOpened(false)}
-                            variant="contained"
+                            primary
                         >
                             Cancel
                         </Button>
                         <Button 
                             onClick={() => { setState(BansuPopupState.SpawningJob); setSpawnCounter(c => c + 1); }}
-                            variant="contained"
+                            primary
                             disabled={!userConsent}
                         >
                             Spawn Bansu job
@@ -160,14 +157,14 @@ export function BansuButton(props: BansuPopupProps) {
                 return <div className="vertical_panel">
                     Spawning Bansu job...
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
-                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
+                    <Button onClick={cancelJob} primary>Cancel</Button>
                 </div>;
             case BansuPopupState.ConnectingOnWebsocket:
                 return <div className="vertical_panel">
                     Estabilishing event listener connection...
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
-                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
+                    <Button onClick={cancelJob} primary>Cancel</Button>
                 </div>;
             case BansuPopupState.Queued:
                 return <div className="vertical_panel">
@@ -176,14 +173,14 @@ export function BansuButton(props: BansuPopupProps) {
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
                     <small>Position in queue: {posInQueue}</small>
-                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
+                    <Button onClick={cancelJob} primary>Cancel</Button>
                 </div>;
             case BansuPopupState.Waiting:
                 return <div className="vertical_panel">
                     Waiting for Bansu job to complete...
                     <small>Bansu instance <i>{bansuEndpoint}</i></small>
                     <small>Job id: {jobId}</small>
-                    <Button onClick={cancelJob} variant="contained">Cancel</Button>
+                    <Button onClick={cancelJob} primary>Cancel</Button>
                 </div>;
             case BansuPopupState.Ready:
                 return <div className="vertical_panel">
@@ -203,14 +200,14 @@ export function BansuButton(props: BansuPopupProps) {
                     <div className="horizontal_container_centered children_expanded">
                         <Button 
                             onClick={() => setPopoverOpened(false)}
-                            variant="contained"
+                            primary
                         >
                             Close
                         </Button>
                         <Button 
                             onClick={() => window.open(`${bansuEndpoint}/get_cif/${jobId}`)}
                             // style={{flex: 'auto'}}
-                            variant="contained"
+                            primary
                         >
                             Download CIF
                         </Button>
@@ -226,7 +223,7 @@ export function BansuButton(props: BansuPopupProps) {
                                         console.error("Error fetching CIF:", err);
                                     }
                                 }}
-                                variant="contained"
+                                primary
                             >
                                 Send to {props.name_of_host_program ? props.name_of_host_program : "host program"}
                             </Button>
@@ -240,13 +237,13 @@ export function BansuButton(props: BansuPopupProps) {
                 <div className="horizontal_container_centered children_expanded">
                     <Button 
                         onClick={() => resetState()}
-                        variant="contained"
+                        primary
                     >
                         Retry
                     </Button>
                     <Button 
                         onClick={() => setPopoverOpened(false)}
-                        variant="contained"
+                        primary
                     >
                         Close
                     </Button>
@@ -366,7 +363,7 @@ export function BansuButton(props: BansuPopupProps) {
     }, [spawnCounter]);
 
     return (
-        <StyledEngineProvider injectFirst>
+        <>
             <Tooltip
                 title={"Generate CIF via Bansu (runs Acedrg on a server)."}
                 enterDelay={1000}
@@ -378,18 +375,18 @@ export function BansuButton(props: BansuPopupProps) {
                         resetState();
                         setPopoverOpened(true);
                     }}
-                    variant="contained"
+                    primary
                 >
                     Generate CIF
                 </Button>
             </Tooltip>
-            <Popover 
+            <CustomPopover
                 open={popoverOpened}
                 anchorEl={props.anchorEl}
                 anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
                 transformOrigin={{ vertical: 'center', horizontal: 'center'}}
             >
-                <div className={"vertical_popup lhasa_editor LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")} style={{maxWidth:  '400px', maxHeight: '500px'}}>
+                <div className={"vertical_popup lhasa_editor" + (props.dark_mode ? " lhasa_dark_mode" : "")} style={{maxWidth:  '400px', maxHeight: '500px'}}>
                     <div className="vertical_popup_title">
                         Restraints generation via Bansu
                     </div>
@@ -397,7 +394,7 @@ export function BansuButton(props: BansuPopupProps) {
                         {popoverContent()}
                     </div>
                 </div>
-            </Popover>
-        </StyledEngineProvider>
+            </CustomPopover>
+        </>
     );
 }

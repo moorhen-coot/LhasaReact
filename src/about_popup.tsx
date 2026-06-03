@@ -1,7 +1,7 @@
-import { Popover, Button } from "@mui/material";
+import { CustomPopover, Button } from "./components";
 
 import './index.scss';
-import './customize_mui.scss';
+import './components.scss';
 
 class AboutPopupProps {
     dark_mode!: boolean;
@@ -13,15 +13,15 @@ class AboutPopupProps {
 
 export function AboutPopup(props: AboutPopupProps) {
     return (
-        <Popover
+        <CustomPopover
             open={props.open}
             anchorEl={props.anchorEl}
             anchorOrigin={{vertical: 'center', horizontal: 'center'}}
             transformOrigin={{vertical: 'center', horizontal: 'center'}}
             onClose={props.onClose}
-            className={"LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")}
+            className={props.dark_mode ? "lhasa_dark_mode" : ""}
         >
-            <div className={"vertical_popup lhasa_editor LhasaMuiStyling" + (props.dark_mode ? " lhasa_dark_mode" : "")}>
+            <div className={"vertical_popup lhasa_editor" + (props.dark_mode ? " lhasa_dark_mode" : "")}>
                 <div className="vertical_popup_title">About Lhasa</div>
                 <div>
                     <img src={props.icons_path_prefix + "/icons/hicolor_apps_scalable_coot-layla.svg"} style={{display: "block", margin: "0 auto", padding: "20px"}} />
@@ -55,9 +55,9 @@ export function AboutPopup(props: AboutPopupProps) {
                     {/* Unfortunately, no other method of pasting the version number works in Moorhen. */}
                     <p><b>Version:</b> 0.5.0-dev</p>
                     <p>Copyright &copy; Global Phasing Ltd. 2024 - 2026</p>
-                    <Button variant="outlined" onClick={props.onClose}>Close</Button>
+                    <Button outlined onClick={props.onClose}>Close</Button>
                 </div>
             </div>
-        </Popover>
+        </CustomPopover>
     );
 }
