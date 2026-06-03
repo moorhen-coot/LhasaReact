@@ -30,40 +30,47 @@ export function usePortalPosition(
   const measuringRef = useRef(false);
 
   const computePosition = useCallback(() => {
-    if (!anchorEl || !portalRef.current) return;
+    if (!portalRef.current) return;
 
-    const anchorRect = anchorEl.getBoundingClientRect();
     const portalWidth = portalRef.current.offsetWidth;
     const portalHeight = portalRef.current.offsetHeight;
 
     let top: number;
     let left: number;
 
-    // Compute top based on anchorOrigin.vertical
-    switch (anchorOrigin.vertical) {
-      case 'top':
-        top = anchorRect.top;
-        break;
-      case 'center':
-        top = anchorRect.top + anchorRect.height / 2;
-        break;
-      case 'bottom':
-      default:
-        top = anchorRect.bottom;
-        break;
-    }
+    if (anchorEl) {
+      const anchorRect = anchorEl.getBoundingClientRect();
 
-    // Compute left based on anchorOrigin.horizontal
-    switch (anchorOrigin.horizontal) {
-      case 'left':
-        left = anchorRect.left;
-        break;
-      case 'center':
-        left = anchorRect.left + anchorRect.width / 2;
-        break;
-      case 'right':
-        left = anchorRect.right;
-        break;
+      // Compute top based on anchorOrigin.vertical
+      switch (anchorOrigin.vertical) {
+        case 'top':
+          top = anchorRect.top;
+          break;
+        case 'center':
+          top = anchorRect.top + anchorRect.height / 2;
+          break;
+        case 'bottom':
+        default:
+          top = anchorRect.bottom;
+          break;
+      }
+
+      // Compute left based on anchorOrigin.horizontal
+      switch (anchorOrigin.horizontal) {
+        case 'left':
+          left = anchorRect.left;
+          break;
+        case 'center':
+          left = anchorRect.left + anchorRect.width / 2;
+          break;
+        case 'right':
+          left = anchorRect.right;
+          break;
+      }
+    } else {
+      // No anchor — center on viewport
+      top = window.innerHeight / 2 + window.scrollY;
+      left = window.innerWidth / 2 + window.scrollX;
     }
 
     // Adjust based on transformOrigin
@@ -93,29 +100,47 @@ export function usePortalPosition(
     top += window.scrollY;
     left += window.scrollX;
 
-    // Viewport edge detection with a small margin
+    // Viewport edge detection with a small margin.
+    // For edge-anchored popups, flip to the opposite side of the anchor.
+    // For center-anchored (or no-anchor) popups, just clamp to the viewport edge.
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const margin = 8;
+    const isCenteredH = !anchorEl || anchorOrigin.horizontal === 'center';
+    const isCenteredV = !anchorEl || anchorOrigin.vertical === 'center';
 
     if (left + portalWidth > viewportWidth + window.scrollX - margin) {
-      left = anchorRect.right - portalWidth + window.scrollX;
-      if (left < window.scrollX + margin) {
-        left = window.scrollX + margin;
+      if (isCenteredH) {
+        left = viewportWidth + window.scrollX - portalWidth - margin;
+      } else {
+        left = anchorEl!.getBoundingClientRect().right - portalWidth + window.scrollX;
+        if (left < window.scrollX + margin) left = window.scrollX + margin;
       }
     }
     if (left < window.scrollX + margin) {
-      left = window.scrollX + margin;
+      if (isCenteredH) {
+        left = window.scrollX + margin;
+      } else {
+        left = anchorEl!.getBoundingClientRect().left + window.scrollX;
+        if (left + portalWidth > viewportWidth + window.scrollX - margin) left = viewportWidth + window.scrollX - portalWidth - margin;
+      }
     }
 
     if (top + portalHeight > viewportHeight + window.scrollY - margin) {
-      top = anchorRect.top - portalHeight + window.scrollY;
-      if (top < window.scrollY + margin) {
-        top = window.scrollY + margin;
+      if (isCenteredV) {
+        top = viewportHeight + window.scrollY - portalHeight - margin;
+      } else {
+        top = anchorEl!.getBoundingClientRect().top - portalHeight + window.scrollY;
+        if (top < window.scrollY + margin) top = window.scrollY + margin;
       }
     }
     if (top < window.scrollY + margin) {
-      top = window.scrollY + margin;
+      if (isCenteredV) {
+        top = window.scrollY + margin;
+      } else {
+        top = anchorEl!.getBoundingClientRect().bottom + window.scrollY;
+        if (top + portalHeight > viewportHeight + window.scrollY - margin) top = viewportHeight + window.scrollY - portalHeight - margin;
+      }
     }
 
     setPosition({ top, left });

@@ -1419,7 +1419,7 @@ export function LhasaComponent({
                     dark_mode={dark_mode}
                     icons_path_prefix={icons_path_prefix}
                     open={aboutOpened}
-                    anchorEl={aboutButtonRef.current}
+                    anchorEl={editorRef.current}
                     onClose={() => setAboutOpen(false)}
                   />
                 </CustomMenu>

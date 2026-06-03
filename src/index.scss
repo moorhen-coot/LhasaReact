@@ -14,51 +14,13 @@ $lhasa_base_padding: 3px;
 $lhasa_padding_minor: 2px;
 $lhasa_font_size: 0.65rem;
 
-// Component color system
+// Component colour system — a few base tokens; everything else is derived inline
 $lhasa_primary_color: #1976d2;
-$lhasa_primary_color_dark: #90caf9;
-$lhasa_primary_hover: #1565c0;
-$lhasa_primary_hover_dark: #64b5f6;
 $lhasa_error_color: #d32f2f;
-$lhasa_popover_background: #f5f5f5;
-$lhasa_popover_background_dark: rgb(53, 53, 53);
-$lhasa_menu_background: white;
 $lhasa_menu_background_dark: #424242;
-$lhasa_tooltip_background: rgba(97, 97, 97, 0.92);
-$lhasa_tooltip_background_dark: rgba(180, 180, 180, 0.92);
-$lhasa_tooltip_text: white;
-$lhasa_tooltip_text_dark: rgba(0, 0, 0, 0.87);
-$lhasa_switch_track: rgba(0, 0, 0, 0.38);
-$lhasa_switch_track_dark: rgba(255, 255, 255, 0.3);
-$lhasa_switch_thumb: white;
-$lhasa_slider_track: rgba(0, 0, 0, 0.2);
-$lhasa_slider_track_dark: rgba(255, 255, 255, 0.2);
-$lhasa_progress_track: rgba(0, 0, 0, 0.1);
-$lhasa_progress_track_dark: rgba(255, 255, 255, 0.1);
-$lhasa_hover_overlay: rgba(0, 0, 0, 0.04);
-$lhasa_hover_overlay_dark: rgba(255, 255, 255, 0.08);
-$lhasa_menu_hover: rgba(0, 0, 0, 0.06);
-$lhasa_menu_hover_dark: rgba(255, 255, 255, 0.08);
-$lhasa_menu_focus_dark: rgba(255, 255, 255, 0.12);
-$lhasa_toggle_pressed: rgba(25, 118, 210, 0.12);
-$lhasa_toggle_pressed_dark: rgba(144, 202, 249, 0.16);
-$lhasa_toggle_pressed_hover: rgba(25, 118, 210, 0.18);
-$lhasa_toggle_pressed_hover_dark: rgba(144, 202, 249, 0.24);
-$lhasa_outlined_border: rgba(25, 118, 210, 0.5);
-$lhasa_outlined_border_dark: rgba(144, 202, 249, 0.5);
-$lhasa_outlined_hover: rgba(25, 118, 210, 0.04);
-$lhasa_outlined_hover_dark: rgba(144, 202, 249, 0.08);
-$lhasa_slider_focus_ring: rgba(25, 118, 210, 0.16);
-$lhasa_slider_focus_ring_dragging: rgba(25, 118, 210, 0.24);
-$lhasa_switch_thumb_shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-$lhasa_floating_shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-$lhasa_floating_shadow_dark: 0 2px 8px rgba(0, 0, 0, 0.4);
-$lhasa_slider_thumb_shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-$lhasa_textfield_label: rgba(0, 0, 0, 0.6);
-$lhasa_textfield_label_dark: rgba(255, 255, 255, 0.7);
-$lhasa_switch_hover: rgba(0, 0, 0, 0.5);
-$lhasa_switch_hover_dark: rgba(255, 255, 255, 0.4);
-$lhasa_menu_focus: rgba(0, 0, 0, 0.08);
+$lhasa_floating_shadow: 0 2px 8px rgba(black, 0.15);
+$lhasa_floating_shadow_dark: 0 2px 8px rgba(black, 0.4);
+$lhasa_thumb_shadow: 0 1px 3px rgba(black, 0.3);
 
 .editor_canvas_container {
     border: $lhasa_border_color 1px solid;
