@@ -165,5 +165,19 @@ export function usePortalPosition(
     };
   }, [open, visible, computePosition]);
 
+  // Re-position when the portal's own size changes (e.g., Bansu workflow steps)
+  useEffect(() => {
+    if (!open || !visible || !portalRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      computePosition();
+    });
+    observer.observe(portalRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [open, visible, computePosition, portalRef.current]);
+
   return { position, visible, portalRef };
 }
