@@ -1,0 +1,833 @@
+@use 'index.scss';
+
+// =====================================================================
+// Shared mixins
+// =====================================================================
+
+@mixin component_font {
+  font-size: index.$lhasa_font_size;
+  font-family: sans-serif;
+  line-height: normal;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+@mixin component_padding {
+  padding-right: index.$lhasa_base_padding;
+  padding-left: index.$lhasa_base_padding;
+  padding-top: index.$lhasa_padding_minor;
+  padding-bottom: index.$lhasa_padding_minor;
+}
+
+// =====================================================================
+// Button
+// =====================================================================
+
+.lhasa_button {
+  @include component_font;
+  @include component_padding;
+  background: none;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 3px;
+  color: index.$lhasa_text_color;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: index.$lhasa_base_padding;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.lhasa_dark_mode .lhasa_button {
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.lhasa_button_primary {
+  @extend .lhasa_button;
+  background-color: #1976d2;
+  color: white;
+  border-color: #1976d2;
+
+  &:hover {
+    background-color: #1565c0;
+  }
+}
+
+.lhasa_dark_mode .lhasa_button_primary {
+  background-color: #90caf9;
+  color: rgba(0, 0, 0, 0.87);
+  border-color: #90caf9;
+
+  &:hover {
+    background-color: #64b5f6;
+  }
+}
+
+.lhasa_button_outlined {
+  @extend .lhasa_button;
+  background: none;
+  border: 1px solid rgba(25, 118, 210, 0.5);
+  color: #1976d2;
+
+  &:hover {
+    background-color: rgba(25, 118, 210, 0.04);
+    border-color: #1976d2;
+  }
+}
+
+.lhasa_dark_mode .lhasa_button_outlined {
+  border-color: rgba(144, 202, 249, 0.5);
+  color: #90caf9;
+
+  &:hover {
+    background-color: rgba(144, 202, 249, 0.08);
+    border-color: #90caf9;
+  }
+}
+
+// =====================================================================
+// IconButton
+// =====================================================================
+
+.lhasa_icon_button {
+  @include component_font;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 3px;
+  color: index.$lhasa_text_color;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.lhasa_dark_mode .lhasa_icon_button {
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+// =====================================================================
+// TextField
+// =====================================================================
+
+.lhasa_textfield {
+  @include component_font;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lhasa_textfield_small {
+  font-size: calc(index.$lhasa_font_size * 0.85);
+}
+
+.lhasa_textfield_label {
+  font-size: 0.75em;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 1px;
+}
+
+.lhasa_dark_mode .lhasa_textfield_label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lhasa_textfield_input {
+  @include component_font;
+  @include component_padding;
+  background-color: index.$lhasa_background_color;
+  color: index.$lhasa_text_color;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 3px;
+  outline: none;
+
+  &:focus {
+    border-color: #1976d2;
+    border-width: 2px;
+    padding-top: calc(index.$lhasa_padding_minor - 1px);
+    padding-bottom: calc(index.$lhasa_padding_minor - 1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+// Outlined variant (default) — full border
+.lhasa_textfield_outlined .lhasa_textfield_input {
+  border-style: solid;
+}
+
+// Standard variant — underline only
+.lhasa_textfield_standard .lhasa_textfield_input {
+  border: none;
+  border-bottom: 1px solid index.$lhasa_border_color;
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  background-color: transparent;
+
+  &:focus {
+    border-bottom-width: 2px;
+    border-bottom-color: #1976d2;
+    padding-bottom: calc(index.$lhasa_padding_minor - 1px);
+  }
+}
+
+.lhasa_dark_mode .lhasa_textfield_input {
+  background-color: index.$lhasa_background_color_dark;
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+}
+
+.lhasa_dark_mode .lhasa_textfield_standard .lhasa_textfield_input {
+  background-color: transparent;
+  border-bottom-color: index.$lhasa_border_color_dark;
+}
+
+// Error state
+.lhasa_textfield_error .lhasa_textfield_input {
+  border-color: #d32f2f;
+}
+
+.lhasa_textfield_error .lhasa_textfield_label {
+  color: #d32f2f;
+}
+
+.lhasa_textfield_helper {
+  font-size: 0.75em;
+  color: #d32f2f;
+  margin-top: 2px;
+}
+
+// =====================================================================
+// Input (bare)
+// =====================================================================
+
+.lhasa_input {
+  @include component_font;
+  @include component_padding;
+  background-color: index.$lhasa_background_color;
+  color: index.$lhasa_text_color;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 3px;
+  outline: none;
+  flex: 1;
+
+  &:focus {
+    border-color: #1976d2;
+  }
+}
+
+.lhasa_dark_mode .lhasa_input {
+  background-color: index.$lhasa_background_color_dark;
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+}
+
+// =====================================================================
+// Switch
+// =====================================================================
+
+.lhasa_switch {
+  display: inline-flex;
+  align-items: center;
+  width: 38px;
+  height: 22px;
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0.38);
+  border: none;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background-color 150ms;
+  position: relative;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.lhasa_switch_checked {
+  background-color: #1976d2;
+
+  &:hover {
+    background-color: #1565c0;
+  }
+}
+
+.lhasa_dark_mode .lhasa_switch {
+  background-color: rgba(255, 255, 255, 0.3);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.lhasa_dark_mode .lhasa_switch_checked {
+  background-color: #90caf9;
+
+  &:hover {
+    background-color: #64b5f6;
+  }
+}
+
+.lhasa_switch_thumb {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: left 150ms;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.lhasa_switch_checked .lhasa_switch_thumb {
+  left: 19px;
+}
+
+// =====================================================================
+// Checkbox
+// =====================================================================
+
+.lhasa_checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #1976d2;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.lhasa_checkbox_small {
+  width: 14px;
+  height: 14px;
+}
+
+// =====================================================================
+// Radio
+// =====================================================================
+
+.lhasa_radio {
+  width: 16px;
+  height: 16px;
+  accent-color: #1976d2;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+// =====================================================================
+// FormControlLabel
+// =====================================================================
+
+.lhasa_form_control_label {
+  display: inline-flex;
+  align-items: center;
+  gap: index.$lhasa_base_padding;
+  cursor: pointer;
+}
+
+.lhasa_form_control_label_text {
+  @include component_font;
+}
+
+// =====================================================================
+// FormGroup
+// =====================================================================
+
+.lhasa_form_group {
+  display: flex;
+  flex-direction: column;
+  gap: index.$lhasa_base_padding;
+  margin-left: index.$lhasa_base_padding;
+}
+
+// =====================================================================
+// FormControl
+// =====================================================================
+
+.lhasa_form_control {
+  display: flex;
+  flex-direction: column;
+}
+
+// =====================================================================
+// RadioGroup
+// =====================================================================
+
+.lhasa_radio_group {
+  display: flex;
+  flex-direction: column;
+  gap: index.$lhasa_base_padding;
+}
+
+// =====================================================================
+// Slider
+// =====================================================================
+
+.lhasa_slider {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 24px;
+  flex: 1;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  min-width: 80px;
+}
+
+.lhasa_slider_track {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  position: relative;
+}
+
+.lhasa_dark_mode .lhasa_slider_track {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.lhasa_slider_fill {
+  height: 100%;
+  background-color: #1976d2;
+  border-radius: 2px;
+}
+
+.lhasa_dark_mode .lhasa_slider_fill {
+  background-color: #90caf9;
+}
+
+.lhasa_slider_thumb {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: #1976d2;
+  border-radius: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  outline: none;
+
+  &:hover {
+    box-shadow: 0 0 0 8px rgba(25, 118, 210, 0.16);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 8px rgba(25, 118, 210, 0.16);
+  }
+}
+
+.lhasa_slider_dragging .lhasa_slider_thumb {
+  box-shadow: 0 0 0 12px rgba(25, 118, 210, 0.24);
+}
+
+.lhasa_dark_mode .lhasa_slider_thumb {
+  background-color: #90caf9;
+}
+
+// =====================================================================
+// Tooltip
+// =====================================================================
+
+.lhasa_tooltip_wrapper {
+  display: inline-flex;
+  position: relative;
+}
+
+.lhasa_tooltip_popup {
+  pointer-events: auto;
+}
+
+.lhasa_tooltip_noninteractive {
+  pointer-events: none;
+}
+
+.lhasa_tooltip_content {
+  @include component_font;
+  background-color: rgba(97, 97, 97, 0.92);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  max-width: 300px;
+  word-wrap: break-word;
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.lhasa_dark_mode .lhasa_tooltip_content {
+  background-color: rgba(180, 180, 180, 0.92);
+  color: rgba(0, 0, 0, 0.87);
+}
+
+// =====================================================================
+// Accordion
+// =====================================================================
+
+.lhasa_accordion {
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 3px;
+  background-color: index.$lhasa_background_color;
+  margin-top: index.$lhasa_base_padding;
+}
+
+.lhasa_dark_mode .lhasa_accordion {
+  background-color: index.$lhasa_background_color_dark;
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+}
+
+.lhasa_accordion_summary_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: index.$lhasa_base_padding;
+  cursor: pointer;
+  user-select: none;
+  min-height: 28px;
+}
+
+.lhasa_accordion_summary {
+  @include component_font;
+  font-weight: bold;
+}
+
+.lhasa_accordion_arrow {
+  font-size: 10px;
+  transition: transform 200ms;
+  flex-shrink: 0;
+}
+
+.lhasa_accordion_arrow_expanded {
+  transform: rotate(180deg);
+}
+
+.lhasa_accordion_details_wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lhasa_accordion_details_open {
+  max-height: 2000px;
+}
+
+.lhasa_accordion_details_inner {
+  padding: 0 index.$lhasa_base_padding index.$lhasa_base_padding;
+}
+
+.lhasa_accordion_details {
+  // inherits from parent
+}
+
+// =====================================================================
+// Menu
+// =====================================================================
+
+.lhasa_menu {
+  @include component_font;
+  background-color: white;
+  color: index.$lhasa_text_color;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 4px 0;
+  min-width: 120px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.lhasa_dark_mode .lhasa_menu,
+.lhasa_menu.lhasa_dark_mode {
+  background-color: #424242;
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.lhasa_menu_item {
+  @include component_font;
+  @include component_padding;
+  display: flex;
+  align-items: center;
+  gap: index.$lhasa_base_padding;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  min-height: 24px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  &:focus-visible {
+    background-color: rgba(0, 0, 0, 0.08);
+    outline: none;
+  }
+}
+
+.lhasa_dark_mode .lhasa_menu_item,
+.lhasa_menu.lhasa_dark_mode .lhasa_menu_item {
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  &:focus-visible {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// =====================================================================
+// Popover
+// =====================================================================
+
+.lhasa_popover {
+  @include component_font;
+  background-color: white;
+  color: index.$lhasa_text_color;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+}
+
+.lhasa_dark_mode .lhasa_popover,
+.lhasa_popover.lhasa_dark_mode {
+  background-color: #424242;
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+// =====================================================================
+// Tabs
+// =====================================================================
+
+.lhasa_tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid index.$lhasa_border_color;
+  margin-bottom: index.$lhasa_base_padding;
+}
+
+.lhasa_dark_mode .lhasa_tabs {
+  border-bottom-color: index.$lhasa_border_color_dark;
+}
+
+.lhasa_tab {
+  @include component_font;
+  @include component_padding;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: index.$lhasa_text_color;
+  cursor: pointer;
+  min-height: 28px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: -2px;
+  }
+}
+
+.lhasa_dark_mode .lhasa_tab {
+  color: index.$lhasa_text_color_dark;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.lhasa_tab_active {
+  border-bottom-color: #1976d2;
+  color: #1976d2;
+}
+
+.lhasa_dark_mode .lhasa_tab_active {
+  border-bottom-color: #90caf9;
+  color: #90caf9;
+}
+
+// =====================================================================
+// ToggleButton
+// =====================================================================
+
+.lhasa_toggle_button {
+  @include component_font;
+  @include component_padding;
+  background: none;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 3px;
+  color: index.$lhasa_text_color;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  text-transform: none;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: -2px;
+  }
+}
+
+.lhasa_dark_mode .lhasa_toggle_button {
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.lhasa_toggle_button_pressed {
+  background-color: rgba(25, 118, 210, 0.12);
+  border-color: #1976d2;
+  color: #1976d2;
+
+  &:hover {
+    background-color: rgba(25, 118, 210, 0.18);
+  }
+}
+
+.lhasa_dark_mode .lhasa_toggle_button_pressed {
+  background-color: rgba(144, 202, 249, 0.16);
+  border-color: #90caf9;
+  color: #90caf9;
+
+  &:hover {
+    background-color: rgba(144, 202, 249, 0.24);
+  }
+}
+
+// =====================================================================
+// Grid
+// =====================================================================
+
+.lhasa_grid_container {
+  display: grid;
+  gap: index.$lhasa_base_padding;
+}
+
+.lhasa_grid_item {
+  // grid-column is set inline
+}
+
+// =====================================================================
+// Collapse
+// =====================================================================
+
+.lhasa_collapse {
+  // base styles set via inline style
+}
+
+// =====================================================================
+// LinearProgress
+// =====================================================================
+
+.lhasa_linear_progress {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lhasa_dark_mode .lhasa_linear_progress {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.lhasa_linear_progress_bar {
+  height: 100%;
+  background-color: #1976d2;
+  border-radius: 2px;
+  transition: width 300ms ease;
+}
+
+.lhasa_dark_mode .lhasa_linear_progress_bar {
+  background-color: #90caf9;
+}
+
+// =====================================================================
+// Select (native)
+// =====================================================================
+
+.lhasa_select {
+  @include component_font;
+  @include component_padding;
+  background-color: index.$lhasa_background_color;
+  color: index.$lhasa_text_color;
+  border: 1px solid index.$lhasa_border_color;
+  border-radius: 3px;
+  cursor: pointer;
+  outline: none;
+  appearance: auto;
+
+  &:focus {
+    border-color: #1976d2;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.lhasa_dark_mode .lhasa_select {
+  background-color: index.$lhasa_background_color_dark;
+  color: index.$lhasa_text_color_dark;
+  border-color: index.$lhasa_border_color_dark;
+}
+
+// =====================================================================
+// Icons in menu items (keep existing sizing)
+// =====================================================================
+
+.lhasa_menu_item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
