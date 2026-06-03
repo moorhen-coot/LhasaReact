@@ -14,7 +14,6 @@ type SvgSelection = Selection<SVGSVGElement, undefined, null, undefined>;
 /// d3 selection of an SVG child element (e.g. `<text>`, `<tspan>`). Uses `any` due to d3's invariant generics.
 type SvgChildSelection = Selection<any, any, any, any>;
 import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, CustomMenu, CustomMenuItem, Accordion, AccordionSummary, AccordionDetails, CustomPopover, IconButton, Tooltip } from './components';
-import { ChevronRight, FileDownload, FileUpload, Image, Redo, Undo } from './components/Icons';
 import { QEDTabs } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
 import { AboutPopup } from './about_popup';
@@ -1192,7 +1191,7 @@ export function LhasaComponent({
                     ref={importMenuItemRef}
                     onClick={() => setImportOpen(true)}
                   >
-                    <FileUpload /> Import from... <ChevronRight />
+                    <img src={icons_path_final + "/lhasa_file_upload.svg"} /> Import from... <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
                   </CustomMenuItem>
                   <CustomMenuItem
                     ref={exportMenuItemRef}
@@ -1206,7 +1205,7 @@ export function LhasaComponent({
                       }
                     }}
                   >
-                    <FileDownload /> Export into... <ChevronRight />
+                    <img src={icons_path_final + "/lhasa_file_download.svg"} /> Export into... <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
                   </CustomMenuItem>
                   <CustomMenuItem
                     onClick={() => {
@@ -1229,7 +1228,7 @@ export function LhasaComponent({
                       setFileOpen(false);
                     }}
                   >
-                    <Image /> Export SVG
+                    <img src={icons_path_final + "/lhasa_image.svg"} /> Export SVG
                   </CustomMenuItem>
                 </CustomMenu>
                 <CustomPopover
@@ -1264,7 +1263,7 @@ export function LhasaComponent({
                             setExportMolMenuFormat({ format: fmt.format, extension: fmt.extension });
                           }}
                         >
-                          {fmt.name} ({fmt.extension}) <ChevronRight />
+                          {fmt.name} ({fmt.extension}) <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
                         </CustomMenuItem>
                   ))}
                 </CustomPopover>
@@ -1295,11 +1294,11 @@ export function LhasaComponent({
                   className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
                   <CustomMenuItem onClick={() => handler_map["Undo"]()} >
-                    <Undo />
+                    <img src={icons_path_final + "/lhasa_undo.svg"} />
                     Undo <div className="keybind_hint">Ctrl+Z</div>
                   </CustomMenuItem>
                   <CustomMenuItem onClick={() => handler_map["Redo"]()} >
-                    <Redo />
+                    <img src={icons_path_final + "/lhasa_redo.svg"} />
                     Redo <div className="keybind_hint">Ctrl+Shift+Z</div>
                   </CustomMenuItem>
                 </CustomMenu>
@@ -1361,7 +1360,7 @@ export function LhasaComponent({
                       ref={displayModeButtonRef}
                       onClick={(_evt) => setDisplayModeOpen((prev) => !prev)}
                   >
-                      Display Mode... <ChevronRight />
+                      Display Mode... <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
                   </CustomMenuItem>
                   <CustomPopover
   open={displayModeOpened}
