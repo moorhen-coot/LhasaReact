@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # workflow_run runs in the context of the default branch, so we
           # must explicitly check out the commit that triggered the build.
@@ -76,7 +76,7 @@ jobs:
 
       - name: Set up Node.js
         if: steps.wasm_check.outputs.available == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
