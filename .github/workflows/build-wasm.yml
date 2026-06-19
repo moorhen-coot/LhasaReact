@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Export runner image version
         # ImageVersion is set by the runner image build scripts but is only
@@ -65,7 +65,7 @@ jobs:
           echo "version=$resolved" >> "$GITHUB_OUTPUT"
 
       - name: Cache Coot sources
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache_coot_src
         with:
           path: wasm_build/coot
@@ -84,7 +84,7 @@ jobs:
           git -C wasm_build/coot checkout ${{ steps.coot_version.outputs.commit }}
 
       - name: Cache Emscripten SDK
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           # Must match actions-cache-folder below.
           path: emsdk-cache
@@ -110,7 +110,7 @@ jobs:
 
       - name: Cache built dependencies
         id: cache_deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             wasm_build/prefix
@@ -128,7 +128,7 @@ jobs:
         run: ./build_wasm.sh
 
       - name: Upload WASM artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           # Artifact name embeds the Coot commit so each build is identifiable
           # when downloading from the Actions UI or via the GitHub API.
