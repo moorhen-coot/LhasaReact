@@ -9,7 +9,8 @@ on:
       emsdk_version:
         description: 'Emscripten SDK version'
         required: false
-        default: 'latest'
+        # default: 'latest'
+        default: '5.0.4'
   push:
     tags:
       - 'v*'
