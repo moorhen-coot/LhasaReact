@@ -204,8 +204,25 @@ export function BansuButton(props: BansuPopupProps) {
                         >
                             Close
                         </Button>
-                        <Button 
-                            onClick={() => window.open(`${bansuEndpoint}/get_cif/${jobId}`)}
+                        <Button
+                            onClick={async () => {
+                                try {
+                                    const response = await fetch(`${bansuEndpoint}/get_cif/${jobId}`);
+                                    const cifText = await response.text();
+                                    const blob = new Blob([cifText], { type: 'chemical/x-cif' });
+                                    const url = URL.createObjectURL(blob);
+                                    // Detached anchor: garbage-collected, no manual cleanup needed.
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    // Sanitize SMILES for use as a filename, mirroring file export.
+                                    const smilesStr = props.smiles_list[selectedMolIndex][2];
+                                    a.download = smilesStr.replace(/[^a-zA-Z0-9]/g, '_') + '.cif';
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                } catch (err) {
+                                    console.error("Error downloading CIF:", err);
+                                }
+                            }}
                             // style={{flex: 'auto'}}
                             primary
                         >
