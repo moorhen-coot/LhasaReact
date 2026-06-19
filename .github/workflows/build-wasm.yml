@@ -24,7 +24,7 @@ permissions:
 # Single source of truth for the Emscripten SDK version. Use 'latest' to track
 # the newest emsdk release.
 env:
-  EMSDK_VERSION: '5.0.4'
+  EMSDK_VERSION: '6.0.0'
 
 jobs:
   build-wasm:
