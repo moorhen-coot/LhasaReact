@@ -5,12 +5,6 @@ on:
   schedule:
   - cron: "0 5 * * 0"
   workflow_dispatch:
-    inputs:
-      emsdk_version:
-        description: 'Emscripten SDK version'
-        required: false
-        # default: 'latest'
-        default: '5.0.4'
   push:
     tags:
       - 'v*'
@@ -26,6 +20,11 @@ on:
 
 permissions:
   contents: write
+
+# Single source of truth for the Emscripten SDK version. Use 'latest' to track
+# the newest emsdk release.
+env:
+  EMSDK_VERSION: '5.0.4'
 
 jobs:
   build-wasm:
@@ -53,10 +52,8 @@ jobs:
 
       - name: Resolve Emscripten SDK version
         id: emsdk
-        # When the requested version is 'latest', resolve it to an actual
-        # release tag so that cache keys change when a new emsdk is released.
         run: |
-          requested="${{ inputs.emsdk_version || 'latest' }}"
+          requested="${EMSDK_VERSION}"
           if [ "$requested" = "latest" ]; then
             resolved=$(curl -sf "https://api.github.com/repos/emscripten-core/emsdk/tags?per_page=1" | python3 -c "import sys,json; print(json.load(sys.stdin)[0]['name'])")
             echo "Resolved 'latest' to emsdk version: $resolved"
@@ -94,7 +91,7 @@ jobs:
           key: emsdk-${{ steps.emsdk.outputs.version }}-runner-${{ runner.os }}-${{ env.ImageVersion }}
 
       - name: Set up Emscripten SDK
-        uses: mymindstorm/setup-emsdk@v14
+        uses: emscripten-core/setup-emsdk@v16
         with:
           version: ${{ steps.emsdk.outputs.version }}
           # Tells setup-emsdk to install the SDK into this subdirectory of the
