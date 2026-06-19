@@ -13,12 +13,14 @@ interface PopupEntry {
 let nextId = 0;
 const popups: PopupEntry[] = [];
 let handlerInstalled = false;
+let onMouseDown: ((e: MouseEvent) => void) | null = null;
+let onKeyDown: ((e: KeyboardEvent) => void) | null = null;
 
 function installHandlers() {
   if (handlerInstalled) return;
   handlerInstalled = true;
 
-  document.addEventListener('mousedown', (e: MouseEvent) => {
+  onMouseDown = (e: MouseEvent) => {
     const target = e.target as Node;
 
     // If target is inside any popup, do nothing
@@ -34,13 +36,33 @@ function installHandlers() {
         return;
       }
     }
-  });
+  };
 
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
+  onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && popups.length > 0) {
       const sorted = [...popups].sort((a, b) => b.level - a.level);
       sorted[0]?.onClose();
     }
+  };
+
+  document.addEventListener('mousedown', onMouseDown);
+  document.addEventListener('keydown', onKeyDown);
+}
+
+// Remove global listeners — call on HMR dispose or app teardown
+export function disposePopupRegistry(): void {
+  if (!handlerInstalled) return;
+  if (onMouseDown) document.removeEventListener('mousedown', onMouseDown);
+  if (onKeyDown) document.removeEventListener('keydown', onKeyDown);
+  onMouseDown = null;
+  onKeyDown = null;
+  handlerInstalled = false;
+}
+
+// HMR cleanup (Vite)
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    disposePopupRegistry();
   });
 }
 

@@ -13,6 +13,9 @@ export function Slider({ value, min = 0, max = 100, step = 1, scale, onChange }:
   const trackRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
   const currentValue = value ?? min;
+  // Ref copy so getValueFromPosition doesn't churn on every value change during drag
+  const currentValueRef = useRef(currentValue);
+  currentValueRef.current = currentValue;
 
   // Compute the fractional position (0 to 1) accounting for optional scale function
   const scaleMin = scale ? scale(min) : min;
@@ -22,7 +25,7 @@ export function Slider({ value, min = 0, max = 100, step = 1, scale, onChange }:
 
   const getValueFromPosition = useCallback(
     (clientX: number) => {
-      if (!trackRef.current) return currentValue;
+      if (!trackRef.current) return currentValueRef.current;
       const rect = trackRef.current.getBoundingClientRect();
       let posFrac = (clientX - rect.left) / rect.width;
       posFrac = Math.max(0, Math.min(1, posFrac));
@@ -52,7 +55,7 @@ export function Slider({ value, min = 0, max = 100, step = 1, scale, onChange }:
       const stepped = Math.round(rawValue / step) * step;
       return Math.max(min, Math.min(max, stepped));
     },
-    [currentValue, min, max, step, scale]
+    [min, max, step, scale]
   );
 
   const onPointerDown = useCallback(
