@@ -9,7 +9,6 @@ export interface UsePortalPositionOptions {
   anchorOrigin?: AnchorOrigin;
   transformOrigin?: AnchorOrigin;
   onClose?: () => void;
-  level?: number;
 }
 
 type Position = { top: number; left: number };
@@ -23,6 +22,13 @@ export function usePortalPosition(
     anchorOrigin = { horizontal: 'left', vertical: 'bottom' },
     transformOrigin = { horizontal: 'left', vertical: 'top' },
   } = options;
+  // Depend on the primitive origin fields, not the object identities — callers
+  // pass inline object literals, so depending on the objects would rebuild
+  // computePosition every render and churn the scroll/resize/observer listeners.
+  const anchorH = anchorOrigin.horizontal;
+  const anchorV = anchorOrigin.vertical;
+  const transformH = transformOrigin.horizontal;
+  const transformV = transformOrigin.vertical;
 
   const [position, setPosition] = useState<Position | null>(null);
   const [visible, setVisible] = useState(false);
@@ -42,7 +48,7 @@ export function usePortalPosition(
       const anchorRect = anchorEl.getBoundingClientRect();
 
       // Compute top based on anchorOrigin.vertical
-      switch (anchorOrigin.vertical) {
+      switch (anchorV) {
         case 'top':
           top = anchorRect.top;
           break;
@@ -56,7 +62,7 @@ export function usePortalPosition(
       }
 
       // Compute left based on anchorOrigin.horizontal
-      switch (anchorOrigin.horizontal) {
+      switch (anchorH) {
         case 'left':
           left = anchorRect.left;
           break;
@@ -74,7 +80,7 @@ export function usePortalPosition(
     }
 
     // Adjust based on transformOrigin
-    switch (transformOrigin.vertical) {
+    switch (transformV) {
       case 'top':
         break;
       case 'center':
@@ -85,7 +91,7 @@ export function usePortalPosition(
         break;
     }
 
-    switch (transformOrigin.horizontal) {
+    switch (transformH) {
       case 'left':
         break;
       case 'center':
@@ -106,8 +112,8 @@ export function usePortalPosition(
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const margin = 8;
-    const isCenteredH = !anchorEl || anchorOrigin.horizontal === 'center';
-    const isCenteredV = !anchorEl || anchorOrigin.vertical === 'center';
+    const isCenteredH = !anchorEl || anchorH === 'center';
+    const isCenteredV = !anchorEl || anchorV === 'center';
 
     if (left + portalWidth > viewportWidth + window.scrollX - margin) {
       if (isCenteredH) {
@@ -145,7 +151,7 @@ export function usePortalPosition(
 
     setPosition({ top, left });
     setVisible(true);
-  }, [anchorEl, anchorOrigin, transformOrigin]);
+  }, [anchorEl, anchorH, anchorV, transformH, transformV]);
 
   useEffect(() => {
     if (!open) {

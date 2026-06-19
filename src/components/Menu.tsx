@@ -27,13 +27,12 @@ export function CustomMenu({ open, anchorEl, onClose, className, children }: Cus
     anchorOrigin: { horizontal: 'left', vertical: 'bottom' },
     transformOrigin: { horizontal: 'left', vertical: 'top' },
     onClose,
-    level: 0,
   });
 
   // Register this popup in the shared registry for click-outside detection
   useEffect(() => {
     if (!open || !portalRef.current || !visible) return;
-    const id = registerPopup(portalRef.current, anchorEl ?? null, onClose ?? (() => {}), 0);
+    const id = registerPopup(portalRef.current, anchorEl ?? null, onClose ?? (() => {}));
     return () => {
       unregisterPopup(id);
     };

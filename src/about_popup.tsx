@@ -15,7 +15,10 @@ export function AboutPopup(props: AboutPopupProps) {
     return (
         <CustomPopover
             open={props.open}
-            anchorEl={props.anchorEl}
+            // Centered modal: position over the editor, but dismiss on any click
+            // outside the popup itself (no exempt anchor zone).
+            anchorEl={null}
+            positionAnchorEl={props.anchorEl}
             anchorOrigin={{vertical: 'center', horizontal: 'center'}}
             transformOrigin={{vertical: 'center', horizontal: 'center'}}
             onClose={props.onClose}

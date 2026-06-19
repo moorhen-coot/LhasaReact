@@ -8,6 +8,11 @@ export type { AnchorOrigin } from './hooks/usePortalPosition';
 export interface CustomPopoverProps {
   open?: boolean;
   anchorEl?: HTMLElement | null;
+  /// Element to position against, if different from `anchorEl`. `anchorEl` still
+  /// defines the click-outside "exempt zone" (e.g. the toggle button), while this
+  /// only drives placement. Use `anchorEl={null}` + `positionAnchorEl={...}` for a
+  /// centered modal that dismisses on any click outside the popup itself.
+  positionAnchorEl?: HTMLElement | null;
   anchorOrigin?: AnchorOrigin;
   transformOrigin?: AnchorOrigin;
   onClose?: () => void;
@@ -18,23 +23,23 @@ export interface CustomPopoverProps {
 export function CustomPopover({
   open,
   anchorEl,
+  positionAnchorEl,
   anchorOrigin,
   transformOrigin,
   onClose,
   className,
   children,
 }: CustomPopoverProps) {
-  const { position, visible, portalRef } = usePortalPosition(anchorEl, open ?? false, {
+  const { position, visible, portalRef } = usePortalPosition(positionAnchorEl ?? anchorEl, open ?? false, {
     anchorOrigin: anchorOrigin ?? { horizontal: 'left', vertical: 'bottom' },
     transformOrigin: transformOrigin ?? { horizontal: 'left', vertical: 'top' },
     onClose,
-    level: 0,
   });
 
   // Register in the shared popup registry for click-outside detection
   useEffect(() => {
     if (!open || !portalRef.current || !visible) return;
-    const id = registerPopup(portalRef.current, anchorEl ?? null, onClose ?? (() => {}), 0);
+    const id = registerPopup(portalRef.current, anchorEl ?? null, onClose ?? (() => {}));
     return () => {
       unregisterPopup(id);
     };

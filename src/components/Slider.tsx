@@ -17,11 +17,10 @@ export function Slider({ value, min = 0, max = 100, step = 1, scale, onChange }:
   const currentValueRef = useRef(currentValue);
   currentValueRef.current = currentValue;
 
-  // Compute the fractional position (0 to 1) accounting for optional scale function
-  const scaleMin = scale ? scale(min) : min;
-  const scaleMax = scale ? scale(max) : max;
-  const scaleVal = scale ? scale(currentValue) : currentValue;
-  const fraction = (scaleVal - scaleMin) / (scaleMax - scaleMin);
+  // Position and onChange operate purely in the raw [min, max] domain (linear),
+  // matching MUI: `scale` only transforms the displayed/aria value, never the
+  // thumb position or the value reported to onChange.
+  const fraction = (currentValue - min) / (max - min);
 
   const getValueFromPosition = useCallback(
     (clientX: number) => {
@@ -30,32 +29,12 @@ export function Slider({ value, min = 0, max = 100, step = 1, scale, onChange }:
       let posFrac = (clientX - rect.left) / rect.width;
       posFrac = Math.max(0, Math.min(1, posFrac));
 
-      // Reverse the scale mapping if present
-      const scaleMin_ = scale ? scale(min) : min;
-      const scaleMax_ = scale ? scale(max) : max;
-      const rawScaleVal = scaleMin_ + posFrac * (scaleMax_ - scaleMin_);
-
-      let rawValue: number;
-      if (scale) {
-        // Binary search to invert the scale function (it's monotonic)
-        let lo = min;
-        let hi = max;
-        for (let i = 0; i < 30; i++) {
-          const mid = (lo + hi) / 2;
-          const sv = scale(mid);
-          if (sv < rawScaleVal) lo = mid;
-          else hi = mid;
-        }
-        rawValue = (lo + hi) / 2;
-      } else {
-        rawValue = rawScaleVal;
-      }
-
+      const rawValue = min + posFrac * (max - min);
       // Snap to step
       const stepped = Math.round(rawValue / step) * step;
       return Math.max(min, Math.min(max, stepped));
     },
-    [min, max, step, scale]
+    [min, max, step]
   );
 
   const onPointerDown = useCallback(
@@ -126,7 +105,7 @@ export function Slider({ value, min = 0, max = 100, step = 1, scale, onChange }:
         aria-valuemin={min}
         aria-valuemax={max}
         aria-valuenow={currentValue}
-        aria-valuetext={currentValue.toFixed(2)}
+        aria-valuetext={(scale ? scale(currentValue) : currentValue).toFixed(2)}
         style={{ left: `${fraction * 100}%` }}
         onKeyDown={onKeyDown}
       />

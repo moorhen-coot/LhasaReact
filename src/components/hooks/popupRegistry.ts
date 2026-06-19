@@ -28,12 +28,12 @@ function installHandlers() {
       if (p.ref.contains(target)) return;
     }
 
-    // Close the deepest popup whose anchor does NOT contain the target
+    // Close every popup the click fell outside of (outside both the popup and
+    // its anchor/trigger). Deepest first so children close before their parents.
     const sorted = [...popups].sort((a, b) => b.level - a.level);
     for (const p of sorted) {
       if (!p.anchorEl?.contains(target)) {
         p.onClose();
-        return;
       }
     }
   };
@@ -69,11 +69,21 @@ if (import.meta.hot) {
 export function registerPopup(
   ref: HTMLElement,
   anchorEl: HTMLElement | null,
-  onClose: () => void,
-  level: number
+  onClose: () => void
 ): number {
   installHandlers();
   const id = nextId++;
+  // Derive nesting depth from the DOM: a nested popup's anchor (e.g. a menu item)
+  // lives inside its parent popup's portal, so this popup sits one level deeper
+  // than the deepest already-open popup whose portal contains the anchor.
+  let level = 0;
+  if (anchorEl) {
+    for (const p of popups) {
+      if (p.ref.contains(anchorEl)) {
+        level = Math.max(level, p.level + 1);
+      }
+    }
+  }
   popups.push({ id, ref, anchorEl, onClose, level });
   return id;
 }
