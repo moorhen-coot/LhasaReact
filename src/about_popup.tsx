@@ -22,7 +22,7 @@ export function AboutPopup(props: AboutPopupProps) {
             anchorOrigin={{vertical: 'center', horizontal: 'center'}}
             transformOrigin={{vertical: 'center', horizontal: 'center'}}
             onClose={props.onClose}
-            className={props.dark_mode ? "lhasa_dark_mode" : ""}
+            className={"lhasa_popover_flush" + (props.dark_mode ? " lhasa_dark_mode" : "")}
         >
             <div className={"vertical_popup lhasa_editor" + (props.dark_mode ? " lhasa_dark_mode" : "")}>
                 <div className="vertical_popup_title">About Lhasa</div>

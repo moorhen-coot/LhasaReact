@@ -597,6 +597,12 @@ $thumb-shadow: index.$lhasa_thumb_shadow;
   padding: 4px 8px;
 }
 
+// For popovers that wrap their own fully-styled panel (e.g. the About popup)
+// the generic padding would frame the panel — opt out.
+.lhasa_popover_flush {
+  padding: 0;
+}
+
 .lhasa_dark_mode .lhasa_popover,
 .lhasa_popover.lhasa_dark_mode {
   background-color: index.$lhasa_background_color_dark;
