@@ -3,7 +3,7 @@ import { HotKeys } from "react-hotkeys"
 //import * as d3 from "d3";
 import { create as D3Create } from 'd3';
 import './index.scss';
-import './customize_mui.scss';
+import './components.scss';
 import { Canvas, CheminformaticsFileFormat, Color, DisplayMode, MainModule, QEDInfo, TextMeasurementCache, TextStyle, TextSpanVector, GraphenePoint } from './types';
 import type { Text as LhasaText } from './types';
 import type { Selection } from 'd3';
@@ -13,8 +13,7 @@ type SvgSelection = Selection<SVGSVGElement, undefined, null, undefined>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 /// d3 selection of an SVG child element (e.g. `<text>`, `<tspan>`). Uses `any` due to d3's invariant generics.
 type SvgChildSelection = Selection<any, any, any, any>;
-import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, Menu, MenuItem, Accordion, AccordionSummary, AccordionDetails, Popover, StyledEngineProvider, IconButton, Tooltip } from '@mui/material';
-import { ChevronRight, FileDownload, FileUpload, Image, Redo, Undo } from '@mui/icons-material';
+import { ToggleButton, Button, Switch, FormGroup, FormControlLabel, FormControl, RadioGroup, Radio, Slider, TextField, CustomMenu, CustomMenuItem, Accordion, AccordionSummary, AccordionDetails, CustomPopover, IconButton, Tooltip } from './components';
 import { QEDTabs } from './qed_property_infobox';
 import { BansuButton } from './bansu_integration';
 import { AboutPopup } from './about_popup';
@@ -1027,15 +1026,15 @@ export function LhasaComponent({
   const fileButtonRef = useRef<HTMLButtonElement | null>(null)
   const [fileOpened, setFileOpen] = useState<boolean>(false);
 
-  const importMenuItemRef = useRef<HTMLLIElement | null>(null);
+  const importMenuItemRef = useRef<HTMLDivElement | null>(null);
   const [importOpened, setImportOpen] = useState<boolean>(false);
 
-  const exportMenuItemRef = useRef<HTMLLIElement | null>(null);
+  const exportMenuItemRef = useRef<HTMLDivElement | null>(null);
   const [exportOpened, setExportOpen] = useState<boolean>(false);
 
   // This sub-menu appears when there are multiple molecules on the canvas and the user has chosen the export format 
   // (by clicking on a format sub-menu in the export menu) - and now needs to choose the molecule to export.
-  const [exportMolMenuAnchor, setExportMolMenuAnchor] = useState<HTMLLIElement | null>(null);
+  const [exportMolMenuAnchor, setExportMolMenuAnchor] = useState<HTMLDivElement | null>(null);
   const [exportMolMenuFormat, setExportMolMenuFormat] = useState<{format: CheminformaticsFileFormat, extension: string} | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -1102,12 +1101,12 @@ export function LhasaComponent({
   const optionButtonRef = useRef<HTMLButtonElement | null>(null)
   const [optionOpened, setOptionOpen] = useState<boolean>(false);
 
-  const displayModeButtonRef = useRef<HTMLLIElement | null>(null);
+  const displayModeButtonRef = useRef<HTMLDivElement | null>(null);
   const [displayModeOpened, setDisplayModeOpen] = useState<boolean>(false);
 
   const helpButtonRef = useRef<HTMLButtonElement | null>(null);
   const [helpOpened, setHelpOpened] = useState<boolean>(false);
-  const aboutButtonRef = useRef<HTMLLIElement | null>(null);
+  const aboutButtonRef = useRef<HTMLDivElement | null>(null);
   const [aboutOpened, setAboutOpen] = useState<boolean>(false);
 
   const sendToButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -1144,9 +1143,9 @@ export function LhasaComponent({
     <>
       <ActiveToolContext.Provider value={{active_tool_name: activeToolName, show_optional_captions: showToolButtonLabels}}>
         <HotKeys keyMap={key_map} handlers={handler_map}>
-          <StyledEngineProvider injectFirst>
+          <>
             <div 
-              className={"lhasa_editor LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")} 
+              className={"lhasa_editor" + (dark_mode ? " lhasa_dark_mode" : "")} 
               ref={editorRef}
               style={
                 {
@@ -1171,7 +1170,8 @@ export function LhasaComponent({
               <div className="horizontal_toolbar">
                 <Button
                   ref={fileButtonRef}
-                  disableElevation
+                  borderless
+
                   onClick={(_evt) => setFileOpen((prev) => !prev)}
                 >
                   File
@@ -1182,19 +1182,19 @@ export function LhasaComponent({
                   style={{ display: 'none' }}
                   onChange={onFileSelected}
                 />
-                <Menu
-                  open={fileOpened}
+                <CustomMenu
+  open={fileOpened}
                   anchorEl={fileButtonRef.current}
                   onClose={() => { setFileOpen(false); setImportOpen(false); setExportOpen(false); }}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
-                  <MenuItem
+                  <CustomMenuItem
                     ref={importMenuItemRef}
                     onClick={() => setImportOpen(true)}
                   >
-                    <FileUpload /> Import from... <ChevronRight />
-                  </MenuItem>
-                  <MenuItem
+                    <img src={icons_path_final + "/lhasa_file_upload.svg"} /> Import from... <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                  </CustomMenuItem>
+                  <CustomMenuItem
                     ref={exportMenuItemRef}
                     onClick={() => {
                       if (smiles.length === 0) {
@@ -1206,9 +1206,9 @@ export function LhasaComponent({
                       }
                     }}
                   >
-                    <FileDownload /> Export into... <ChevronRight />
-                  </MenuItem>
-                  <MenuItem
+                    <img src={icons_path_final + "/lhasa_file_download.svg"} /> Export into... <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                  </CustomMenuItem>
+                  <CustomMenuItem
                     onClick={() => {
                       const liveSvg = svgRef.current?.querySelector("svg");
                       if (!liveSvg) {
@@ -1229,95 +1229,97 @@ export function LhasaComponent({
                       setFileOpen(false);
                     }}
                   >
-                    <Image /> Export SVG
-                  </MenuItem>
-                </Menu>
-                <Popover
-                  open={importOpened}
+                    <img src={icons_path_final + "/lhasa_image.svg"} /> Export SVG
+                  </CustomMenuItem>
+                </CustomMenu>
+                <CustomPopover
+  open={importOpened}
                   anchorEl={importMenuItemRef.current}
                   anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
                   onClose={() => setImportOpen(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
                   {fileFormats.map((fmt) => (
-                    <MenuItem key={fmt.name} onClick={() => handleImportFile(fmt.format)}>
+                    <CustomMenuItem key={fmt.name} onClick={() => handleImportFile(fmt.format)}>
                       {fmt.name} ({fmt.extension})
-                    </MenuItem>
+                    </CustomMenuItem>
                   ))}
-                </Popover>
-                <Popover
-                  open={exportOpened}
+                </CustomPopover>
+                <CustomPopover
+  open={exportOpened}
                   anchorEl={exportMenuItemRef.current}
                   anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
                   onClose={() => { setExportOpen(false); setExportMolMenuAnchor(null); setExportMolMenuFormat(null); }}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
                   {fileFormats.map((fmt) => (
                     smiles.length === 1
-                      ? <MenuItem key={fmt.name} onClick={() => handleExportMol(smiles[0][0], smiles[0][1], fmt.format, fmt.extension)}>
+                      ? <CustomMenuItem key={fmt.name} onClick={() => handleExportMol(smiles[0][0], smiles[0][1], fmt.format, fmt.extension)}>
                           {fmt.name} ({fmt.extension})
-                        </MenuItem>
-                      : <MenuItem
+                        </CustomMenuItem>
+                      : <CustomMenuItem
                           key={fmt.name}
                           onClick={(evt) => {
-                            setExportMolMenuAnchor(evt.currentTarget);
+                            setExportMolMenuAnchor(evt.currentTarget as HTMLDivElement);
                             setExportMolMenuFormat({ format: fmt.format, extension: fmt.extension });
                           }}
                         >
-                          {fmt.name} ({fmt.extension}) <ChevronRight />
-                        </MenuItem>
+                          {fmt.name} ({fmt.extension}) <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                        </CustomMenuItem>
                   ))}
-                </Popover>
-                <Popover
-                  open={exportMolMenuAnchor !== null && exportMolMenuFormat !== null}
+                </CustomPopover>
+                <CustomPopover
+  open={exportMolMenuAnchor !== null && exportMolMenuFormat !== null}
                   anchorEl={exportMolMenuAnchor}
                   anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
                   onClose={() => { setExportMolMenuAnchor(null); setExportMolMenuFormat(null); }}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
                   {smiles.map(([molId, smilesStr]) => (
-                    <MenuItem key={molId} onClick={() => handleExportMol(molId, smilesStr, exportMolMenuFormat!.format, exportMolMenuFormat!.extension)}>
+                    <CustomMenuItem key={molId} onClick={() => handleExportMol(molId, smilesStr, exportMolMenuFormat!.format, exportMolMenuFormat!.extension)}>
                       {smilesStr}
-                    </MenuItem>
+                    </CustomMenuItem>
                   ))}
-                </Popover>
+                </CustomPopover>
                 <Button
                   ref={editButtonRef}
-                  disableElevation
+                  borderless
+
                   onClick={(_evt) => setEditOpen((prev) => !prev)}
                 >
                   Edit
                 </Button>
-                <Menu
-                  open={editOpened}
+                <CustomMenu
+  open={editOpened}
                   anchorEl={editButtonRef.current}
                   onClose={() => setEditOpen(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
-                  <MenuItem onClick={() => handler_map["Undo"]()} >
-                    <Undo />
+                  <CustomMenuItem onClick={() => handler_map["Undo"]()} >
+                    <img src={icons_path_final + "/lhasa_undo.svg"} />
                     Undo <div className="keybind_hint">Ctrl+Z</div>
-                  </MenuItem>
-                  <MenuItem onClick={() => handler_map["Redo"]()} >
-                    <Redo />
+                  </CustomMenuItem>
+                  <CustomMenuItem onClick={() => handler_map["Redo"]()} >
+                    <img src={icons_path_final + "/lhasa_redo.svg"} />
                     Redo <div className="keybind_hint">Ctrl+Shift+Z</div>
-                  </MenuItem>
-                </Menu>
-                <Button 
+                  </CustomMenuItem>
+                </CustomMenu>
+                <Button
                   ref={optionButtonRef}
-                  disableElevation
+                  borderless
+
                   onClick={(_evt) => setOptionOpen((prev) => !prev)}
 
                 >
                   Options
                 </Button>
-                <Menu
-                  open={optionOpened}
+                <CustomMenu
+  open={optionOpened}
                   anchorEl={optionButtonRef.current}
                   onClose={() => setOptionOpen(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
-                  <MenuItem>
+                  <CustomMenuItem>
                     <FormGroup>
                       <FormControlLabel 
                         label="Allow Invalid Molecules" 
@@ -1356,19 +1358,19 @@ export function LhasaComponent({
                         }}
                       />
                     </FormGroup>
-                  </MenuItem>
-                  <MenuItem
+                  </CustomMenuItem>
+                  <CustomMenuItem
                       ref={displayModeButtonRef}
                       onClick={(_evt) => setDisplayModeOpen((prev) => !prev)}
                   >
-                      Display Mode... <ChevronRight />
-                  </MenuItem>
-                  <Popover
-                  open={displayModeOpened}
+                      Display Mode... <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                  </CustomMenuItem>
+                  <CustomPopover
+  open={displayModeOpened}
                   anchorEl={displayModeButtonRef.current}
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                   onClose={() => setDisplayModeOpen(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                   //  onMouseOut={(_ev) => setDisplayModeAnchorEl(null)}
                   >
                     <FormControl>
@@ -1394,39 +1396,41 @@ export function LhasaComponent({
                         />
                       </RadioGroup>
                     </FormControl>
-                  </Popover>
-                </Menu>
+                  </CustomPopover>
+                </CustomMenu>
                 <Button
                   ref={helpButtonRef}
-                  disableElevation
+                  borderless
+
                   onClick={(_evt) => setHelpOpened((prev) => !prev)}
                 >
                   Help
                 </Button>
-                <Menu
-                  open={helpOpened}
+                <CustomMenu
+  open={helpOpened}
                   anchorEl={helpButtonRef.current}
                   onClose={() => setHelpOpened(false)}
-                  className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                  className={(dark_mode ? "lhasa_dark_mode" : "")}
                 >
-                  <MenuItem
+                  <CustomMenuItem
                     ref={aboutButtonRef}
                     onClick={(_evt) => setAboutOpen(true)}
                   >
                     About
-                  </MenuItem>
+                  </CustomMenuItem>
                   <AboutPopup
                     dark_mode={dark_mode}
                     icons_path_prefix={icons_path_prefix}
                     open={aboutOpened}
-                    anchorEl={aboutButtonRef.current}
+                    anchorEl={editorRef.current}
                     onClose={() => setAboutOpen(false)}
                   />
-                </Menu>
+                </CustomMenu>
                 {send_to_host_program_callback && name_of_host_program && smiles.length > 0 && <>
                   <Button
                     ref={sendToButtonRef}
-                    disableElevation
+                    borderless
+  
                     onClick={(_evt) => {
                       if (smiles.length === 1) {
                         const lookup_result = canvasIdsToPropsIdsRef.current.get(smiles[0][0]);
@@ -1440,14 +1444,14 @@ export function LhasaComponent({
                   >
                     Send to {name_of_host_program}
                   </Button>
-                  <Menu
-                    open={sendToMenuOpen}
+                  <CustomMenu
+    open={sendToMenuOpen}
                     anchorEl={sendToButtonRef.current}
                     onClose={() => setSendToMenuOpen(false)}
-                    className={"LhasaMuiStyling" + (dark_mode ? " lhasa_dark_mode" : "")}
+                    className={(dark_mode ? "lhasa_dark_mode" : "")}
                   >
                     {smiles.map(([molId, smilesStr]) => (
-                      <MenuItem key={molId} onClick={() => {
+                      <CustomMenuItem key={molId} onClick={() => {
                         const lookup_result = canvasIdsToPropsIdsRef.current.get(molId);
                         const external_id = lookup_result !== undefined ? lookup_result : null;
                         const rdkit_pickle_base64 = Lhasa.export_mol_to_pickle_base64(lh.current, molId);
@@ -1455,9 +1459,9 @@ export function LhasaComponent({
                         setSendToMenuOpen(false);
                       }}>
                         {smilesStr}
-                      </MenuItem>
+                      </CustomMenuItem>
                     ))}
-                  </Menu>
+                  </CustomMenu>
                 </>}
                 {bansu_endpoint && smiles.length > 0 &&
                   <BansuButton
@@ -1532,13 +1536,11 @@ export function LhasaComponent({
                     <TextField
                       label="Custom element symbol"
                       id={x_element_symbol_input}
-                      variant="outlined"
-                      error={x_element_error_string != null}
-                      helperText={x_element_error_string}
+                      error={x_element_error_string}
                       style={{alignSelf: "center", flexGrow: "1"}}
                     />
                     <Button
-                    variant='contained'
+                    primary
                     // className='x_element_submit_button'
                     onClick={() => on_x_element_submit_button()}
                     >
@@ -1635,7 +1637,7 @@ export function LhasaComponent({
                   <div className="smiles_display vertical_panel">
                     {smiles.map((smiles_tuple) => <div key={smiles_tuple[0]} className='horizontal_container'>
                       <TextField
-                        variant="standard"
+                        standard
                         value={editedSmiles !== smiles_tuple[0] ? smiles_tuple[1] : undefined}
                         onFocus={(_event) => setEditedSmiles(smiles_tuple[0])}
                         onBlur={(_event) => setEditedSmiles(null)}
@@ -1654,14 +1656,12 @@ export function LhasaComponent({
                     <TextField
                       label="SMILES"
                       id={smiles_input}
-                      variant="outlined"
-                      error={smiles_error_string != null}
-                      helperText={smiles_error_string}
+                      error={smiles_error_string}
                       style={{"flexGrow": 1}}
                     />
-                    <Button 
-                      variant="contained" 
-                      onClick={() => on_smiles_import_button()} 
+                    <Button
+                      primary
+                      onClick={() => on_smiles_import_button()}
                     >
                       Import SMILES
                     </Button>
@@ -1680,7 +1680,7 @@ export function LhasaComponent({
                 </div>
               }
             </div>
-          </StyledEngineProvider>
+          </>
         </HotKeys>
       </ActiveToolContext.Provider>
     </>
