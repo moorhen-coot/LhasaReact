@@ -1192,7 +1192,7 @@ export function LhasaComponent({
                     ref={importMenuItemRef}
                     onClick={() => setImportOpen(true)}
                   >
-                    <img src={icons_path_final + "/lhasa_file_upload.svg"} /> Import from... <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                    <img src={icons_path_final + "/lhasa_file_upload.svg"} /> Import from... <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
                   </CustomMenuItem>
                   <CustomMenuItem
                     ref={exportMenuItemRef}
@@ -1206,7 +1206,7 @@ export function LhasaComponent({
                       }
                     }}
                   >
-                    <img src={icons_path_final + "/lhasa_file_download.svg"} /> Export into... <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                    <img src={icons_path_final + "/lhasa_file_download.svg"} /> Export into... <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
                   </CustomMenuItem>
                   <CustomMenuItem
                     onClick={() => {
@@ -1264,7 +1264,7 @@ export function LhasaComponent({
                             setExportMolMenuFormat({ format: fmt.format, extension: fmt.extension });
                           }}
                         >
-                          {fmt.name} ({fmt.extension}) <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                          {fmt.name} ({fmt.extension}) <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
                         </CustomMenuItem>
                   ))}
                 </CustomPopover>
@@ -1363,7 +1363,7 @@ export function LhasaComponent({
                       ref={displayModeButtonRef}
                       onClick={(_evt) => setDisplayModeOpen((prev) => !prev)}
                   >
-                      Display Mode... <img src={icons_path_final + "/lhasa_chevron_right.svg"} />
+                      Display Mode... <img className="lhasa_menu_chevron" src={icons_path_final + "/lhasa_chevron_right.svg"} />
                   </CustomMenuItem>
                   <CustomPopover
   open={displayModeOpened}
