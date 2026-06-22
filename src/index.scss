@@ -252,7 +252,9 @@ $lhasa_thumb_shadow: 0 1px 3px rgba(black, 0.3);
 
 .vertical_popup {
     @include vertical_container;
-    @include center_flex;
+    // The MUI build neutralized center_flex via LhasaMuiStyling, so the popup body
+    // was always left-aligned; keep it that way (the title centers via its own rule).
+    text-align: left;
     gap: $lhasa_padding_minor * 4;
     padding: $lhasa_base_padding * 4;
 }

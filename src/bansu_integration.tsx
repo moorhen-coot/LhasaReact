@@ -402,6 +402,7 @@ export function BansuButton(props: BansuPopupProps) {
                 anchorEl={props.anchorEl}
                 anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
                 transformOrigin={{ vertical: 'center', horizontal: 'center'}}
+                className="lhasa_popover_flush"
             >
                 <div className={"vertical_popup lhasa_editor" + (props.dark_mode ? " lhasa_dark_mode" : "")} style={{maxWidth:  '400px', maxHeight: '500px'}}>
                     <div className="vertical_popup_title">
