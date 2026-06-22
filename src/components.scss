@@ -96,6 +96,21 @@ $thumb-shadow: index.$lhasa_thumb_shadow;
   &:hover { background-color: rgba($primary-dark, 0.08); border-color: $primary-dark; }
 }
 
+.lhasa_button_borderless {
+  @extend .lhasa_button;
+  border-color: transparent;
+  color: $primary;
+
+  &:hover { background-color: rgba($primary, 0.04); }
+}
+
+.lhasa_dark_mode .lhasa_button_borderless {
+  border-color: transparent;
+  color: $primary-dark;
+
+  &:hover { background-color: rgba($primary-dark, 0.08); }
+}
+
 // =====================================================================
 // IconButton
 // =====================================================================
@@ -108,20 +123,20 @@ $thumb-shadow: index.$lhasa_thumb_shadow;
   width: 28px;
   height: 28px;
   padding: 0;
-  background: none;
-  border: 1px solid index.$lhasa_border_color;
-  border-radius: 3px;
-  color: index.$lhasa_text_color;
+  background-color: rgba($primary, 0.12);
+  border: none;
+  border-radius: 50%;
+  color: $primary;
   cursor: pointer;
 
-  &:hover { background-color: rgba(black, 0.04); }
+  &:hover { background-color: rgba($primary, 0.22); }
 }
 
 .lhasa_dark_mode .lhasa_icon_button {
-  color: index.$lhasa_text_color_dark;
-  border-color: index.$lhasa_border_color_dark;
+  background-color: rgba($primary-dark, 0.16);
+  color: $primary-dark;
 
-  &:hover { background-color: rgba(white, 0.08); }
+  &:hover { background-color: rgba($primary-dark, 0.28); }
 }
 
 // =====================================================================
@@ -579,6 +594,7 @@ $thumb-shadow: index.$lhasa_thumb_shadow;
   color: index.$lhasa_text_color;
   border-radius: 4px;
   box-shadow: $shadow;
+  padding: 4px 8px;
 }
 
 .lhasa_dark_mode .lhasa_popover,
@@ -645,7 +661,7 @@ $thumb-shadow: index.$lhasa_thumb_shadow;
   @include component_font;
   @include component_padding;
   background: none;
-  border: 1px solid index.$lhasa_border_color;
+  border: 1px solid rgba(black, 0.12);
   border-radius: 3px;
   color: index.$lhasa_text_color;
   cursor: pointer;
@@ -663,9 +679,17 @@ $thumb-shadow: index.$lhasa_thumb_shadow;
 
 .lhasa_dark_mode .lhasa_toggle_button {
   color: index.$lhasa_text_color_dark;
-  border-color: index.$lhasa_border_color_dark;
+  border-color: rgba(white, 0.12);
 
   &:hover { background-color: rgba(white, 0.08); }
+}
+
+// In the vertical element picker, the Tooltip wrapper + button must fill the
+// column width so single-letter buttons (I) align with wider ones (Cl, Br).
+.vertical_toolbar > .lhasa_tooltip_wrapper { width: 100%; }
+.vertical_toolbar .lhasa_toggle_button {
+  width: 100%;
+  justify-content: center;
 }
 
 .lhasa_toggle_button_pressed {

@@ -1170,6 +1170,7 @@ export function LhasaComponent({
               <div className="horizontal_toolbar">
                 <Button
                   ref={fileButtonRef}
+                  borderless
 
                   onClick={(_evt) => setFileOpen((prev) => !prev)}
                 >
@@ -1282,6 +1283,7 @@ export function LhasaComponent({
                 </CustomPopover>
                 <Button
                   ref={editButtonRef}
+                  borderless
 
                   onClick={(_evt) => setEditOpen((prev) => !prev)}
                 >
@@ -1302,8 +1304,9 @@ export function LhasaComponent({
                     Redo <div className="keybind_hint">Ctrl+Shift+Z</div>
                   </CustomMenuItem>
                 </CustomMenu>
-                <Button 
+                <Button
                   ref={optionButtonRef}
+                  borderless
 
                   onClick={(_evt) => setOptionOpen((prev) => !prev)}
 
@@ -1397,6 +1400,7 @@ export function LhasaComponent({
                 </CustomMenu>
                 <Button
                   ref={helpButtonRef}
+                  borderless
 
                   onClick={(_evt) => setHelpOpened((prev) => !prev)}
                 >
@@ -1425,6 +1429,7 @@ export function LhasaComponent({
                 {send_to_host_program_callback && name_of_host_program && smiles.length > 0 && <>
                   <Button
                     ref={sendToButtonRef}
+                    borderless
   
                     onClick={(_evt) => {
                       if (smiles.length === 1) {
