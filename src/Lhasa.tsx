@@ -1045,6 +1045,7 @@ export function LhasaComponent({
     { name: "SDF", format: Lhasa.CheminformaticsFileFormat.SDF, extension: ".sdf" },
     { name: "InChI", format: Lhasa.CheminformaticsFileFormat.InChI, extension: ".inchi" },
     { name: "CDXML", format: Lhasa.CheminformaticsFileFormat.CDXML, extension: ".cdxml" },
+    { name: "SMILES", format: Lhasa.CheminformaticsFileFormat.SMILES, extension: ".smi" },
   ];
 
   function handleImportFile(format: CheminformaticsFileFormat) {
