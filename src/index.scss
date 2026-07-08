@@ -14,6 +14,14 @@ $lhasa_base_padding: 3px;
 $lhasa_padding_minor: 2px;
 $lhasa_font_size: 0.65rem;
 
+// Component colour system — a few base tokens; everything else is derived inline
+$lhasa_primary_color: #1976d2;
+$lhasa_error_color: #d32f2f;
+$lhasa_menu_background_dark: #424242;
+$lhasa_floating_shadow: 0 2px 8px rgba(black, 0.15);
+$lhasa_floating_shadow_dark: 0 2px 8px rgba(black, 0.4);
+$lhasa_thumb_shadow: 0 1px 3px rgba(black, 0.3);
+
 .editor_canvas_container {
     border: $lhasa_border_color 1px solid;
     /* Padding here breaks relative coords */
@@ -157,12 +165,6 @@ $lhasa_font_size: 0.65rem;
     flex-direction: column;
 }
 
-@mixin lhasa_disable_MUI_swelling {
-    font-size: $lhasa_font_size;
-    line-height: normal;
-    letter-spacing: 0em;
-}
-
 @mixin center_flex {
     text-align: center;
     justify-content: center;
@@ -241,16 +243,26 @@ $lhasa_font_size: 0.65rem;
 .tool_button {
     @include vertical_container;
     @include center_flex;
-    @include lhasa_disable_MUI_swelling;
+    font-size: $lhasa_font_size;
+    line-height: normal;
+    letter-spacing: normal;
     gap: $lhasa_padding_minor;
     padding: $lhasa_base_padding;
 }
 
 .vertical_popup {
     @include vertical_container;
-    @include center_flex;
+    // The MUI build neutralized center_flex via LhasaMuiStyling, so the popup body
+    // was always left-aligned; keep it that way (the title centers via its own rule).
+    text-align: left;
     gap: $lhasa_padding_minor * 4;
     padding: $lhasa_base_padding * 4;
+}
+
+.vertical_popup ul {
+    display: inline-block;
+    text-align: left;
+    margin: 0;
 }
 
 .vertical_popup_title {

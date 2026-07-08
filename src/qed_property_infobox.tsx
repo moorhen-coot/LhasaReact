@@ -1,4 +1,4 @@
-import { LinearProgress, Tabs, Tab } from '@mui/material';
+import { LinearProgress, Tabs, Tab } from './components';
 import type { QEDInfo } from './types';
 
 type QedPropertyInfoboxProps = {
